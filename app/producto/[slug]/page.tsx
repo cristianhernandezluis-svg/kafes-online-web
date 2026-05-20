@@ -315,7 +315,7 @@ export default function ProductoPage() {
 
             <button
               onClick={() => setOpenCheckout(true)}
-              className="bg-pink-600 hover:bg-pink-700 text-white w-full py-5 rounded-2xl text-2xl font-black shadow-xl animate-bounce hover:scale-105 active:scale-95"
+              className="bg-pink-600 hover:bg-pink-700 text-white w-full py-5 rounded-2xl text-2xl font-black shadow-xl animate-[pulse_1.2s_ease-in-out_infinite]"
             >
               Comprar ahora
             </button>
