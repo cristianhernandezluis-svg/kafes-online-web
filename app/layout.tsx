@@ -1,6 +1,13 @@
 import "./globals.css";
 import Script from "next/script";
 
+import { Poppins } from "next/font/google";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
 export const metadata = {
   title: "KAFES ONLINE",
   description: "Herramientas profesionales",
@@ -13,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body>
+      <body className={poppins.className}>
 
         {/* META PIXEL */}
         <Script id="facebook-pixel" strategy="afterInteractive">
@@ -46,6 +53,7 @@ export default function RootLayout({
               w.TiktokAnalyticsObject=t;
               var ttq=w[t]=w[t]||[];
               ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
+
               ttq.setAndDefer=function(t,e){
                 t[e]=function(){
                   t.push([e].concat(Array.prototype.slice.call(arguments,0)))
@@ -58,23 +66,29 @@ export default function RootLayout({
 
               ttq.load=function(e,n){
                 var r="https://analytics.tiktok.com/i18n/pixel/events.js";
+
                 ttq._i=ttq._i||{};
                 ttq._i[e]=[];
                 ttq._i[e]._u=r;
+
                 ttq._t=ttq._t||{};
                 ttq._t[e]=+new Date;
+
                 ttq._o=ttq._o||{};
                 ttq._o[e]=n||{};
+
                 n=document.createElement("script");
                 n.type="text/javascript";
                 n.async=!0;
                 n.src=r+"?sdkid="+e+"&lib="+t;
+
                 e=document.getElementsByTagName("script")[0];
                 e.parentNode.insertBefore(n,e)
               };
 
               ttq.load('CUNLUQ3C77UCIANOL1D0');
               ttq.page();
+
             }(window, document, 'ttq');
           `}
         </Script>
