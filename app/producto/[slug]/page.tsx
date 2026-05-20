@@ -452,22 +452,43 @@ export default function ProductoPage() {
                     </div>
                   </div>
 
-                  <div className="p-5 bg-zinc-100 border-b space-y-2">
-                    <div className="flex justify-between">
-                      <span>Subtotal</span>
-                      <strong>S/{total}</strong>
-                    </div>
+                  <div className="p-5 border-b">
 
-                    <div className="flex justify-between">
-                      <span>Envío</span>
-                      <strong>Gratis</strong>
-                    </div>
+  <div className="border rounded-2xl overflow-hidden shadow-sm">
 
-                    <div className="flex justify-between text-lg">
-                      <span>Total</span>
-                      <strong>S/{total}</strong>
-                    </div>
-                  </div>
+    <div className="flex justify-between px-4 py-3 border-b bg-white">
+      <span className="text-zinc-700">
+        Subtotal
+      </span>
+
+      <strong className="font-black">
+        S/{total}
+      </strong>
+    </div>
+
+    <div className="flex justify-between px-4 py-3 border-b bg-white">
+      <span className="text-zinc-700">
+        Envío
+      </span>
+
+      <strong className="font-black text-green-600">
+        Gratis
+      </strong>
+    </div>
+
+    <div className="flex justify-between px-4 py-4 bg-zinc-50">
+      <span className="text-xl font-black">
+        Total
+      </span>
+
+      <strong className="text-2xl font-black">
+        S/{total}
+      </strong>
+    </div>
+
+  </div>
+
+</div>
 
                   <div className="p-5 space-y-3">
                     <Input
