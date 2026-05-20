@@ -75,11 +75,11 @@ export default function ProductoPage() {
       {openCheckout && (
         <div
           onClick={() => setOpenCheckout(false)}
-          className="fixed inset-0 bg-black/70 z-[999] flex items-center justify-center p-4"
+         className="fixed inset-0 bg-black/70 z-[999] flex items-start justify-center p-4 overflow-y-auto"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white text-black w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative"
+            className="bg-white text-black w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative my-6"
           >
             <button
               onClick={() => setOpenCheckout(false)}
