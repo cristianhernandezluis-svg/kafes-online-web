@@ -492,58 +492,75 @@ export default function ProductoPage() {
 
                   <div className="p-5 space-y-3">
                     <Input
-                      icon={<User size={18} />}
-                      placeholder="Nombre completo *"
-                      value={nombre}
-                      onChange={setNombre}
-                    />
+  icon={<User size={18} />}
+  placeholder="Nombre completo *"
+  value={nombre}
+  onChange={setNombre}
+  name="name"
+  autoComplete="name"
+/>
 
-                    <Input
-                      icon={<Phone size={18} />}
-                      placeholder="Celular *"
-                      value={celular}
-                      onChange={setCelular}
-                    />
+<Input
+  icon={<Phone size={18} />}
+  placeholder="Celular *"
+  value={celular}
+  onChange={setCelular}
+  name="tel"
+  type="tel"
+  autoComplete="tel"
+/>
 
-                    <Input
-                      icon={<MapPin size={18} />}
-                      placeholder="Ciudad o distrito *"
-                      value={ciudad}
-                      onChange={setCiudad}
-                    />
+<Input
+  icon={<MapPin size={18} />}
+  placeholder="Ciudad o distrito *"
+  value={ciudad}
+  onChange={setCiudad}
+  name="address-level2"
+  autoComplete="address-level2"
+/>
 
-                    <select
-                      required
-                      value={region}
-                      onChange={(e) => setRegion(e.target.value)}
-                      className="w-full px-4 py-3 border rounded-xl outline-none bg-white text-zinc-700"
-                    >
-                      <option value="">Selecciona tu región *</option>
-                      {regionesPeru.map((item) => (
-                        <option key={item} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
+<select
+  required
+  value={region}
+  onChange={(e) => setRegion(e.target.value)}
+  name="region"
+  autoComplete="address-level1"
+  className="w-full px-5 py-4 border rounded-2xl outline-none bg-white text-zinc-700 text-lg"
+>
+  <option value="">Selecciona tu región *</option>
 
-                    <Input
-                      icon={<Home size={18} />}
-                      placeholder="Dirección exacta *"
-                      value={direccion}
-                      onChange={setDireccion}
-                    />
+  {regionesPeru.map((item) => (
+    <option key={item} value={item}>
+      {item}
+    </option>
+  ))}
+</select>
 
-                    <Input
-                      icon={<MapPin size={18} />}
-                      placeholder="Referencia"
-                      value={referencia}
-                      onChange={setReferencia}
-                    />
+<Input
+  icon={<Home size={18} />}
+  placeholder="Dirección exacta *"
+  value={direccion}
+  onChange={setDireccion}
+  name="street-address"
+  autoComplete="street-address"
+/>
 
-                    <button
-                      onClick={finalizarPedido}
-                      disabled={loading}
-                      className="w-full bg-black text-yellow-400 py-4 rounded-xl font-black text-lg hover:bg-zinc-800 transition"
+<Input
+  icon={<MapPin size={18} />}
+  placeholder="Referencia"
+  value={referencia}
+  onChange={setReferencia}
+  name="address-line2"
+  autoComplete="address-line2"
+/>
+
+<button
+  onClick={finalizarPedido}
+  disabled={loading}
+  className="w-full bg-black text-yellow-400 py-5 rounded-2xl font-black text-xl hover:bg-zinc-800 transition active:scale-[0.98]"
+>
+  {loading ? "Enviando pedido..." : "Finalizar pedido"}
+</button>
                     >
                       {loading ? "Enviando pedido..." : "Finalizar pedido"}
                     </button>
@@ -606,7 +623,36 @@ export default function ProductoPage() {
   );
 }
 
-function Input({ icon, placeholder, value, onChange }: any) {
+function Input({
+  icon,
+  placeholder,
+ value,
+  onChange,
+  name,
+  autoComplete,
+  type = "text",
+}: any) {
+  return (
+    <div className="flex border rounded-2xl overflow-hidden">
+      
+      <div className="bg-zinc-100 px-5 flex items-center text-zinc-500">
+        {icon}
+      </div>
+
+      <input
+        required
+        type={type}
+        name={name}
+        autoComplete={autoComplete}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full px-5 py-4 outline-none text-lg"
+      />
+      
+    </div>
+  );
+} {
   return (
     <div className="flex border rounded-xl overflow-hidden">
       <div className="bg-zinc-100 px-4 flex items-center text-zinc-500">
