@@ -307,6 +307,99 @@ export default function ProductoPage() {
           </div>
         </div>
       </div>
+{/* TESTIMONIOS */}
+<section className="max-w-7xl mx-auto px-6 py-20">
+  <h2 className="text-4xl font-black text-center mb-10">
+    Clientes Felices
+  </h2>
+
+  <div className="grid md:grid-cols-3 gap-6">
+    <Testimonial name="Carlos M." text="Me llegó rápido y funciona muy bien." />
+    <Testimonial name="Luis R." text="Buena potencia y excelente atención." />
+    <Testimonial name="Miguel A." text="Producto recomendado, buena calidad." />
+  </div>
+</section>
+
+{/* FAQ */}
+<section className="max-w-5xl mx-auto px-6 py-16">
+  <h2 className="text-4xl font-black text-center mb-10">
+    Preguntas Frecuentes
+  </h2>
+
+  <div className="space-y-5">
+    <Faq question="¿Hacen envíos a provincia?" answer="Sí, enviamos a todo el Perú." />
+    <Faq question="¿El pago es contra entrega?" answer="Sí, un asesor confirmará tu pedido por WhatsApp." />
+    <Faq question="¿Tiene garantía?" answer="Sí, todos nuestros productos cuentan con garantía." />
+  </div>
+</section>
+
+{/* TAMBIÉN TE PUEDEN INTERESAR */}
+<section className="max-w-7xl mx-auto px-6 py-20">
+  <h2 className="text-3xl font-black mb-8">
+    También te pueden interesar:
+  </h2>
+
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <ProductCard name="Taladro 48V" price="S/189" image="/sierra-bomvink-8.jpg" />
+    <ProductCard name="Amoladora BOMVINK" price="S/289" image="/sierra-bomvink-8.jpg" />
+    <ProductCard name="Sierra Caladora" price="S/249" image="/sierra-bomvink-8.jpg" />
+    <ProductCard name="Soporte Amoladora" price="S/199" image="/sierra-bomvink-8.jpg" />
+  </div>
+</section>
+
+{/* EXPLORA EL CATÁLOGO */}
+<section className="max-w-7xl mx-auto px-6 py-20">
+  <h2 className="text-3xl font-black mb-8">
+    Explora el catálogo
+  </h2>
+
+  <div className="bg-black text-white rounded-3xl p-10 text-center">
+    <h3 className="text-4xl font-black">
+      Herramientas profesionales para todo el Perú
+    </h3>
+
+    <p className="text-zinc-300 mt-4">
+      Encuentra productos con envío rápido, pago contra entrega y atención personalizada.
+    </p>
+
+    <a
+      href="/"
+      className="inline-block mt-8 bg-yellow-400 text-black px-8 py-4 rounded-2xl font-black"
+    >
+      Ver catálogo
+    </a>
+  </div>
+</section>
+
+{/* FOOTER */}
+<footer className="bg-black text-white px-6 py-16 pb-32">
+  <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
+    <div>
+      <h2 className="text-3xl font-black">KAFES ONLINE</h2>
+      <p className="text-zinc-400 mt-4">
+        Herramientas profesionales con envío a todo el Perú.
+      </p>
+    </div>
+
+    <div>
+      <h3 className="font-black mb-4">Atención al cliente</h3>
+      <p className="text-zinc-400">📞 +51 980 296 583</p>
+      <p className="text-zinc-400">📍 Lima, Perú</p>
+    </div>
+
+    <div>
+      <h3 className="font-black mb-4">Menú inferior</h3>
+      <p className="text-zinc-400">Preguntas frecuentes</p>
+      <p className="text-zinc-400">Política de envíos</p>
+      <p className="text-zinc-400">Términos del servicio</p>
+      <p className="text-zinc-400">Política de privacidad</p>
+    </div>
+  </div>
+
+  <div className="text-center text-zinc-500 text-sm mt-12 border-t border-zinc-800 pt-6">
+    © 2026 KAFES ONLINE - Todos los derechos reservados.
+  </div>
+</footer>
 
       {openCheckout && (
         <div
