@@ -16,6 +16,13 @@ import {
   Search,
 } from "lucide-react";
 
+declare global {
+  interface Window {
+    fbq?: any;
+    ttq?: any;
+  }
+}
+
 export default function ProductoPage() {
   const [openCheckout, setOpenCheckout] = useState(false);
   const [pedidoFinalizado, setPedidoFinalizado] = useState(false);
@@ -65,6 +72,18 @@ export default function ProductoPage() {
 
       setPedidoFinalizado(true);
 
+      if (typeof window !== "undefined") {
+        window.fbq?.("track", "Purchase", {
+          value: total,
+          currency: "PEN",
+        });
+
+        window.ttq?.track("CompletePayment", {
+          value: total,
+          currency: "PEN",
+        });
+      }
+
       setTimeout(() => {
         setOpenCheckout(false);
         setPedidoFinalizado(false);
@@ -84,8 +103,6 @@ export default function ProductoPage() {
 
   return (
     <main className="min-h-screen bg-white text-black">
-
-      {/* TOP BAR */}
       <header className="bg-white border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
           <a href="/" className="text-2xl md:text-3xl font-black">
