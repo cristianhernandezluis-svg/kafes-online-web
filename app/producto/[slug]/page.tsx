@@ -629,3 +629,39 @@ function Benefit({ text }: any) {
     </div>
   );
 }
+
+function Testimonial({ name, text }: any) {
+  return (
+    <div className="bg-white border rounded-3xl p-6 shadow-sm text-center">
+      <div className="text-yellow-400 text-xl mb-3">★★★★★</div>
+      <p className="text-zinc-700">"{text}"</p>
+      <h3 className="font-black mt-4">{name}</h3>
+    </div>
+  );
+}
+
+function Faq({ question, answer }: any) {
+  return (
+    <div className="border rounded-3xl p-6">
+      <h3 className="font-black text-xl">{question}</h3>
+      <p className="text-zinc-600 mt-3">{answer}</p>
+    </div>
+  );
+}
+
+function ProductCard({ name, price, image }: any) {
+  return (
+    <div className="bg-white border rounded-3xl p-4 shadow-sm">
+      <Image
+        src={image}
+        alt={name}
+        width={300}
+        height={300}
+        className="w-full h-40 object-contain bg-zinc-100 rounded-2xl"
+      />
+
+      <h3 className="font-black mt-4">{name}</h3>
+      <p className="text-yellow-500 font-black text-xl mt-2">{price}</p>
+    </div>
+  );
+}
