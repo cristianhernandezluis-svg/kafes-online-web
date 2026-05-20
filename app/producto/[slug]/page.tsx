@@ -124,14 +124,23 @@ export default function ProductoPage() {
 
   return (
     <main className="min-h-screen bg-white text-black">
+
+      {/* TOP BAR */}
+      <div className="bg-green-500 text-white text-center py-2 text-sm font-bold">
+        🚚 ENVÍOS GRATIS A TODO EL PERÚ
+      </div>
+
+      {/* HEADER */}
       <header className="bg-white border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+
           <a href="/" className="text-2xl md:text-3xl font-black">
             KAFES ONLINE
           </a>
 
           <div className="hidden md:flex items-center gap-2 bg-zinc-100 rounded-full px-4 py-2 w-[420px]">
             <Search size={20} className="text-zinc-500" />
+
             <input
               placeholder="Busca productos..."
               className="bg-transparent outline-none w-full"
@@ -139,13 +148,17 @@ export default function ProductoPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <a href="/" className="font-bold hover:text-yellow-500">
+
+            <a
+              href="/"
+              className="font-bold hover:text-yellow-500 transition"
+            >
               Inicio
             </a>
 
             <a
               href="/#productos"
-              className="hidden md:block font-bold hover:text-yellow-500"
+              className="hidden md:block font-bold hover:text-yellow-500 transition"
             >
               Catálogo
             </a>
@@ -153,13 +166,19 @@ export default function ProductoPage() {
             <button className="bg-yellow-400 text-black p-3 rounded-full">
               <ShoppingCart />
             </button>
+
           </div>
+
         </div>
       </header>
 
+      {/* PRODUCTO */}
       <div className="max-w-7xl mx-auto py-10 px-6 grid md:grid-cols-2 gap-12">
+
         <div>
+
           <div className="bg-zinc-100 rounded-3xl p-8">
+
             <Image
               src="/sierra-bomvink-8.jpg"
               alt="Sierra BOMVINK"
@@ -168,16 +187,21 @@ export default function ProductoPage() {
               className="rounded-2xl object-contain"
               priority
             />
+
           </div>
 
           <div className="grid grid-cols-3 gap-4 mt-4">
+
             <MiniBox text="2 baterías" />
             <MiniBox text="8 pulgadas" />
             <MiniBox text="21V" />
+
           </div>
+
         </div>
 
         <div>
+
           <span className="bg-yellow-400 text-black px-4 py-2 rounded-full font-bold">
             MÁS VENDIDO
           </span>
@@ -186,13 +210,27 @@ export default function ProductoPage() {
             Sierra Inalámbrica BOMVINK 8"
           </h1>
 
+          <div className="flex items-center gap-2 mt-3 text-yellow-400 font-bold">
+            ★★★★★
+            <span className="text-zinc-600 text-sm">
+              4.9/5 +100 reseñas
+            </span>
+          </div>
+
           <div className="mt-6 flex items-center gap-4">
-            <p className="text-5xl font-black text-yellow-500">S/249</p>
-            <span className="line-through text-zinc-400 text-2xl">S/299</span>
+
+            <p className="text-5xl font-black text-yellow-500">
+              S/249
+            </p>
+
+            <span className="line-through text-zinc-400 text-2xl">
+              S/299
+            </span>
+
           </div>
 
           <div className="mt-4 bg-red-100 text-red-600 px-4 py-3 rounded-2xl font-bold inline-block">
-            🔥 Quedan 7 unidades disponibles
+            🔥 Últimas unidades disponibles
           </div>
 
           <div className="mt-4 bg-black text-yellow-400 px-5 py-4 rounded-2xl font-black inline-block shadow-xl animate-pulse">
@@ -200,92 +238,184 @@ export default function ProductoPage() {
           </div>
 
           <p className="text-zinc-600 mt-6 text-lg leading-8">
-            Sierra inalámbrica profesional ideal para poda, madera, trabajos de
-            campo y uso continuo.
+            Sierra inalámbrica profesional ideal para poda,
+            madera, trabajos de campo y uso continuo.
           </p>
 
           <div className="grid grid-cols-2 gap-4 mt-8">
-            <InfoBox icon={<Truck />} title="Envío rápido" text="A todo el Perú" />
-            <InfoBox icon={<ShieldCheck />} title="Compra segura" text="Confirmación por WhatsApp" />
+
+            <InfoBox
+              icon={<Truck />}
+              title="Envío rápido"
+              text="A todo el Perú"
+            />
+
+            <InfoBox
+              icon={<ShieldCheck />}
+              title="Compra segura"
+              text="Confirmación por WhatsApp"
+            />
+
           </div>
 
-          <div className="mt-10">
-            <h2 className="text-3xl font-black mb-6">Características</h2>
+          {/* BENEFICIOS */}
+          <div className="mt-8 space-y-3">
 
-            <div className="space-y-4 text-lg">
-              {[
-                "21V de potencia",
-                "Incluye 2 baterías",
-                "Espada de 8 pulgadas",
-                "Corte rápido y preciso",
-                "Ideal para poda y madera",
-                "Diseño ergonómico",
-              ].map((item) => (
-                <div key={item} className="flex gap-3 items-center">
-                  <CheckCircle className="text-green-500" />
-                  {item}
-                </div>
-              ))}
+            <Benefit text="21V de potencia" />
+            <Benefit text="Incluye 2 baterías" />
+            <Benefit text="Espada de 8 pulgadas" />
+            <Benefit text="Corte rápido y preciso" />
+            <Benefit text="Ideal para poda y madera" />
+            <Benefit text="Diseño ergonómico" />
+
+          </div>
+
+          {/* CANTIDAD */}
+          <div className="mt-8">
+
+            <label className="font-black">
+              Cantidad
+            </label>
+
+            <div className="flex mt-3 w-[180px]">
+
+              <button
+                onClick={() =>
+                  setCantidad(Math.max(1, cantidad - 1))
+                }
+                className="bg-zinc-200 px-5 py-3 font-black rounded-l-xl"
+              >
+                -
+              </button>
+
+              <div className="flex-1 border-y flex items-center justify-center font-black">
+                {cantidad}
+              </div>
+
+              <button
+                onClick={() => setCantidad(cantidad + 1)}
+                className="bg-zinc-200 px-5 py-3 font-black rounded-r-xl"
+              >
+                +
+              </button>
+
             </div>
+
           </div>
 
-          <button
-            onClick={() => setOpenCheckout(true)}
-            className="mt-10 bg-yellow-400 hover:bg-yellow-300 text-black w-full py-5 rounded-2xl text-2xl font-black flex items-center justify-center gap-3 shadow-xl transition"
-          >
-            <ShoppingCart />
-            Comprar ahora
-          </button>
+          {/* BOTONES */}
+          <div className="mt-8 space-y-4">
+
+            <button
+              onClick={() => setOpenCheckout(true)}
+              className="bg-green-500 hover:bg-green-600 text-white w-full py-5 rounded-2xl text-2xl font-black transition shadow-xl"
+            >
+              Agregar al carrito
+            </button>
+
+            <button
+              onClick={() => setOpenCheckout(true)}
+              className="bg-pink-600 hover:bg-pink-700 text-white w-full py-5 rounded-2xl text-2xl font-black transition shadow-xl"
+            >
+              Comprar ahora
+            </button>
+
+          </div>
+
+          <div className="mt-6 bg-zinc-100 rounded-2xl p-5 space-y-3 text-sm">
+
+            <p>🚚 Envío gratis a todo el Perú</p>
+            <p>📦 Pago contra entrega</p>
+            <p>🛡️ Garantía de satisfacción</p>
+
+          </div>
+
         </div>
+
       </div>
 
-      <section className="max-w-7xl mx-auto px-6 pb-20">
-        <div className="bg-zinc-100 rounded-3xl p-8">
-          <h2 className="text-3xl font-black mb-4">Descripción del producto</h2>
-          <p className="text-zinc-700 leading-8 text-lg">
-            La Sierra Inalámbrica BOMVINK 8” está diseñada para trabajos de poda
-            y cortes rápidos en madera. Ideal para uso doméstico y profesional.
-          </p>
-        </div>
-      </section>
-
+      {/* TESTIMONIOS */}
       <section className="max-w-7xl mx-auto px-6 pb-24">
+
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-black">Clientes satisfechos</h2>
-          <p className="text-zinc-500 mt-3">
-            Opiniones reales de nuestros clientes.
-          </p>
+
+          <h2 className="text-4xl font-black">
+            Clientes felices
+          </h2>
+
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          <Testimonial name="Carlos M." city="Lima" text="Muy buena potencia y llegó rápido." />
-          <Testimonial name="Luis R." city="Arequipa" text="Excelente producto y buena atención." />
-          <Testimonial name="Miguel A." city="Trujillo" text="La batería dura bastante y corta bien." />
+
+          <Testimonial
+            name="Carlos M."
+            city="Lima"
+            text="Muy buena potencia y llegó rápido."
+          />
+
+          <Testimonial
+            name="Luis R."
+            city="Arequipa"
+            text="Excelente producto y buena atención."
+          />
+
+          <Testimonial
+            name="Miguel A."
+            city="Trujillo"
+            text="La batería dura bastante y corta bien."
+          />
+
         </div>
+
       </section>
 
-      <section className="max-w-5xl mx-auto px-6 pb-24">
+      {/* FAQ */}
+      <section className="max-w-5xl mx-auto px-6 pb-36">
+
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-black">Preguntas frecuentes</h2>
+
+          <h2 className="text-4xl font-black">
+            Preguntas frecuentes
+          </h2>
+
         </div>
 
         <div className="space-y-5">
-          <Faq question="¿Hacen envíos a provincia?" answer="Sí, enviamos a todo el Perú." />
-          <Faq question="¿El pago es contra entrega?" answer="Sí, un asesor confirmará tu pedido." />
-          <Faq question="¿Tiene garantía?" answer="Sí, todos nuestros productos tienen garantía." />
+
+          <Faq
+            question="¿Hacen envíos a provincia?"
+            answer="Sí, enviamos a todo el Perú."
+          />
+
+          <Faq
+            question="¿El pago es contra entrega?"
+            answer="Sí, un asesor confirmará tu pedido."
+          />
+
+          <Faq
+            question="¿Tiene garantía?"
+            answer="Sí, todos nuestros productos tienen garantía."
+          />
+
         </div>
+
       </section>
 
+      {/* POPUP CHECKOUT */}
       {openCheckout && (
+
         <div
           onClick={() => setOpenCheckout(false)}
           className="fixed inset-0 bg-black/70 z-[999] overflow-y-auto"
         >
+
           <div className="min-h-screen flex items-start justify-center p-4">
+
             <div
               onClick={(e) => e.stopPropagation()}
               className="bg-white text-black w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative my-10"
             >
+
               <button
                 onClick={() => setOpenCheckout(false)}
                 className="absolute top-4 right-4 text-zinc-500 hover:text-black"
@@ -294,15 +424,22 @@ export default function ProductoPage() {
               </button>
 
               {!pedidoFinalizado ? (
+
                 <>
                   <div className="p-5 border-b">
-                    <h2 className="font-black text-xl">PAGO CONTRA ENTREGA</h2>
+
+                    <h2 className="font-black text-xl">
+                      PAGO CONTRA ENTREGA
+                    </h2>
+
                     <p className="text-sm text-zinc-500">
                       Completa tus datos para reservar tu producto.
                     </p>
+
                   </div>
 
                   <div className="p-5 flex gap-3 border-b">
+
                     <Image
                       src="/sierra-bomvink-8.jpg"
                       alt="Sierra BOMVINK"
@@ -312,15 +449,25 @@ export default function ProductoPage() {
                     />
 
                     <div className="flex-1">
+
                       <h3 className="font-black text-sm">
                         Sierra Inalámbrica BOMVINK 8"
                       </h3>
-                      <p className="text-sm text-zinc-500">Envío a todo el Perú</p>
-                      <p className="font-black mt-1">S/249</p>
+
+                      <p className="text-sm text-zinc-500">
+                        Envío a todo el Perú
+                      </p>
+
+                      <p className="font-black mt-1">
+                        S/{total}
+                      </p>
+
                     </div>
+
                   </div>
 
                   <div className="p-5 bg-zinc-100 border-b space-y-2">
+
                     <div className="flex justify-between">
                       <span>Subtotal</span>
                       <strong>S/{total}</strong>
@@ -335,81 +482,144 @@ export default function ProductoPage() {
                       <span>Total</span>
                       <strong>S/{total}</strong>
                     </div>
+
                   </div>
 
                   <div className="p-5 space-y-3">
-                    <h3 className="font-black text-center mb-3">
-                      Ingresa tus datos de envío
-                    </h3>
 
-                    <Input icon={<User size={18} />} placeholder="Nombre completo *" value={nombre} onChange={setNombre} />
-                    <Input icon={<Phone size={18} />} placeholder="Celular *" value={celular} onChange={setCelular} />
-                    <Input icon={<MapPin size={18} />} placeholder="Ciudad o distrito *" value={ciudad} onChange={setCiudad} />
-                    <Input icon={<Home size={18} />} placeholder="Dirección exacta *" value={direccion} onChange={setDireccion} />
-                    <Input icon={<MapPin size={18} />} placeholder="Referencia" value={referencia} onChange={setReferencia} />
+                    <Input
+                      icon={<User size={18} />}
+                      placeholder="Nombre completo *"
+                      value={nombre}
+                      onChange={setNombre}
+                    />
 
-                    <div>
-                      <label className="font-bold text-sm">Cantidad</label>
-                      <div className="flex mt-2">
-                        <button
-                          type="button"
-                          onClick={() => setCantidad(Math.max(1, cantidad - 1))}
-                          className="bg-yellow-400 px-5 py-3 font-black"
-                        >
-                          -
-                        </button>
+                    <Input
+                      icon={<Phone size={18} />}
+                      placeholder="Celular *"
+                      value={celular}
+                      onChange={setCelular}
+                    />
 
-                        <div className="flex-1 border-y flex items-center justify-center font-black">
-                          {cantidad}
-                        </div>
+                    <Input
+                      icon={<MapPin size={18} />}
+                      placeholder="Ciudad o distrito *"
+                      value={ciudad}
+                      onChange={setCiudad}
+                    />
 
-                        <button
-                          type="button"
-                          onClick={() => setCantidad(cantidad + 1)}
-                          className="bg-yellow-400 px-5 py-3 font-black"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
+                    <Input
+                      icon={<Home size={18} />}
+                      placeholder="Dirección exacta *"
+                      value={direccion}
+                      onChange={setDireccion}
+                    />
+
+                    <Input
+                      icon={<MapPin size={18} />}
+                      placeholder="Referencia"
+                      value={referencia}
+                      onChange={setReferencia}
+                    />
 
                     <button
                       onClick={finalizarPedido}
                       disabled={loading}
-                      className="w-full bg-black text-yellow-400 py-4 rounded-xl font-black text-lg hover:bg-zinc-800 transition disabled:opacity-60"
+                      className="w-full bg-black text-yellow-400 py-4 rounded-xl font-black text-lg hover:bg-zinc-800 transition"
                     >
-                      {loading ? "Enviando pedido..." : "Finalizar pedido"}
+                      {loading
+                        ? "Enviando pedido..."
+                        : "Finalizar pedido"}
                     </button>
 
-                    <p className="text-xs text-center text-zinc-500">
-                      Al finalizar, un asesor confirmará tu pedido por WhatsApp.
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <div className="p-10 text-center">
-                  <div className="flex justify-center mb-5">
-                    <CheckCircle size={90} className="text-green-500" />
                   </div>
 
-                  <h2 className="text-3xl font-black mb-4">¡Pedido recibido!</h2>
+                </>
+
+              ) : (
+
+                <div className="p-10 text-center">
+
+                  <div className="flex justify-center mb-5">
+
+                    <CheckCircle
+                      size={90}
+                      className="text-green-500"
+                    />
+
+                  </div>
+
+                  <h2 className="text-3xl font-black mb-4">
+                    ¡Pedido recibido!
+                  </h2>
 
                   <p className="text-zinc-600 text-lg leading-8">
                     Gracias por confiar en KAFES ONLINE.
                   </p>
 
-                  <p className="text-zinc-600 text-lg leading-8 mt-3">
-                    Un asesor se pondrá en contacto contigo vía WhatsApp para
-                    confirmar tu pedido.
-                  </p>
                 </div>
+
               )}
+
             </div>
+
           </div>
+
         </div>
+
       )}
 
+      {/* STICKY ADD TO CART */}
+
+      <div className="fixed bottom-0 left-0 w-full bg-white border-t shadow-2xl z-40">
+
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+
+          <div className="flex items-center gap-3">
+
+            <Image
+              src="/sierra-bomvink-8.jpg"
+              alt="Sierra BOMVINK"
+              width={60}
+              height={60}
+              className="rounded-xl bg-zinc-100"
+            />
+
+            <div>
+
+              <h3 className="font-black text-sm md:text-lg leading-tight">
+                Sierra BOMVINK 8"
+              </h3>
+
+              <div className="flex items-center gap-2">
+
+                <p className="text-yellow-500 font-black text-xl">
+                  S/249
+                </p>
+
+                <span className="line-through text-zinc-400 text-sm">
+                  S/299
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <button
+            onClick={() => setOpenCheckout(true)}
+            className="bg-green-500 hover:bg-green-600 text-white px-6 md:px-10 py-3 rounded-full font-black shadow-xl transition whitespace-nowrap"
+          >
+            Comprar Ahora
+          </button>
+
+        </div>
+
+      </div>
+
       <WhatsAppButton />
+
     </main>
   );
 }
@@ -420,6 +630,7 @@ function Input({ icon, placeholder, value, onChange }: any) {
       <div className="bg-zinc-100 px-4 flex items-center text-zinc-500">
         {icon}
       </div>
+
       <input
         required
         value={value}
@@ -434,28 +645,62 @@ function Input({ icon, placeholder, value, onChange }: any) {
 function InfoBox({ icon, title, text }: any) {
   return (
     <div className="border rounded-2xl p-4">
-      <div className="text-yellow-500">{icon}</div>
-      <h3 className="font-black mt-2">{title}</h3>
-      <p className="text-sm text-zinc-500">{text}</p>
+      <div className="text-yellow-500">
+        {icon}
+      </div>
+
+      <h3 className="font-black mt-2">
+        {title}
+      </h3>
+
+      <p className="text-sm text-zinc-500">
+        {text}
+      </p>
     </div>
   );
 }
 
 function MiniBox({ text }: any) {
   return (
-    <div className="bg-zinc-100 rounded-2xl p-4 text-center font-black">{text}</div>
+    <div className="bg-zinc-100 rounded-2xl p-4 text-center font-black">
+      {text}
+    </div>
+  );
+}
+
+function Benefit({ text }: any) {
+  return (
+    <div className="flex items-center gap-3">
+      <CheckCircle className="text-green-500" />
+      <span className="font-medium">{text}</span>
+    </div>
   );
 }
 
 function Testimonial({ name, city, text }: any) {
   return (
     <div className="bg-white border rounded-3xl p-7 shadow-sm">
-      <div className="text-yellow-400 text-2xl mb-4">★★★★★</div>
-      <p className="text-zinc-700 leading-8">"{text}"</p>
-      <div className="mt-6">
-        <h3 className="font-black text-lg">{name}</h3>
-        <p className="text-zinc-500">{city}</p>
+
+      <div className="text-yellow-400 text-2xl mb-4">
+        ★★★★★
       </div>
+
+      <p className="text-zinc-700 leading-8">
+        "{text}"
+      </p>
+
+      <div className="mt-6">
+
+        <h3 className="font-black text-lg">
+          {name}
+        </h3>
+
+        <p className="text-zinc-500">
+          {city}
+        </p>
+
+      </div>
+
     </div>
   );
 }
@@ -463,8 +708,15 @@ function Testimonial({ name, city, text }: any) {
 function Faq({ question, answer }: any) {
   return (
     <div className="border rounded-3xl p-6">
-      <h3 className="font-black text-xl">{question}</h3>
-      <p className="text-zinc-600 mt-3 leading-7">{answer}</p>
+
+      <h3 className="font-black text-xl">
+        {question}
+      </h3>
+
+      <p className="text-zinc-600 mt-3 leading-7">
+        {answer}
+      </p>
+
     </div>
   );
 }
