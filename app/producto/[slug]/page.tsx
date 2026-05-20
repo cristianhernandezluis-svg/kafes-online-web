@@ -559,11 +559,13 @@ export default function ProductoPage() {
   disabled={loading}
   className="w-full bg-black text-yellow-400 py-5 rounded-2xl font-black text-xl hover:bg-zinc-800 transition active:scale-[0.98]"
 >
+  <button
+  onClick={finalizarPedido}
+  disabled={loading}
+  className="w-full bg-black text-yellow-400 py-5 rounded-2xl font-black text-xl hover:bg-zinc-800 transition active:scale-[0.98]"
+>
   {loading ? "Enviando pedido..." : "Finalizar pedido"}
 </button>
-                    >
-                      {loading ? "Enviando pedido..." : "Finalizar pedido"}
-                    </button>
                   </div>
                 </>
               ) : (
