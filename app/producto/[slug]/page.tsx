@@ -13,6 +13,7 @@ import {
   Home,
   Truck,
   ShieldCheck,
+  Search,
 } from "lucide-react";
 
 export default function ProductoPage() {
@@ -83,6 +84,51 @@ export default function ProductoPage() {
 
   return (
     <main className="min-h-screen bg-white text-black">
+
+      {/* TOP BAR */}
+      <header className="bg-white border-b sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          <a href="/" className="text-2xl md:text-3xl font-black">
+            KAFES ONLINE
+          </a>
+
+          <div className="hidden md:flex items-center gap-2 bg-zinc-100 rounded-full px-4 py-2 w-[420px]">
+            <Search size={20} className="text-zinc-500" />
+            <input
+              placeholder="Busca productos, marcas y más..."
+              className="bg-transparent outline-none w-full text-black"
+            />
+          </div>
+
+          <div className="flex items-center gap-3">
+            <a href="/" className="font-bold hover:text-yellow-500 transition">
+              Inicio
+            </a>
+
+            <a
+              href="/#productos"
+              className="hidden md:block font-bold hover:text-yellow-500 transition"
+            >
+              Catálogo
+            </a>
+
+            <button className="bg-yellow-400 text-black p-3 rounded-full">
+              <ShoppingCart />
+            </button>
+          </div>
+        </div>
+
+        <nav className="hidden md:block bg-zinc-100 border-t">
+          <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-center gap-12 text-zinc-700 font-semibold">
+            <a href="/" className="hover:text-black">Los más vendidos</a>
+            <a href="/" className="hover:text-black">Herramientas Eléctricas</a>
+            <a href="/" className="hover:text-black">Herramientas Inalámbricas</a>
+            <a href="/" className="hover:text-black">Ferretería</a>
+            <a href="/" className="hover:text-black">Ofertas</a>
+          </div>
+        </nav>
+      </header>
+
       <div className="max-w-7xl mx-auto py-10 px-6 grid md:grid-cols-2 gap-12">
         <div>
           <div className="bg-zinc-100 rounded-3xl p-8">
@@ -211,9 +257,7 @@ export default function ProductoPage() {
                       <h3 className="font-black text-sm">
                         Sierra Inalámbrica BOMVINK 8"
                       </h3>
-                      <p className="text-sm text-zinc-500">
-                        Envío a todo el Perú
-                      </p>
+                      <p className="text-sm text-zinc-500">Envío a todo el Perú</p>
                       <p className="font-black mt-1">S/249</p>
                     </div>
                   </div>
@@ -290,9 +334,7 @@ export default function ProductoPage() {
                     <CheckCircle size={90} className="text-green-500" />
                   </div>
 
-                  <h2 className="text-3xl font-black mb-4">
-                    ¡Pedido recibido!
-                  </h2>
+                  <h2 className="text-3xl font-black mb-4">¡Pedido recibido!</h2>
 
                   <p className="text-zinc-600 text-lg leading-8">
                     Gracias por confiar en KAFES ONLINE.
