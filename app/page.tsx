@@ -83,48 +83,28 @@ export default function Home() {
           <span className="text-yellow-400 font-bold">Stock limitado</span>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          <a
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <ProductCard
             href="/producto/sierra-bomvink-8"
-            className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden cursor-pointer hover:-translate-y-2 hover:border-yellow-400 transition duration-300 block group"
-          >
-            <div className="bg-white p-6 overflow-hidden">
-              <img
-                src="/sierra-bomvink-8.jpg"
-                alt="Sierra BOMVINK"
-                className="w-full h-72 object-contain group-hover:scale-105 transition duration-300"
-              />
-            </div>
+            image="/sierra-bomvink-8.jpg"
+            alt="Sierra BOMVINK"
+            badge="MÁS VENDIDO"
+            title='Sierra Inalámbrica BOMVINK 8"'
+            description="Incluye 2 baterías de 21V. Ideal para poda, corte de madera y trabajos de campo."
+            price="S/249"
+            beforePrice="S/299"
+          />
 
-            <div className="p-6">
-              <div className="flex items-center justify-between">
-                <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-black">
-                  MÁS VENDIDO
-                </span>
-
-                <span className="text-green-400 text-sm font-bold">
-                  Disponible
-                </span>
-              </div>
-
-              <h3 className="text-2xl font-black mt-4 leading-tight">
-                Sierra Inalámbrica BOMVINK 8"
-              </h3>
-
-              <p className="text-zinc-400 mt-3 leading-relaxed">
-                Incluye 2 baterías de 21V. Ideal para poda, corte de madera y trabajos de campo.
-              </p>
-
-              <div className="mt-5 flex items-center gap-3">
-                <p className="text-yellow-400 text-4xl font-black">S/249</p>
-                <span className="line-through text-zinc-500 text-lg">S/299</span>
-              </div>
-
-              <button className="mt-6 w-full bg-yellow-400 hover:bg-yellow-300 text-black py-4 rounded-2xl font-black text-lg transition">
-                Ver detalles
-              </button>
-            </div>
-          </a>
+          <ProductCard
+            href="/producto/soporte-telescopico-xtd"
+            image="/soporte-telescopico-xtd.jpg"
+            alt="Soporte Telescópico XTD"
+            badge="NUEVO"
+            title="Soporte Telescópico XTD"
+            description="Soporte profesional para amoladora con mayor estabilidad, precisión y seguridad al cortar."
+            price="S/209"
+            beforePrice="S/249"
+          />
         </div>
       </section>
 
@@ -140,5 +120,65 @@ function Benefit({ icon, title, text }: any) {
       <h3 className="text-2xl font-black mt-4">{title}</h3>
       <p className="text-zinc-400 mt-2">{text}</p>
     </div>
+  );
+}
+
+function ProductCard({
+  href,
+  image,
+  alt,
+  badge,
+  title,
+  description,
+  price,
+  beforePrice,
+}: any) {
+  return (
+    <a
+      href={href}
+      className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden cursor-pointer hover:-translate-y-2 hover:border-yellow-400 transition duration-300 block group"
+    >
+      <div className="bg-white p-6 overflow-hidden">
+        <img
+          src={image}
+          alt={alt}
+          className="w-full h-72 object-contain group-hover:scale-105 transition duration-300"
+        />
+      </div>
+
+      <div className="p-6">
+        <div className="flex items-center justify-between">
+          <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-black">
+            {badge}
+          </span>
+
+          <span className="text-green-400 text-sm font-bold">
+            Disponible
+          </span>
+        </div>
+
+        <h3 className="text-2xl font-black mt-4 leading-tight">
+          {title}
+        </h3>
+
+        <p className="text-zinc-400 mt-3 leading-relaxed">
+          {description}
+        </p>
+
+        <div className="mt-5 flex items-center gap-3">
+          <p className="text-yellow-400 text-4xl font-black">
+            {price}
+          </p>
+
+          <span className="line-through text-zinc-500 text-lg">
+            {beforePrice}
+          </span>
+        </div>
+
+        <button className="mt-6 w-full bg-yellow-400 hover:bg-yellow-300 text-black py-4 rounded-2xl font-black text-lg transition">
+          Ver detalles
+        </button>
+      </div>
+    </a>
   );
 }
