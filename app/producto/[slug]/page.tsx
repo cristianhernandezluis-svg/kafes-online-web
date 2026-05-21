@@ -2,6 +2,8 @@
 
 import WhatsAppButton from "@/components/WhatsAppButton";
 import Image from "next/image";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   CheckCircle,
@@ -22,6 +24,48 @@ declare global {
     ttq?: any;
   }
 }
+
+const productos: any = {
+  "sierra-bomvink-8": {
+    nombre: 'Sierra Inalámbrica BOMVINK 8"',
+    nombreCorto: 'Sierra BOMVINK 8"',
+    precio: 249,
+    precioAntes: 299,
+    imagen: "/sierra-bomvink-8.jpg",
+    etiqueta: "MÁS VENDIDO",
+    descripcion:
+      "Sierra inalámbrica profesional ideal para poda, madera, trabajos de campo y uso continuo.",
+    mini: ["2 baterías", "8 pulgadas", "21V"],
+    beneficios: [
+      "21V de potencia",
+      "Incluye 2 baterías",
+      "Espada de 8 pulgadas",
+      "Corte rápido y preciso",
+      "Ideal para poda y madera",
+      "Diseño ergonómico",
+    ],
+  },
+
+  "soporte-telescopico-xtd": {
+    nombre: "Soporte Telescópico XTD para Amoladora",
+    nombreCorto: "Soporte Telescópico XTD",
+    precio: 209,
+    precioAntes: 249,
+    imagen: "/soporte-telescopico-xtd.jpg",
+    etiqueta: "NUEVO INGRESO",
+    descripcion:
+      "Soporte telescópico para amoladora, ideal para cortes más precisos, seguros y profesionales.",
+    mini: ["115/125 mm", "Base de hierro", "Ajustable"],
+    beneficios: [
+      "Base de hierro resistente",
+      "Soportes con ajuste variable",
+      "Mayor seguridad al cortar",
+      "Protección contra chispas integrada",
+      "Compatible con discos de 115 y 125 mm",
+      "No incluye amoladora",
+    ],
+  },
+};
 
 const regionesPeru = [
   "Amazonas",
@@ -52,6 +96,10 @@ const regionesPeru = [
 ];
 
 export default function ProductoPage() {
+  const params = useParams();
+  const slug = params.slug as string;
+  const producto = productos[slug];
+
   const [openCheckout, setOpenCheckout] = useState(false);
   const [pedidoFinalizado, setPedidoFinalizado] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -66,9 +114,6 @@ export default function ProductoPage() {
 
   const [timeLeft, setTimeLeft] = useState(3 * 60 * 60);
 
-  const precio = 249;
-  const total = precio * cantidad;
-
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
@@ -76,6 +121,25 @@ export default function ProductoPage() {
 
     return () => clearInterval(timer);
   }, []);
+
+  if (!producto) {
+    return (
+      <main className="min-h-screen flex items-center justify-center text-center px-6">
+        <div>
+          <h1 className="text-4xl font-black">Producto no encontrado</h1>
+          <Link
+            href="/"
+            className="inline-block mt-6 bg-black text-yellow-400 px-8 py-4 rounded-2xl font-black"
+          >
+            Volver al catálogo
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  const precio = producto.precio;
+  const total = precio * cantidad;
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
@@ -97,7 +161,8 @@ export default function ProductoPage() {
     setLoading(true);
 
     const pedido = {
-      producto: "Sierra Inalámbrica BOMVINK 8",
+      producto: producto.nombre,
+      slug,
       precio,
       cantidad,
       total,
@@ -123,17 +188,15 @@ export default function ProductoPage() {
 
       setPedidoFinalizado(true);
 
-      if (typeof window !== "undefined") {
-        window.fbq?.("track", "Purchase", {
-          value: total,
-          currency: "PEN",
-        });
+      window.fbq?.("track", "Purchase", {
+        value: total,
+        currency: "PEN",
+      });
 
-        window.ttq?.track("CompletePayment", {
-          value: total,
-          currency: "PEN",
-        });
-      }
+      window.ttq?.track("CompletePayment", {
+        value: total,
+        currency: "PEN",
+      });
 
       setTimeout(() => {
         setOpenCheckout(false);
@@ -161,9 +224,9 @@ export default function ProductoPage() {
 
       <header className="bg-white border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
-          <a href="/" className="text-2xl md:text-3xl font-black">
+          <Link href="/" className="text-2xl md:text-3xl font-black">
             KAFES ONLINE
-          </a>
+          </Link>
 
           <div className="hidden md:flex items-center gap-2 bg-zinc-100 rounded-full px-4 py-2 w-[420px]">
             <Search size={20} className="text-zinc-500" />
@@ -174,16 +237,16 @@ export default function ProductoPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <a href="/" className="font-bold hover:text-yellow-500 transition">
+            <Link href="/" className="font-bold hover:text-yellow-500">
               Inicio
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/#productos"
-              className="hidden md:block font-bold hover:text-yellow-500 transition"
+              className="hidden md:block font-bold hover:text-yellow-500"
             >
               Catálogo
-            </a>
+            </Link>
 
             <button className="bg-yellow-400 text-black p-3 rounded-full">
               <ShoppingCart />
@@ -196,8 +259,8 @@ export default function ProductoPage() {
         <div>
           <div className="bg-zinc-100 rounded-3xl p-8">
             <Image
-              src="/sierra-bomvink-8.jpg"
-              alt="Sierra BOMVINK"
+              src={producto.imagen}
+              alt={producto.nombre}
               width={700}
               height={700}
               className="rounded-2xl object-contain"
@@ -206,19 +269,19 @@ export default function ProductoPage() {
           </div>
 
           <div className="grid grid-cols-3 gap-4 mt-4">
-            <MiniBox text="2 baterías" />
-            <MiniBox text="8 pulgadas" />
-            <MiniBox text="21V" />
+            {producto.mini.map((item: string) => (
+              <MiniBox key={item} text={item} />
+            ))}
           </div>
         </div>
 
         <div>
           <span className="bg-yellow-400 text-black px-4 py-2 rounded-full font-bold">
-            MÁS VENDIDO
+            {producto.etiqueta}
           </span>
 
           <h1 className="text-4xl md:text-5xl font-black mt-6">
-            Sierra Inalámbrica BOMVINK 8"
+            {producto.nombre}
           </h1>
 
           <div className="flex items-center gap-2 mt-3 text-yellow-400 font-bold">
@@ -229,8 +292,10 @@ export default function ProductoPage() {
           </div>
 
           <div className="mt-6 flex items-center gap-4">
-            <p className="text-5xl font-black text-yellow-500">S/249</p>
-            <span className="line-through text-zinc-400 text-2xl">S/299</span>
+            <p className="text-5xl font-black text-yellow-500">S/{precio}</p>
+            <span className="line-through text-zinc-400 text-2xl">
+              S/{producto.precioAntes}
+            </span>
           </div>
 
           <div className="mt-4 bg-red-100 text-red-600 px-4 py-3 rounded-2xl font-bold inline-block">
@@ -242,22 +307,22 @@ export default function ProductoPage() {
           </div>
 
           <p className="text-zinc-600 mt-6 text-lg leading-8">
-            Sierra inalámbrica profesional ideal para poda, madera, trabajos de
-            campo y uso continuo.
+            {producto.descripcion}
           </p>
 
           <div className="grid grid-cols-2 gap-4 mt-8">
             <InfoBox icon={<Truck />} title="Envío rápido" text="A todo el Perú" />
-            <InfoBox icon={<ShieldCheck />} title="Compra segura" text="Confirmación por WhatsApp" />
+            <InfoBox
+              icon={<ShieldCheck />}
+              title="Compra segura"
+              text="Confirmación por WhatsApp"
+            />
           </div>
 
           <div className="mt-8 space-y-3">
-            <Benefit text="21V de potencia" />
-            <Benefit text="Incluye 2 baterías" />
-            <Benefit text="Espada de 8 pulgadas" />
-            <Benefit text="Corte rápido y preciso" />
-            <Benefit text="Ideal para poda y madera" />
-            <Benefit text="Diseño ergonómico" />
+            {producto.beneficios.map((item: string) => (
+              <Benefit key={item} text={item} />
+            ))}
           </div>
 
           <div className="mt-8">
@@ -307,99 +372,102 @@ export default function ProductoPage() {
           </div>
         </div>
       </div>
-{/* TESTIMONIOS */}
-<section className="max-w-7xl mx-auto px-6 py-20">
-  <h2 className="text-4xl font-black text-center mb-10">
-    Clientes Felices
-  </h2>
 
-  <div className="grid md:grid-cols-3 gap-6">
-    <Testimonial name="Carlos M." text="Me llegó rápido y funciona muy bien." />
-    <Testimonial name="Luis R." text="Buena potencia y excelente atención." />
-    <Testimonial name="Miguel A." text="Producto recomendado, buena calidad." />
-  </div>
-</section>
+      <section className="max-w-7xl mx-auto px-6 py-20">
+        <h2 className="text-4xl font-black text-center mb-10">
+          Clientes Felices
+        </h2>
 
-{/* FAQ */}
-<section className="max-w-5xl mx-auto px-6 py-16">
-  <h2 className="text-4xl font-black text-center mb-10">
-    Preguntas Frecuentes
-  </h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          <Testimonial name="Carlos M." text="Me llegó rápido y funciona muy bien." />
+          <Testimonial name="Luis R." text="Buena potencia y excelente atención." />
+          <Testimonial name="Miguel A." text="Producto recomendado, buena calidad." />
+        </div>
+      </section>
 
-  <div className="space-y-5">
-    <Faq question="¿Hacen envíos a provincia?" answer="Sí, enviamos a todo el Perú." />
-    <Faq question="¿El pago es contra entrega?" answer="Sí, un asesor confirmará tu pedido por WhatsApp." />
-    <Faq question="¿Tiene garantía?" answer="Sí, todos nuestros productos cuentan con garantía." />
-  </div>
-</section>
+      <section className="max-w-5xl mx-auto px-6 py-16">
+        <h2 className="text-4xl font-black text-center mb-10">
+          Preguntas Frecuentes
+        </h2>
 
-{/* TAMBIÉN TE PUEDEN INTERESAR */}
-<section className="max-w-7xl mx-auto px-6 py-20">
-  <h2 className="text-3xl font-black mb-8">
-    También te pueden interesar:
-  </h2>
+        <div className="space-y-5">
+          <Faq question="¿Hacen envíos a provincia?" answer="Sí, enviamos a todo el Perú." />
+          <Faq
+            question="¿El pago es contra entrega?"
+            answer="Sí, un asesor confirmará tu pedido por WhatsApp."
+          />
+          <Faq question="¿Tiene garantía?" answer="Sí, todos nuestros productos cuentan con garantía." />
+        </div>
+      </section>
 
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-    <ProductCard name="Taladro 48V" price="S/189" image="/sierra-bomvink-8.jpg" />
-    <ProductCard name="Amoladora BOMVINK" price="S/289" image="/sierra-bomvink-8.jpg" />
-    <ProductCard name="Sierra Caladora" price="S/249" image="/sierra-bomvink-8.jpg" />
-    <ProductCard name="Soporte Amoladora" price="S/199" image="/sierra-bomvink-8.jpg" />
-  </div>
-</section>
+      <section className="max-w-7xl mx-auto px-6 py-20">
+        <h2 className="text-3xl font-black mb-8">
+          También te pueden interesar:
+        </h2>
 
-{/* EXPLORA EL CATÁLOGO */}
-<section className="max-w-7xl mx-auto px-6 py-20">
-  <h2 className="text-3xl font-black mb-8">
-    Explora el catálogo
-  </h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <ProductCard
+            name='Sierra BOMVINK 8"'
+            price="S/249"
+            image="/sierra-bomvink-8.jpg"
+            href="/producto/sierra-bomvink-8"
+          />
+          <ProductCard
+            name="Soporte Telescópico XTD"
+            price="S/209"
+            image="/soporte-telescopico-xtd.jpg"
+            href="/producto/soporte-telescopico-xtd"
+          />
+        </div>
+      </section>
 
-  <div className="bg-black text-white rounded-3xl p-10 text-center">
-    <h3 className="text-4xl font-black">
-      Herramientas profesionales para todo el Perú
-    </h3>
+      <section className="max-w-7xl mx-auto px-6 py-20">
+        <div className="bg-black text-white rounded-3xl p-10 text-center">
+          <h3 className="text-4xl font-black">
+            Herramientas profesionales para todo el Perú
+          </h3>
 
-    <p className="text-zinc-300 mt-4">
-      Encuentra productos con envío rápido, pago contra entrega y atención personalizada.
-    </p>
+          <p className="text-zinc-300 mt-4">
+            Encuentra productos con envío rápido, pago contra entrega y atención personalizada.
+          </p>
 
-    <a
-      href="/"
-      className="inline-block mt-8 bg-yellow-400 text-black px-8 py-4 rounded-2xl font-black"
-    >
-      Ver catálogo
-    </a>
-  </div>
-</section>
+          <Link
+            href="/"
+            className="inline-block mt-8 bg-yellow-400 text-black px-8 py-4 rounded-2xl font-black"
+          >
+            Ver catálogo
+          </Link>
+        </div>
+      </section>
 
-{/* FOOTER */}
-<footer className="bg-black text-white px-6 py-16 pb-32">
-  <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
-    <div>
-      <h2 className="text-3xl font-black">KAFES ONLINE</h2>
-      <p className="text-zinc-400 mt-4">
-        Herramientas profesionales con envío a todo el Perú.
-      </p>
-    </div>
+      <footer className="bg-black text-white px-6 py-16 pb-32">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
+          <div>
+            <h2 className="text-3xl font-black">KAFES ONLINE</h2>
+            <p className="text-zinc-400 mt-4">
+              Herramientas profesionales con envío a todo el Perú.
+            </p>
+          </div>
 
-    <div>
-      <h3 className="font-black mb-4">Atención al cliente</h3>
-      <p className="text-zinc-400">📞 +51 980 296 583</p>
-      <p className="text-zinc-400">📍 Lima, Perú</p>
-    </div>
+          <div>
+            <h3 className="font-black mb-4">Atención al cliente</h3>
+            <p className="text-zinc-400">📞 +51 980 296 583</p>
+            <p className="text-zinc-400">📍 Lima, Perú</p>
+          </div>
 
-    <div>
-      <h3 className="font-black mb-4">Menú inferior</h3>
-      <p className="text-zinc-400">Preguntas frecuentes</p>
-      <p className="text-zinc-400">Política de envíos</p>
-      <p className="text-zinc-400">Términos del servicio</p>
-      <p className="text-zinc-400">Política de privacidad</p>
-    </div>
-  </div>
+          <div>
+            <h3 className="font-black mb-4">Menú inferior</h3>
+            <p className="text-zinc-400">Preguntas frecuentes</p>
+            <p className="text-zinc-400">Política de envíos</p>
+            <p className="text-zinc-400">Términos del servicio</p>
+            <p className="text-zinc-400">Política de privacidad</p>
+          </div>
+        </div>
 
-  <div className="text-center text-zinc-500 text-sm mt-12 border-t border-zinc-800 pt-6">
-    © 2026 KAFES ONLINE - Todos los derechos reservados.
-  </div>
-</footer>
+        <div className="text-center text-zinc-500 text-sm mt-12 border-t border-zinc-800 pt-6">
+          © 2026 KAFES ONLINE - Todos los derechos reservados.
+        </div>
+      </footer>
 
       {openCheckout && (
         <div
@@ -421,10 +489,7 @@ export default function ProductoPage() {
               {!pedidoFinalizado ? (
                 <>
                   <div className="p-5 border-b">
-                    <h2 className="font-black text-xl">
-                      PAGO CONTRA ENTREGA
-                    </h2>
-
+                    <h2 className="font-black text-xl">PAGO CONTRA ENTREGA</h2>
                     <p className="text-sm text-zinc-500">
                       Completa tus datos para reservar tu producto.
                     </p>
@@ -432,140 +497,70 @@ export default function ProductoPage() {
 
                   <div className="p-5 flex gap-3 border-b">
                     <Image
-                      src="/sierra-bomvink-8.jpg"
-                      alt="Sierra BOMVINK"
+                      src={producto.imagen}
+                      alt={producto.nombre}
                       width={80}
                       height={80}
                       className="rounded-xl object-contain bg-zinc-100"
                     />
 
                     <div className="flex-1">
-                      <h3 className="font-black text-sm">
-                        Sierra Inalámbrica BOMVINK 8"
-                      </h3>
-
-                      <p className="text-sm text-zinc-500">
-                        Envío a todo el Perú
-                      </p>
-
+                      <h3 className="font-black text-sm">{producto.nombre}</h3>
+                      <p className="text-sm text-zinc-500">Envío a todo el Perú</p>
                       <p className="font-black mt-1">S/{total}</p>
                     </div>
                   </div>
 
                   <div className="p-5 border-b">
+                    <div className="border rounded-2xl overflow-hidden shadow-sm">
+                      <div className="flex justify-between px-4 py-3 border-b bg-white">
+                        <span className="text-zinc-700">Subtotal</span>
+                        <strong className="font-black">S/{total}</strong>
+                      </div>
 
-  <div className="border rounded-2xl overflow-hidden shadow-sm">
+                      <div className="flex justify-between px-4 py-3 border-b bg-white">
+                        <span className="text-zinc-700">Envío</span>
+                        <strong className="font-black text-green-600">Gratis</strong>
+                      </div>
 
-    <div className="flex justify-between px-4 py-3 border-b bg-white">
-      <span className="text-zinc-700">
-        Subtotal
-      </span>
-
-      <strong className="font-black">
-        S/{total}
-      </strong>
-    </div>
-
-    <div className="flex justify-between px-4 py-3 border-b bg-white">
-      <span className="text-zinc-700">
-        Envío
-      </span>
-
-      <strong className="font-black text-green-600">
-        Gratis
-      </strong>
-    </div>
-
-    <div className="flex justify-between px-4 py-4 bg-zinc-50">
-      <span className="text-xl font-black">
-        Total
-      </span>
-
-      <strong className="text-2xl font-black">
-        S/{total}
-      </strong>
-    </div>
-
-  </div>
-
-</div>
+                      <div className="flex justify-between px-4 py-4 bg-zinc-50">
+                        <span className="text-xl font-black">Total</span>
+                        <strong className="text-2xl font-black">S/{total}</strong>
+                      </div>
+                    </div>
+                  </div>
 
                   <div className="p-5 space-y-3">
-                    <Input
-  icon={<User size={18} />}
-  placeholder="Nombre completo *"
-  value={nombre}
-  onChange={setNombre}
-  name="name"
-  autoComplete="name"
-/>
+                    <Input icon={<User size={18} />} placeholder="Nombre completo *" value={nombre} onChange={setNombre} name="name" autoComplete="name" />
+                    <Input icon={<Phone size={18} />} placeholder="Celular *" value={celular} onChange={setCelular} name="tel" type="tel" autoComplete="tel" />
+                    <Input icon={<MapPin size={18} />} placeholder="Ciudad o distrito *" value={ciudad} onChange={setCiudad} name="address-level2" autoComplete="address-level2" />
 
-<Input
-  icon={<Phone size={18} />}
-  placeholder="Celular *"
-  value={celular}
-  onChange={setCelular}
-  name="tel"
-  type="tel"
-  autoComplete="tel"
-/>
+                    <select
+                      required
+                      value={region}
+                      onChange={(e) => setRegion(e.target.value)}
+                      name="region"
+                      autoComplete="address-level1"
+                      className="w-full px-5 py-4 border rounded-2xl outline-none bg-white text-zinc-700 text-lg"
+                    >
+                      <option value="">Selecciona tu región *</option>
+                      {regionesPeru.map((item) => (
+                        <option key={item} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
 
-<Input
-  icon={<MapPin size={18} />}
-  placeholder="Ciudad o distrito *"
-  value={ciudad}
-  onChange={setCiudad}
-  name="address-level2"
-  autoComplete="address-level2"
-/>
+                    <Input icon={<Home size={18} />} placeholder="Dirección exacta *" value={direccion} onChange={setDireccion} name="street-address" autoComplete="street-address" />
+                    <Input icon={<MapPin size={18} />} placeholder="Referencia" value={referencia} onChange={setReferencia} name="address-line2" autoComplete="address-line2" />
 
-<select
-  required
-  value={region}
-  onChange={(e) => setRegion(e.target.value)}
-  name="region"
-  autoComplete="address-level1"
-  className="w-full px-5 py-4 border rounded-2xl outline-none bg-white text-zinc-700 text-lg"
->
-  <option value="">Selecciona tu región *</option>
-
-  {regionesPeru.map((item) => (
-    <option key={item} value={item}>
-      {item}
-    </option>
-  ))}
-</select>
-
-<Input
-  icon={<Home size={18} />}
-  placeholder="Dirección exacta *"
-  value={direccion}
-  onChange={setDireccion}
-  name="street-address"
-  autoComplete="street-address"
-/>
-
-<Input
-  icon={<MapPin size={18} />}
-  placeholder="Referencia"
-  value={referencia}
-  onChange={setReferencia}
-  name="address-line2"
-  autoComplete="address-line2"
-/>
-
-<button
-  onClick={finalizarPedido}
-  disabled={loading}
-  className="w-full bg-black text-yellow-400 py-5 rounded-2xl font-black text-xl hover:bg-zinc-800 transition active:scale-[0.98]"
->
-  <button
-  onClick={finalizarPedido}
-  disabled={loading}
-  className="w-full bg-black text-yellow-400 py-5 rounded-2xl font-black text-xl hover:bg-zinc-800 transition active:scale-[0.98]"
->
-  {loading ? "Enviando pedido..." : "Finalizar pedido"}
-</button>
+                    <button
+                      onClick={finalizarPedido}
+                      disabled={loading}
+                      className="w-full bg-black text-yellow-400 py-5 rounded-2xl font-black text-xl hover:bg-zinc-800 transition active:scale-[0.98]"
+                    >
+                      {loading ? "Enviando pedido..." : "Finalizar pedido"}
+                    </button>
                   </div>
                 </>
               ) : (
@@ -574,9 +569,7 @@ export default function ProductoPage() {
                     <CheckCircle size={90} className="text-green-500" />
                   </div>
 
-                  <h2 className="text-3xl font-black mb-4">
-                    ¡Pedido recibido!
-                  </h2>
+                  <h2 className="text-3xl font-black mb-4">¡Pedido recibido!</h2>
 
                   <p className="text-zinc-600 text-lg leading-8">
                     Gracias por confiar en KAFES ONLINE.
@@ -592,8 +585,8 @@ export default function ProductoPage() {
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Image
-              src="/sierra-bomvink-8.jpg"
-              alt="Sierra BOMVINK"
+              src={producto.imagen}
+              alt={producto.nombre}
               width={60}
               height={60}
               className="rounded-xl bg-zinc-100"
@@ -601,12 +594,14 @@ export default function ProductoPage() {
 
             <div>
               <h3 className="font-black text-sm md:text-lg leading-tight">
-                Sierra BOMVINK 8"
+                {producto.nombreCorto}
               </h3>
 
               <div className="flex items-center gap-2">
-                <p className="text-yellow-500 font-black text-xl">S/249</p>
-                <span className="line-through text-zinc-400 text-sm">S/299</span>
+                <p className="text-yellow-500 font-black text-xl">S/{precio}</p>
+                <span className="line-through text-zinc-400 text-sm">
+                  S/{producto.precioAntes}
+                </span>
               </div>
             </div>
           </div>
@@ -628,7 +623,7 @@ export default function ProductoPage() {
 function Input({
   icon,
   placeholder,
- value,
+  value,
   onChange,
   name,
   autoComplete,
@@ -636,7 +631,6 @@ function Input({
 }: any) {
   return (
     <div className="flex border rounded-2xl overflow-hidden">
-      
       <div className="bg-zinc-100 px-5 flex items-center text-zinc-500">
         {icon}
       </div>
@@ -650,23 +644,6 @@ function Input({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="w-full px-5 py-4 outline-none text-lg"
-      />
-      
-    </div>
-  );
-} {
-  return (
-    <div className="flex border rounded-xl overflow-hidden">
-      <div className="bg-zinc-100 px-4 flex items-center text-zinc-500">
-        {icon}
-      </div>
-
-      <input
-        required
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full px-4 py-3 outline-none"
       />
     </div>
   );
@@ -718,9 +695,9 @@ function Faq({ question, answer }: any) {
   );
 }
 
-function ProductCard({ name, price, image }: any) {
+function ProductCard({ name, price, image, href }: any) {
   return (
-    <div className="bg-white border rounded-3xl p-4 shadow-sm">
+    <Link href={href} className="bg-white border rounded-3xl p-4 shadow-sm block">
       <Image
         src={image}
         alt={name}
@@ -731,6 +708,6 @@ function ProductCard({ name, price, image }: any) {
 
       <h3 className="font-black mt-4">{name}</h3>
       <p className="text-yellow-500 font-black text-xl mt-2">{price}</p>
-    </div>
+    </Link>
   );
 }
