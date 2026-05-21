@@ -189,14 +189,29 @@ export default function ProductoPage() {
       setPedidoFinalizado(true);
 
       window.fbq?.("track", "Purchase", {
-        value: total,
-        currency: "PEN",
-      });
+  value: total,
+  currency: "PEN",
+  content_ids: [slug],
+  content_name: producto.nombre,
+  content_type: "product",
+  contents: [
+    {
+      id: slug,
+      quantity: cantidad,
+      item_price: precio,
+    },
+  ],
+});
 
-      window.ttq?.track("CompletePayment", {
-        value: total,
-        currency: "PEN",
-      });
+window.ttq?.track("CompletePayment", {
+  value: total,
+  currency: "PEN",
+  content_id: slug,
+  content_name: producto.nombre,
+  content_type: "product",
+  quantity: cantidad,
+  price: precio,
+});
 
       setTimeout(() => {
         setOpenCheckout(false);
