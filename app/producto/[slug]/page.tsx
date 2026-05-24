@@ -294,19 +294,53 @@ export default function ProductoPage() {
       )}
 
       {producto.modoGempages ? (
-        <section className="w-full bg-black">
-          <div className="w-full max-w-[430px] mx-auto bg-black">
-            <Image
-              src={producto.imagen}
-              alt={producto.nombre}
-              width={1080}
-              height={1920}
-              className="w-full h-auto block"
-              priority
-            />
-          </div>
-        </section>
-      ) : (
+  <>
+    <section className="w-full bg-black">
+      <div className="w-full max-w-[430px] mx-auto bg-black">
+
+        {/* IMAGEN GEM PAGES */}
+        <Image
+          src={producto.imagen}
+          alt={producto.nombre}
+          width={1080}
+          height={3000}
+          className="w-full h-auto block"
+          priority
+        />
+
+        {/* BOTON COMPRAR */}
+        <div className="px-4 pb-6 pt-2 bg-black">
+          <button
+            onClick={() => setOpenCheckout(true)}
+            className="
+              w-full
+              bg-yellow-400
+              hover:bg-yellow-300
+              text-black
+              font-black
+              text-2xl
+              py-5
+              rounded-[24px]
+              shadow-[0_10px_40px_rgba(255,215,0,0.35)]
+              transition
+              active:scale-[0.98]
+              flex
+              items-center
+              justify-center
+              gap-3
+              border-b-[6px]
+              border-yellow-600
+            "
+          >
+            <ShoppingCart size={28} />
+            COMPRAR AHORA
+          </button>
+        </div>
+
+      </div>
+    </section>
+  </>
+) : (
         <>
           <div className="max-w-7xl mx-auto py-10 px-4 md:px-6 grid md:grid-cols-2 gap-12">
             <div>
@@ -693,37 +727,7 @@ export default function ProductoPage() {
         </div>
       )}
 
-      <div className="fixed bottom-0 left-0 w-full bg-white border-t shadow-2xl z-50">
-        <div
-          className={`mx-auto px-4 py-3 flex items-center justify-between gap-3 ${
-            producto.modoGempages ? "max-w-[430px]" : "max-w-7xl"
-          }`}
-        >
-          <div className="flex items-center gap-3 min-w-0">
-            <Image
-              src={producto.imagen}
-              alt={producto.nombre}
-              width={60}
-              height={60}
-              className="rounded-xl bg-zinc-100 object-cover"
-            />
-
-            <div className="min-w-0">
-              <h3 className="font-black text-sm md:text-lg leading-tight truncate">
-                {producto.nombreCorto}
-              </h3>
-
-              <div className="flex items-center gap-2">
-                <p className="text-yellow-500 font-black text-xl md:text-2xl">
-                  S/{precio}
-                </p>
-                <span className="line-through text-zinc-400 text-sm">
-                  S/{producto.precioAntes}
-                </span>
-              </div>
-            </div>
-          </div>
-
+      
           <button
             onClick={() => setOpenCheckout(true)}
             className={`px-6 py-4 rounded-2xl font-black shadow-xl transition whitespace-nowrap ${
