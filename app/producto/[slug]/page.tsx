@@ -309,29 +309,30 @@ export default function ProductoPage() {
         />
 
         {/* BOTON COMPRAR */}
-        <div className="px-4 pb-6 pt-2 bg-black">
-          <button
-            onClick={() => setOpenCheckout(true)}
-            className="
-              w-full
-              bg-yellow-400
-              hover:bg-yellow-300
-              text-black
-              font-black
-              text-2xl
-              py-5
-              rounded-[24px]
-              shadow-[0_10px_40px_rgba(255,215,0,0.35)]
-              transition
-              active:scale-[0.98]
-              flex
-              items-center
-              justify-center
-              gap-3
-              border-b-[6px]
-              border-yellow-600
-            "
-          >
+<div className="px-4 pb-6 pt-2 bg-black">
+  <button
+    onClick={() => setOpenCheckout(true)}
+    className="
+      w-full
+      bg-yellow-400
+      hover:bg-yellow-300
+      text-black
+      font-black
+      text-2xl
+      py-5
+      rounded-[24px]
+      shadow-[0_10px_40px_rgba(255,215,0,0.35)]
+      transition
+      active:scale-[0.98]
+      flex
+      items-center
+      justify-center
+      gap-3
+      border-b-[6px]
+      border-yellow-600
+      animate-[pulse_1.5s_ease-in-out_infinite]
+    "
+  >
             <ShoppingCart size={28} />
             COMPRAR AHORA
           </button>
