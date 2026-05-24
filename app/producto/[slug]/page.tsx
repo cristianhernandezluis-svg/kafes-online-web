@@ -789,7 +789,7 @@ export default function ProductoPage() {
               </h2>
 
               <p className="text-sm font-semibold text-black/80 mt-1">
-                Pago contra entrega en todo el Perú 🇵🇪
+                🚚 Envíos rápidos a todo el Perú 🇵🇪
               </p>
             </div>
 
