@@ -33,6 +33,7 @@ const productos: any = {
     precioAntes: 299,
     imagen: "/sierra-bomvink-8.jpg",
     etiqueta: "MÁS VENDIDO",
+    modoGempages: false,
     descripcion:
       "Sierra inalámbrica profesional ideal para poda, madera, trabajos de campo y uso continuo.",
     mini: ["2 baterías", "8 pulgadas", "21V"],
@@ -46,6 +47,27 @@ const productos: any = {
     ],
   },
 
+  "sierra-bomvink-gempages": {
+    nombre: 'Sierra Inalámbrica BOMVINK 8" - Oferta Premium',
+    nombreCorto: 'Sierra BOMVINK 8"',
+    precio: 249,
+    precioAntes: 499,
+    imagen: "/sierra-bomvink-gempages.jpg",
+    etiqueta: "OFERTA PREMIUM",
+    modoGempages: true,
+    descripcion:
+      "Sierra inalámbrica BOMVINK 8 pulgadas con diseño premium estilo GemPages.",
+    mini: ["21V", "8 pulgadas", "12 meses"],
+    beneficios: [
+      "Batería 21V",
+      "Corte rápido",
+      "Ligera y portátil",
+      "Segura y resistente",
+      "Garantía 12 meses",
+      "Pago contra entrega",
+    ],
+  },
+
   "soporte-telescopico-xtd": {
     nombre: "Soporte Telescópico XTD para Amoladora",
     nombreCorto: "Soporte Telescópico XTD",
@@ -53,6 +75,7 @@ const productos: any = {
     precioAntes: 249,
     imagen: "/soporte-telescopico-xtd.jpg",
     etiqueta: "NUEVO INGRESO",
+    modoGempages: false,
     descripcion:
       "Soporte telescópico para amoladora, ideal para cortes más precisos, seguros y profesionales.",
     mini: ["115/125 mm", "Base de hierro", "Ajustable"],
@@ -189,29 +212,29 @@ export default function ProductoPage() {
       setPedidoFinalizado(true);
 
       window.fbq?.("track", "Purchase", {
-  value: total,
-  currency: "PEN",
-  content_ids: [slug],
-  content_name: producto.nombre,
-  content_type: "product",
-  contents: [
-    {
-      id: slug,
-      quantity: cantidad,
-      item_price: precio,
-    },
-  ],
-});
+        value: total,
+        currency: "PEN",
+        content_ids: [slug],
+        content_name: producto.nombre,
+        content_type: "product",
+        contents: [
+          {
+            id: slug,
+            quantity: cantidad,
+            item_price: precio,
+          },
+        ],
+      });
 
-window.ttq?.track("CompletePayment", {
-  value: total,
-  currency: "PEN",
-  content_id: slug,
-  content_name: producto.nombre,
-  content_type: "product",
-  quantity: cantidad,
-  price: precio,
-});
+      window.ttq?.track("CompletePayment", {
+        value: total,
+        currency: "PEN",
+        content_id: slug,
+        content_name: producto.nombre,
+        content_type: "product",
+        quantity: cantidad,
+        price: precio,
+      });
 
       setTimeout(() => {
         setOpenCheckout(false);
@@ -270,24 +293,38 @@ window.ttq?.track("CompletePayment", {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto py-10 px-6 grid md:grid-cols-2 gap-12">
+      <div
+        className={`max-w-7xl mx-auto py-10 px-4 md:px-6 grid gap-12 ${
+          producto.modoGempages ? "md:grid-cols-[1.05fr_0.95fr]" : "md:grid-cols-2"
+        }`}
+      >
         <div>
-          <div className="bg-zinc-100 rounded-3xl p-8">
+          <div
+            className={`rounded-3xl overflow-hidden ${
+              producto.modoGempages ? "bg-black p-0" : "bg-zinc-100 p-8"
+            }`}
+          >
             <Image
               src={producto.imagen}
               alt={producto.nombre}
-              width={700}
-              height={700}
-              className="rounded-2xl object-contain"
+              width={1200}
+              height={2200}
+              className={`w-full rounded-2xl ${
+                producto.modoGempages
+                  ? "h-auto object-contain"
+                  : "object-contain"
+              }`}
               priority
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            {producto.mini.map((item: string) => (
-              <MiniBox key={item} text={item} />
-            ))}
-          </div>
+          {!producto.modoGempages && (
+            <div className="grid grid-cols-3 gap-4 mt-4">
+              {producto.mini.map((item: string) => (
+                <MiniBox key={item} text={item} />
+              ))}
+            </div>
+          )}
         </div>
 
         <div>
@@ -427,6 +464,14 @@ window.ttq?.track("CompletePayment", {
             image="/sierra-bomvink-8.jpg"
             href="/producto/sierra-bomvink-8"
           />
+
+          <ProductCard
+            name='Sierra BOMVINK Premium'
+            price="S/249"
+            image="/sierra-bomvink-gempages.jpg"
+            href="/producto/sierra-bomvink-gempages"
+          />
+
           <ProductCard
             name="Soporte Telescópico XTD"
             price="S/209"
@@ -604,7 +649,7 @@ window.ttq?.track("CompletePayment", {
               alt={producto.nombre}
               width={60}
               height={60}
-              className="rounded-xl bg-zinc-100"
+              className="rounded-xl bg-zinc-100 object-contain"
             />
 
             <div>
