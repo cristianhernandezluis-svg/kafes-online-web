@@ -761,161 +761,190 @@ export default function ProductoPage() {
       )}
 
       {openCheckout && (
-        <div
+  <div
+    onClick={() => setOpenCheckout(false)}
+    className="fixed inset-0 bg-black/70 z-[999] overflow-y-auto"
+  >
+    <div className="min-h-screen flex items-start justify-center p-4">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white text-black w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative my-10"
+      >
+        <button
           onClick={() => setOpenCheckout(false)}
-          className="fixed inset-0 bg-black/70 z-[999] overflow-y-auto"
+          className="absolute top-4 right-4 text-zinc-500 hover:text-black z-10"
         >
-          <div className="min-h-screen flex items-start justify-center p-4">
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white text-black w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative my-10"
-            >
-              <button
-                onClick={() => setOpenCheckout(false)}
-                className="absolute top-4 right-4 text-zinc-500 hover:text-black"
+          <X />
+        </button>
+
+        {!pedidoFinalizado ? (
+          <>
+            <div className="bg-gradient-to-r from-yellow-400 to-yellow-300 p-4 border-b">
+              <p className="text-xs font-black uppercase tracking-wide">
+                OFERTA ESPECIAL
+              </p>
+
+              <h2 className="text-2xl font-black leading-tight">
+                FINALIZA TU PEDIDO
+              </h2>
+
+              <p className="text-sm font-semibold text-black/80 mt-1">
+                Pago contra entrega en todo el Perú 🇵🇪
+              </p>
+            </div>
+
+            <div className="p-4 border-b bg-white">
+              <div className="flex gap-3">
+                <Image
+                  src={producto.imagen}
+                  alt={producto.nombre}
+                  width={85}
+                  height={85}
+                  className="rounded-2xl object-cover bg-zinc-100 border"
+                />
+
+                <div className="flex-1">
+                  <h3 className="font-black text-[15px] leading-tight">
+                    {producto.nombre}
+                  </h3>
+
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-2xl font-black text-black">
+                      S/{precio}
+                    </span>
+
+                    <span className="line-through text-zinc-400 text-sm">
+                      S/{producto.precioAntes}
+                    </span>
+                  </div>
+
+                  <div className="mt-2 inline-flex items-center gap-2 bg-green-100 text-green-700 px-2 py-1 rounded-lg text-xs font-bold">
+                    <Truck size={14} />
+                    ENVÍO GRATIS
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 border-b bg-zinc-50">
+              <div className="bg-white border rounded-2xl overflow-hidden">
+                <div className="flex justify-between px-4 py-3 border-b text-sm">
+                  <span className="font-medium text-zinc-600">Subtotal</span>
+                  <strong className="font-black">S/{total}</strong>
+                </div>
+
+                <div className="flex justify-between px-4 py-3 border-b text-sm">
+                  <span className="font-medium text-zinc-600">Envío</span>
+                  <strong className="font-black text-green-600">Gratis</strong>
+                </div>
+
+                <div className="flex justify-between px-4 py-4 bg-yellow-50">
+                  <span className="text-lg font-black">Total</span>
+                  <strong className="text-2xl font-black text-black">
+                    S/{total}
+                  </strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-5 space-y-3">
+              <Input
+                icon={<User size={18} />}
+                placeholder="Nombre completo *"
+                value={nombre}
+                onChange={setNombre}
+                name="name"
+                autoComplete="name"
+              />
+
+              <Input
+                icon={<Phone size={18} />}
+                placeholder="Celular *"
+                value={celular}
+                onChange={setCelular}
+                name="tel"
+                type="tel"
+                autoComplete="tel"
+              />
+
+              <Input
+                icon={<MapPin size={18} />}
+                placeholder="Ciudad o distrito *"
+                value={ciudad}
+                onChange={setCiudad}
+                name="address-level2"
+                autoComplete="address-level2"
+              />
+
+              <select
+                required
+                value={region}
+                onChange={(e) => setRegion(e.target.value)}
+                name="region"
+                autoComplete="address-level1"
+                className="w-full px-5 py-4 border rounded-2xl outline-none bg-white text-zinc-700 text-lg font-semibold"
               >
-                <X />
-              </button>
+                <option value="">Selecciona tu región *</option>
+                {regionesPeru.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
 
-              {!pedidoFinalizado ? (
-                <>
-                  <div className="p-5 border-b">
-                    <h2 className="font-black text-xl">PAGO CONTRA ENTREGA</h2>
-                    <p className="text-sm text-zinc-500">
-                      Completa tus datos para reservar tu producto.
-                    </p>
-                  </div>
-
-                  <div className="p-5 flex gap-3 border-b">
-                    <Image
-                      src={producto.imagen}
-                      alt={producto.nombre}
-                      width={80}
-                      height={80}
-                      className="rounded-xl object-contain bg-zinc-100"
-                    />
-
-                    <div className="flex-1">
-                      <h3 className="font-black text-sm">{producto.nombre}</h3>
-                      <p className="text-sm text-zinc-500">
-                        Envío a todo el Perú
-                      </p>
-                      <p className="font-black mt-1">S/{total}</p>
-                    </div>
-                  </div>
-
-                  <div className="p-5 border-b">
-                    <div className="border rounded-2xl overflow-hidden shadow-sm">
-                      <div className="flex justify-between px-4 py-3 border-b bg-white">
-                        <span className="text-zinc-700">Subtotal</span>
-                        <strong className="font-black">S/{total}</strong>
-                      </div>
-
-                      <div className="flex justify-between px-4 py-3 border-b bg-white">
-                        <span className="text-zinc-700">Envío</span>
-                        <strong className="font-black text-green-600">
-                          Gratis
-                        </strong>
-                      </div>
-
-                      <div className="flex justify-between px-4 py-4 bg-zinc-50">
-                        <span className="text-xl font-black">Total</span>
-                        <strong className="text-2xl font-black">S/{total}</strong>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-5 space-y-3">
-                    <Input
-                      icon={<User size={18} />}
-                      placeholder="Nombre completo *"
-                      value={nombre}
-                      onChange={setNombre}
-                      name="name"
-                      autoComplete="name"
-                    />
-
-                    <Input
-                      icon={<Phone size={18} />}
-                      placeholder="Celular *"
-                      value={celular}
-                      onChange={setCelular}
-                      name="tel"
-                      type="tel"
-                      autoComplete="tel"
-                    />
-
-                    <Input
-                      icon={<MapPin size={18} />}
-                      placeholder="Ciudad o distrito *"
-                      value={ciudad}
-                      onChange={setCiudad}
-                      name="address-level2"
-                      autoComplete="address-level2"
-                    />
-
-                    <select
-                      required
-                      value={region}
-                      onChange={(e) => setRegion(e.target.value)}
-                      name="region"
-                      autoComplete="address-level1"
-                      className="w-full px-5 py-4 border rounded-2xl outline-none bg-white text-zinc-700 text-lg"
-                    >
-                      <option value="">Selecciona tu región *</option>
-                      {regionesPeru.map((item) => (
-                        <option key={item} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
-
-                    <Input
-                      icon={<Home size={18} />}
-                      placeholder="Dirección exacta *"
-                      value={direccion}
-                      onChange={setDireccion}
-                      name="street-address"
-                      autoComplete="street-address"
-                    />
-
-                    <Input
-                      icon={<MapPin size={18} />}
-                      placeholder="Referencia"
-                      value={referencia}
-                      onChange={setReferencia}
-                      name="address-line2"
-                      autoComplete="address-line2"
-                    />
-
-                    <button
-                      onClick={finalizarPedido}
-                      disabled={loading}
-                      className="w-full bg-black text-yellow-400 py-5 rounded-2xl font-black text-xl hover:bg-zinc-800 transition active:scale-[0.98]"
-                    >
-                      {loading ? "Enviando pedido..." : "Finalizar pedido"}
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <div className="p-10 text-center">
-                  <div className="flex justify-center mb-5">
-                    <CheckCircle size={90} className="text-green-500" />
-                  </div>
-
-                  <h2 className="text-3xl font-black mb-4">
-                    ¡Pedido recibido!
-                  </h2>
-
-                  <p className="text-zinc-600 text-lg leading-8">
-                    Gracias por confiar en KAFES ONLINE.
-                  </p>
+              {region && (
+                <div className="bg-green-50 border border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-700">
+                  {region === "Lima"
+                    ? "✅ Pago contra entrega disponible en Lima Metropolitana"
+                    : "✅ Envío a provincia disponible con adelanto mínimo"}
                 </div>
               )}
+
+              <Input
+                icon={<Home size={18} />}
+                placeholder="Dirección exacta *"
+                value={direccion}
+                onChange={setDireccion}
+                name="street-address"
+                autoComplete="street-address"
+              />
+
+              <Input
+                icon={<MapPin size={18} />}
+                placeholder="Referencia"
+                value={referencia}
+                onChange={setReferencia}
+                name="address-line2"
+                autoComplete="address-line2"
+              />
+
+              <button
+                onClick={finalizarPedido}
+                disabled={loading}
+                className="w-full bg-black text-white py-5 rounded-2xl font-black text-lg hover:bg-zinc-800 transition active:scale-[0.98] flex items-center justify-center gap-3 shadow-xl"
+              >
+                <Truck size={22} />
+                {loading ? "ENVIANDO..." : "REALIZAR PEDIDO"}
+              </button>
             </div>
+          </>
+        ) : (
+          <div className="p-10 text-center">
+            <div className="flex justify-center mb-5">
+              <CheckCircle size={90} className="text-green-500" />
+            </div>
+
+            <h2 className="text-3xl font-black mb-4">¡Pedido recibido!</h2>
+
+            <p className="text-zinc-600 text-lg leading-8">
+              Gracias por confiar en KAFES ONLINE.
+            </p>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+    </div>
+  </div>
+)}
 
       <WhatsAppButton />
     </main>
