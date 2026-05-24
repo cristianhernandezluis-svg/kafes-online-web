@@ -55,14 +55,12 @@ const productos: any = {
     imagen: "/sierra-bomvink-gempages.jpg",
     etiqueta: "OFERTA PREMIUM",
     modoGempages: true,
-    descripcion:
-      "Sierra inalámbrica BOMVINK 8 pulgadas con diseño premium estilo GemPages.",
+    descripcion: "Sierra inalámbrica BOMVINK 8 pulgadas.",
     mini: ["21V", "8 pulgadas", "12 meses"],
     beneficios: [
       "Batería 21V",
       "Corte rápido",
       "Ligera y portátil",
-      "Segura y resistente",
       "Garantía 12 meses",
       "Pago contra entrega",
     ],
@@ -91,31 +89,11 @@ const productos: any = {
 };
 
 const regionesPeru = [
-  "Amazonas",
-  "Áncash",
-  "Apurímac",
-  "Arequipa",
-  "Ayacucho",
-  "Cajamarca",
-  "Callao",
-  "Cusco",
-  "Huancavelica",
-  "Huánuco",
-  "Ica",
-  "Junín",
-  "La Libertad",
-  "Lambayeque",
-  "Lima",
-  "Loreto",
-  "Madre de Dios",
-  "Moquegua",
-  "Pasco",
-  "Piura",
-  "Puno",
-  "San Martín",
-  "Tacna",
-  "Tumbes",
-  "Ucayali",
+  "Amazonas", "Áncash", "Apurímac", "Arequipa", "Ayacucho", "Cajamarca",
+  "Callao", "Cusco", "Huancavelica", "Huánuco", "Ica", "Junín",
+  "La Libertad", "Lambayeque", "Lima", "Loreto", "Madre de Dios",
+  "Moquegua", "Pasco", "Piura", "Puno", "San Martín", "Tacna",
+  "Tumbes", "Ucayali",
 ];
 
 export default function ProductoPage() {
@@ -150,10 +128,7 @@ export default function ProductoPage() {
       <main className="min-h-screen flex items-center justify-center text-center px-6">
         <div>
           <h1 className="text-4xl font-black">Producto no encontrado</h1>
-          <Link
-            href="/"
-            className="inline-block mt-6 bg-black text-yellow-400 px-8 py-4 rounded-2xl font-black"
-          >
+          <Link href="/" className="inline-block mt-6 bg-black text-yellow-400 px-8 py-4 rounded-2xl font-black">
             Volver al catálogo
           </Link>
         </div>
@@ -169,10 +144,7 @@ export default function ProductoPage() {
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
 
-    return `${String(h).padStart(2, "0")}:${String(m).padStart(
-      2,
-      "0"
-    )}:${String(s).padStart(2, "0")}`;
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
   };
 
   const finalizarPedido = async () => {
@@ -255,7 +227,7 @@ export default function ProductoPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white text-black">
+    <main className="min-h-screen bg-white text-black pb-28">
       <div className="bg-green-500 text-white text-center py-2 text-sm font-bold">
         🚚 ENVÍOS GRATIS A TODO EL PERÚ
       </div>
@@ -268,10 +240,7 @@ export default function ProductoPage() {
 
           <div className="hidden md:flex items-center gap-2 bg-zinc-100 rounded-full px-4 py-2 w-[420px]">
             <Search size={20} className="text-zinc-500" />
-            <input
-              placeholder="Busca productos..."
-              className="bg-transparent outline-none w-full"
-            />
+            <input placeholder="Busca productos..." className="bg-transparent outline-none w-full" />
           </div>
 
           <div className="flex items-center gap-3">
@@ -279,10 +248,7 @@ export default function ProductoPage() {
               Inicio
             </Link>
 
-            <Link
-              href="/#productos"
-              className="hidden md:block font-bold hover:text-yellow-500"
-            >
+            <Link href="/#productos" className="hidden md:block font-bold hover:text-yellow-500">
               Catálogo
             </Link>
 
@@ -293,210 +259,152 @@ export default function ProductoPage() {
         </div>
       </header>
 
-      <div
-        className={`max-w-7xl mx-auto py-10 px-4 md:px-6 grid gap-12 ${
-          producto.modoGempages ? "md:grid-cols-[1.05fr_0.95fr]" : "md:grid-cols-2"
-        }`}
-      >
-        <div>
-          <div
-            className={`rounded-3xl overflow-hidden ${
-              producto.modoGempages ? "bg-black p-0" : "bg-zinc-100 p-8"
-            }`}
-          >
+      {producto.modoGempages ? (
+        <section className="w-full bg-black">
+          <div className="w-full max-w-[430px] mx-auto bg-black">
             <Image
               src={producto.imagen}
               alt={producto.nombre}
-              width={1200}
-              height={2200}
-              className={`w-full rounded-2xl ${
-                producto.modoGempages
-                  ? "h-auto object-contain"
-                  : "object-contain"
-              }`}
+              width={1080}
+              height={1700}
+              className="w-full h-auto block"
               priority
             />
           </div>
-
-          {!producto.modoGempages && (
-            <div className="grid grid-cols-3 gap-4 mt-4">
-              {producto.mini.map((item: string) => (
-                <MiniBox key={item} text={item} />
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div>
-          <span className="bg-yellow-400 text-black px-4 py-2 rounded-full font-bold">
-            {producto.etiqueta}
-          </span>
-
-          <h1 className="text-4xl md:text-5xl font-black mt-6">
-            {producto.nombre}
-          </h1>
-
-          <div className="flex items-center gap-2 mt-3 text-yellow-400 font-bold">
-            ★★★★★
-            <span className="text-zinc-600 text-sm">
-              4.9/5 +100 reseñas
-            </span>
-          </div>
-
-          <div className="mt-6 flex items-center gap-4">
-            <p className="text-5xl font-black text-yellow-500">S/{precio}</p>
-            <span className="line-through text-zinc-400 text-2xl">
-              S/{producto.precioAntes}
-            </span>
-          </div>
-
-          <div className="mt-4 bg-red-100 text-red-600 px-4 py-3 rounded-2xl font-bold inline-block">
-            🔥 Últimas unidades disponibles
-          </div>
-
-          <div className="mt-4 bg-black text-yellow-400 px-5 py-4 rounded-2xl font-black inline-block shadow-xl animate-pulse">
-            ⏰ Oferta termina en: {formatTime(timeLeft)}
-          </div>
-
-          <p className="text-zinc-600 mt-6 text-lg leading-8">
-            {producto.descripcion}
-          </p>
-
-          <div className="grid grid-cols-2 gap-4 mt-8">
-            <InfoBox icon={<Truck />} title="Envío rápido" text="A todo el Perú" />
-            <InfoBox
-              icon={<ShieldCheck />}
-              title="Compra segura"
-              text="Confirmación por WhatsApp"
-            />
-          </div>
-
-          <div className="mt-8 space-y-3">
-            {producto.beneficios.map((item: string) => (
-              <Benefit key={item} text={item} />
-            ))}
-          </div>
-
-          <div className="mt-8">
-            <label className="font-black">Cantidad</label>
-
-            <div className="flex mt-3 w-[180px]">
-              <button
-                onClick={() => setCantidad(Math.max(1, cantidad - 1))}
-                className="bg-zinc-200 px-5 py-3 font-black rounded-l-xl"
-              >
-                -
-              </button>
-
-              <div className="flex-1 border-y flex items-center justify-center font-black">
-                {cantidad}
+        </section>
+      ) : (
+        <>
+          <div className="max-w-7xl mx-auto py-10 px-4 md:px-6 grid md:grid-cols-2 gap-12">
+            <div>
+              <div className="bg-zinc-100 rounded-3xl p-8">
+                <Image
+                  src={producto.imagen}
+                  alt={producto.nombre}
+                  width={700}
+                  height={700}
+                  className="rounded-2xl object-contain"
+                  priority
+                />
               </div>
 
-              <button
-                onClick={() => setCantidad(cantidad + 1)}
-                className="bg-zinc-200 px-5 py-3 font-black rounded-r-xl"
-              >
-                +
-              </button>
+              <div className="grid grid-cols-3 gap-4 mt-4">
+                {producto.mini.map((item: string) => (
+                  <MiniBox key={item} text={item} />
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <span className="bg-yellow-400 text-black px-4 py-2 rounded-full font-bold">
+                {producto.etiqueta}
+              </span>
+
+              <h1 className="text-4xl md:text-5xl font-black mt-6">
+                {producto.nombre}
+              </h1>
+
+              <div className="flex items-center gap-2 mt-3 text-yellow-400 font-bold">
+                ★★★★★
+                <span className="text-zinc-600 text-sm">4.9/5 +100 reseñas</span>
+              </div>
+
+              <div className="mt-6 flex items-center gap-4">
+                <p className="text-5xl font-black text-yellow-500">S/{precio}</p>
+                <span className="line-through text-zinc-400 text-2xl">
+                  S/{producto.precioAntes}
+                </span>
+              </div>
+
+              <div className="mt-4 bg-red-100 text-red-600 px-4 py-3 rounded-2xl font-bold inline-block">
+                🔥 Últimas unidades disponibles
+              </div>
+
+              <div className="mt-4 bg-black text-yellow-400 px-5 py-4 rounded-2xl font-black inline-block shadow-xl animate-pulse">
+                ⏰ Oferta termina en: {formatTime(timeLeft)}
+              </div>
+
+              <p className="text-zinc-600 mt-6 text-lg leading-8">
+                {producto.descripcion}
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 mt-8">
+                <InfoBox icon={<Truck />} title="Envío rápido" text="A todo el Perú" />
+                <InfoBox icon={<ShieldCheck />} title="Compra segura" text="Confirmación por WhatsApp" />
+              </div>
+
+              <div className="mt-8 space-y-3">
+                {producto.beneficios.map((item: string) => (
+                  <Benefit key={item} text={item} />
+                ))}
+              </div>
+
+              <div className="mt-8">
+                <label className="font-black">Cantidad</label>
+
+                <div className="flex mt-3 w-[180px]">
+                  <button onClick={() => setCantidad(Math.max(1, cantidad - 1))} className="bg-zinc-200 px-5 py-3 font-black rounded-l-xl">
+                    -
+                  </button>
+
+                  <div className="flex-1 border-y flex items-center justify-center font-black">
+                    {cantidad}
+                  </div>
+
+                  <button onClick={() => setCantidad(cantidad + 1)} className="bg-zinc-200 px-5 py-3 font-black rounded-r-xl">
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-8 space-y-4">
+                <button onClick={() => setOpenCheckout(true)} className="bg-green-500 hover:bg-green-600 text-white w-full py-5 rounded-2xl text-2xl font-black transition shadow-xl">
+                  Agregar al carrito
+                </button>
+
+                <button onClick={() => setOpenCheckout(true)} className="bg-pink-600 hover:bg-pink-700 text-white w-full py-5 rounded-2xl text-2xl font-black shadow-xl animate-[pulse_1.2s_ease-in-out_infinite]">
+                  Comprar ahora
+                </button>
+              </div>
+
+              <div className="mt-6 bg-zinc-100 rounded-2xl p-5 space-y-3 text-sm">
+                <p>🚚 Envío gratis a todo el Perú</p>
+                <p>📦 Pago contra entrega</p>
+                <p>🛡️ Garantía de satisfacción</p>
+              </div>
             </div>
           </div>
 
-          <div className="mt-8 space-y-4">
-            <button
-              onClick={() => setOpenCheckout(true)}
-              className="bg-green-500 hover:bg-green-600 text-white w-full py-5 rounded-2xl text-2xl font-black transition shadow-xl"
-            >
-              Agregar al carrito
-            </button>
+          <section className="max-w-7xl mx-auto px-6 py-20">
+            <h2 className="text-4xl font-black text-center mb-10">Clientes Felices</h2>
 
-            <button
-              onClick={() => setOpenCheckout(true)}
-              className="bg-pink-600 hover:bg-pink-700 text-white w-full py-5 rounded-2xl text-2xl font-black shadow-xl animate-[pulse_1.2s_ease-in-out_infinite]"
-            >
-              Comprar ahora
-            </button>
-          </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              <Testimonial name="Carlos M." text="Me llegó rápido y funciona muy bien." />
+              <Testimonial name="Luis R." text="Buena potencia y excelente atención." />
+              <Testimonial name="Miguel A." text="Producto recomendado, buena calidad." />
+            </div>
+          </section>
 
-          <div className="mt-6 bg-zinc-100 rounded-2xl p-5 space-y-3 text-sm">
-            <p>🚚 Envío gratis a todo el Perú</p>
-            <p>📦 Pago contra entrega</p>
-            <p>🛡️ Garantía de satisfacción</p>
-          </div>
-        </div>
-      </div>
+          <section className="max-w-5xl mx-auto px-6 py-16">
+            <h2 className="text-4xl font-black text-center mb-10">
+              Preguntas Frecuentes
+            </h2>
 
-      <section className="max-w-7xl mx-auto px-6 py-20">
-        <h2 className="text-4xl font-black text-center mb-10">
-          Clientes Felices
-        </h2>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          <Testimonial name="Carlos M." text="Me llegó rápido y funciona muy bien." />
-          <Testimonial name="Luis R." text="Buena potencia y excelente atención." />
-          <Testimonial name="Miguel A." text="Producto recomendado, buena calidad." />
-        </div>
-      </section>
-
-      <section className="max-w-5xl mx-auto px-6 py-16">
-        <h2 className="text-4xl font-black text-center mb-10">
-          Preguntas Frecuentes
-        </h2>
-
-        <div className="space-y-5">
-          <Faq question="¿Hacen envíos a provincia?" answer="Sí, enviamos a todo el Perú." />
-          <Faq
-            question="¿El pago es contra entrega?"
-            answer="Sí, un asesor confirmará tu pedido por WhatsApp."
-          />
-          <Faq question="¿Tiene garantía?" answer="Sí, todos nuestros productos cuentan con garantía." />
-        </div>
-      </section>
+            <div className="space-y-5">
+              <Faq question="¿Hacen envíos a provincia?" answer="Sí, enviamos a todo el Perú." />
+              <Faq question="¿El pago es contra entrega?" answer="Sí, un asesor confirmará tu pedido por WhatsApp." />
+              <Faq question="¿Tiene garantía?" answer="Sí, todos nuestros productos cuentan con garantía." />
+            </div>
+          </section>
+        </>
+      )}
 
       <section className="max-w-7xl mx-auto px-6 py-20">
-        <h2 className="text-3xl font-black mb-8">
-          También te pueden interesar:
-        </h2>
+        <h2 className="text-3xl font-black mb-8">También te pueden interesar:</h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <ProductCard
-            name='Sierra BOMVINK 8"'
-            price="S/249"
-            image="/sierra-bomvink-8.jpg"
-            href="/producto/sierra-bomvink-8"
-          />
-
-          <ProductCard
-            name='Sierra BOMVINK Premium'
-            price="S/249"
-            image="/sierra-bomvink-gempages.jpg"
-            href="/producto/sierra-bomvink-gempages"
-          />
-
-          <ProductCard
-            name="Soporte Telescópico XTD"
-            price="S/209"
-            image="/soporte-telescopico-xtd.jpg"
-            href="/producto/soporte-telescopico-xtd"
-          />
-        </div>
-      </section>
-
-      <section className="max-w-7xl mx-auto px-6 py-20">
-        <div className="bg-black text-white rounded-3xl p-10 text-center">
-          <h3 className="text-4xl font-black">
-            Herramientas profesionales para todo el Perú
-          </h3>
-
-          <p className="text-zinc-300 mt-4">
-            Encuentra productos con envío rápido, pago contra entrega y atención personalizada.
-          </p>
-
-          <Link
-            href="/"
-            className="inline-block mt-8 bg-yellow-400 text-black px-8 py-4 rounded-2xl font-black"
-          >
-            Ver catálogo
-          </Link>
+          <ProductCard name='Sierra BOMVINK 8"' price="S/249" image="/sierra-bomvink-8.jpg" href="/producto/sierra-bomvink-8" />
+          <ProductCard name='Sierra BOMVINK Premium' price="S/249" image="/sierra-bomvink-gempages.jpg" href="/producto/sierra-bomvink-gempages" />
+          <ProductCard name="Soporte Telescópico XTD" price="S/209" image="/soporte-telescopico-xtd.jpg" href="/producto/soporte-telescopico-xtd" />
         </div>
       </section>
 
@@ -530,19 +438,10 @@ export default function ProductoPage() {
       </footer>
 
       {openCheckout && (
-        <div
-          onClick={() => setOpenCheckout(false)}
-          className="fixed inset-0 bg-black/70 z-[999] overflow-y-auto"
-        >
+        <div onClick={() => setOpenCheckout(false)} className="fixed inset-0 bg-black/70 z-[999] overflow-y-auto">
           <div className="min-h-screen flex items-start justify-center p-4">
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white text-black w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative my-10"
-            >
-              <button
-                onClick={() => setOpenCheckout(false)}
-                className="absolute top-4 right-4 text-zinc-500 hover:text-black"
-              >
+            <div onClick={(e) => e.stopPropagation()} className="bg-white text-black w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative my-10">
+              <button onClick={() => setOpenCheckout(false)} className="absolute top-4 right-4 text-zinc-500 hover:text-black">
                 <X />
               </button>
 
@@ -556,13 +455,7 @@ export default function ProductoPage() {
                   </div>
 
                   <div className="p-5 flex gap-3 border-b">
-                    <Image
-                      src={producto.imagen}
-                      alt={producto.nombre}
-                      width={80}
-                      height={80}
-                      className="rounded-xl object-contain bg-zinc-100"
-                    />
+                    <Image src={producto.imagen} alt={producto.nombre} width={80} height={80} className="rounded-xl object-contain bg-zinc-100" />
 
                     <div className="flex-1">
                       <h3 className="font-black text-sm">{producto.nombre}</h3>
@@ -595,30 +488,17 @@ export default function ProductoPage() {
                     <Input icon={<Phone size={18} />} placeholder="Celular *" value={celular} onChange={setCelular} name="tel" type="tel" autoComplete="tel" />
                     <Input icon={<MapPin size={18} />} placeholder="Ciudad o distrito *" value={ciudad} onChange={setCiudad} name="address-level2" autoComplete="address-level2" />
 
-                    <select
-                      required
-                      value={region}
-                      onChange={(e) => setRegion(e.target.value)}
-                      name="region"
-                      autoComplete="address-level1"
-                      className="w-full px-5 py-4 border rounded-2xl outline-none bg-white text-zinc-700 text-lg"
-                    >
+                    <select required value={region} onChange={(e) => setRegion(e.target.value)} name="region" autoComplete="address-level1" className="w-full px-5 py-4 border rounded-2xl outline-none bg-white text-zinc-700 text-lg">
                       <option value="">Selecciona tu región *</option>
                       {regionesPeru.map((item) => (
-                        <option key={item} value={item}>
-                          {item}
-                        </option>
+                        <option key={item} value={item}>{item}</option>
                       ))}
                     </select>
 
                     <Input icon={<Home size={18} />} placeholder="Dirección exacta *" value={direccion} onChange={setDireccion} name="street-address" autoComplete="street-address" />
                     <Input icon={<MapPin size={18} />} placeholder="Referencia" value={referencia} onChange={setReferencia} name="address-line2" autoComplete="address-line2" />
 
-                    <button
-                      onClick={finalizarPedido}
-                      disabled={loading}
-                      className="w-full bg-black text-yellow-400 py-5 rounded-2xl font-black text-xl hover:bg-zinc-800 transition active:scale-[0.98]"
-                    >
+                    <button onClick={finalizarPedido} disabled={loading} className="w-full bg-black text-yellow-400 py-5 rounded-2xl font-black text-xl hover:bg-zinc-800 transition active:scale-[0.98]">
                       {loading ? "Enviando pedido..." : "Finalizar pedido"}
                     </button>
                   </div>
@@ -644,13 +524,7 @@ export default function ProductoPage() {
       <div className="fixed bottom-0 left-0 w-full bg-white border-t shadow-2xl z-40">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Image
-              src={producto.imagen}
-              alt={producto.nombre}
-              width={60}
-              height={60}
-              className="rounded-xl bg-zinc-100 object-contain"
-            />
+            <Image src={producto.imagen} alt={producto.nombre} width={60} height={60} className="rounded-xl bg-zinc-100 object-contain" />
 
             <div>
               <h3 className="font-black text-sm md:text-lg leading-tight">
@@ -666,10 +540,7 @@ export default function ProductoPage() {
             </div>
           </div>
 
-          <button
-            onClick={() => setOpenCheckout(true)}
-            className="bg-green-500 hover:bg-green-600 text-white px-6 md:px-10 py-3 rounded-full font-black shadow-xl transition whitespace-nowrap"
-          >
+          <button onClick={() => setOpenCheckout(true)} className="bg-green-500 hover:bg-green-600 text-white px-6 md:px-10 py-3 rounded-full font-black shadow-xl transition whitespace-nowrap">
             Comprar Ahora
           </button>
         </div>
@@ -680,31 +551,14 @@ export default function ProductoPage() {
   );
 }
 
-function Input({
-  icon,
-  placeholder,
-  value,
-  onChange,
-  name,
-  autoComplete,
-  type = "text",
-}: any) {
+function Input({ icon, placeholder, value, onChange, name, autoComplete, type = "text" }: any) {
   return (
     <div className="flex border rounded-2xl overflow-hidden">
       <div className="bg-zinc-100 px-5 flex items-center text-zinc-500">
         {icon}
       </div>
 
-      <input
-        required
-        type={type}
-        name={name}
-        autoComplete={autoComplete}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full px-5 py-4 outline-none text-lg"
-      />
+      <input required type={type} name={name} autoComplete={autoComplete} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full px-5 py-4 outline-none text-lg" />
     </div>
   );
 }
@@ -758,14 +612,7 @@ function Faq({ question, answer }: any) {
 function ProductCard({ name, price, image, href }: any) {
   return (
     <Link href={href} className="bg-white border rounded-3xl p-4 shadow-sm block">
-      <Image
-        src={image}
-        alt={name}
-        width={300}
-        height={300}
-        className="w-full h-40 object-contain bg-zinc-100 rounded-2xl"
-      />
-
+      <Image src={image} alt={name} width={300} height={300} className="w-full h-40 object-contain bg-zinc-100 rounded-2xl" />
       <h3 className="font-black mt-4">{name}</h3>
       <p className="text-yellow-500 font-black text-xl mt-2">{price}</p>
     </Link>
