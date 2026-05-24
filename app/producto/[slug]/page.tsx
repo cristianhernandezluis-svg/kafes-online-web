@@ -847,7 +847,7 @@ export default function ProductoPage() {
               </div>
             </div>
 
-            <div className="p-5 space-y-3">
+            <div className="p-4 space-y-3">
               <Input
                 icon={<User size={18} />}
                 placeholder="Nombre completo *"
@@ -919,13 +919,36 @@ export default function ProductoPage() {
               />
 
               <button
-                onClick={finalizarPedido}
-                disabled={loading}
-                className="w-full bg-black text-white py-5 rounded-2xl font-black text-lg hover:bg-zinc-800 transition active:scale-[0.98] flex items-center justify-center gap-3 shadow-xl"
-              >
-                <Truck size={22} />
-                {loading ? "ENVIANDO..." : "REALIZAR PEDIDO"}
-              </button>
+  onClick={finalizarPedido}
+  disabled={loading}
+  className="
+    w-full
+    bg-yellow-400
+    hover:bg-yellow-300
+    text-black
+    py-5
+    rounded-2xl
+    font-black
+    text-lg
+    transition
+    active:scale-[0.98]
+    flex
+    items-center
+    justify-center
+    gap-3
+    border-b-[5px]
+    border-yellow-600
+    shadow-xl
+    animate-[pulse_1.5s_ease-in-out_infinite]
+  "
+>
+  <Truck size={22} />
+  {loading ? "ENVIANDO..." : "REALIZAR PEDIDO"}
+</button>
+
+<p className="text-center text-xs text-zinc-500 font-semibold mt-3">
+  🔒 Tus datos están protegidos y tu pedido será confirmado por WhatsApp
+</p>
             </div>
           </>
         ) : (
