@@ -727,20 +727,6 @@ export default function ProductoPage() {
         </div>
       )}
 
-      
-          <button
-            onClick={() => setOpenCheckout(true)}
-            className={`px-6 py-4 rounded-2xl font-black shadow-xl transition whitespace-nowrap ${
-              producto.modoGempages
-                ? "bg-yellow-400 hover:bg-yellow-300 text-black text-lg"
-                : "bg-green-500 hover:bg-green-600 text-white"
-            }`}
-          >
-            Comprar Ahora
-          </button>
-        </div>
-      </div>
-
       <WhatsAppButton />
     </main>
   );
