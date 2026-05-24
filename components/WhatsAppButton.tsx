@@ -9,7 +9,19 @@ export default function WhatsAppButton() {
       <a
         href="https://wa.me/51980296583"
         target="_blank"
-        className="w-16 h-16 rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 overflow-hidden"
+        className="
+w-16
+h-16
+rounded-full
+shadow-[0_10px_30px_rgba(37,211,102,0.45)]
+flex
+items-center
+justify-center
+transition-all
+hover:scale-110
+overflow-hidden
+animate-[pulse_2s_ease-in-out_infinite]
+"
       >
 
         <Image
