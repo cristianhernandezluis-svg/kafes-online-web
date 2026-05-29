@@ -4,7 +4,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   CheckCircle,
   ShoppingCart,
@@ -129,6 +129,11 @@ export default function ProductoPage() {
 
   const [timeLeft, setTimeLeft] = useState(3 * 60 * 60);
 
+  const viewContentTrackedSlug = useRef<string | null>(null);
+
+  const precio = producto?.precio || 0;
+  const total = precio * cantidad;
+
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
@@ -136,6 +141,30 @@ export default function ProductoPage() {
 
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (!producto || !slug) return;
+    if (viewContentTrackedSlug.current === slug) return;
+
+    viewContentTrackedSlug.current = slug;
+
+    window.ttq?.track("ViewContent", {
+      content_id: slug,
+      content_name: producto.nombre,
+      content_type: "product",
+      value: precio,
+      currency: "PEN",
+      price: precio,
+    });
+
+    window.fbq?.("track", "ViewContent", {
+      value: precio,
+      currency: "PEN",
+      content_ids: [slug],
+      content_name: producto.nombre,
+      content_type: "product",
+    });
+  }, [slug, producto, precio]);
 
   if (!producto) {
     return (
@@ -153,8 +182,59 @@ export default function ProductoPage() {
     );
   }
 
-  const precio = producto.precio;
-  const total = precio * cantidad;
+  const abrirCheckout = () => {
+    window.ttq?.track("AddToCart", {
+      content_id: slug,
+      content_name: producto.nombre,
+      content_type: "product",
+      value: total,
+      currency: "PEN",
+      quantity: cantidad,
+      price: precio,
+    });
+
+    window.ttq?.track("InitiateCheckout", {
+      content_id: slug,
+      content_name: producto.nombre,
+      content_type: "product",
+      value: total,
+      currency: "PEN",
+      quantity: cantidad,
+      price: precio,
+    });
+
+    window.fbq?.("track", "AddToCart", {
+      value: total,
+      currency: "PEN",
+      content_ids: [slug],
+      content_name: producto.nombre,
+      content_type: "product",
+      contents: [
+        {
+          id: slug,
+          quantity: cantidad,
+          item_price: precio,
+        },
+      ],
+    });
+
+    window.fbq?.("track", "InitiateCheckout", {
+      value: total,
+      currency: "PEN",
+      content_ids: [slug],
+      content_name: producto.nombre,
+      content_type: "product",
+      contents: [
+        {
+          id: slug,
+          quantity: cantidad,
+          item_price: precio,
+        },
+      ],
+    });
+
+    setOpenCheckout(true);
+  };
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
@@ -216,6 +296,16 @@ export default function ProductoPage() {
             item_price: precio,
           },
         ],
+      });
+
+      window.ttq?.track("Purchase", {
+        value: total,
+        currency: "PEN",
+        content_id: slug,
+        content_name: producto.nombre,
+        content_type: "product",
+        quantity: cantidad,
+        price: precio,
       });
 
       window.ttq?.track("CompletePayment", {
@@ -294,243 +384,121 @@ export default function ProductoPage() {
       )}
 
       {producto.modoGempages ? (
-  <>
-    <section className="w-full bg-black">
-      <div className="w-full max-w-[430px] mx-auto bg-black">
+        <>
+          <section className="w-full bg-black">
+            <div className="w-full max-w-[430px] mx-auto bg-black">
+              <Image
+                src={producto.imagen}
+                alt={producto.nombre}
+                width={1080}
+                height={3000}
+                className="w-full h-auto block"
+                priority
+              />
 
-        {/* IMAGEN GEM PAGES */}
-        <Image
-          src={producto.imagen}
-          alt={producto.nombre}
-          width={1080}
-          height={3000}
-          className="w-full h-auto block"
-          priority
-        />
+              <div className="px-4 pb-6 pt-2 bg-black">
+                <button
+                  onClick={abrirCheckout}
+                  className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(255,215,0,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-yellow-600 animate-[pulse_1.5s_ease-in-out_infinite]"
+                >
+                  <ShoppingCart size={28} />
+                  COMPRAR AHORA
+                </button>
+              </div>
 
-        {/* BOTON COMPRAR */}
-<div className="px-4 pb-6 pt-2 bg-black">
-  <button
-    onClick={() => setOpenCheckout(true)}
-    className="
-      w-full
-      bg-yellow-400
-      hover:bg-yellow-300
-      text-black
-      font-black
-      text-2xl
-      py-5
-      rounded-[24px]
-      shadow-[0_10px_40px_rgba(255,215,0,0.35)]
-      transition
-      active:scale-[0.98]
-      flex
-      items-center
-      justify-center
-      gap-3
-      border-b-[6px]
-      border-yellow-600
-      animate-[pulse_1.5s_ease-in-out_infinite]
-    "
-  >
-            <ShoppingCart size={28} />
-            COMPRAR AHORA
-          </button>
-        </div>
-{/* SEGUNDA IMAGEN */}
-<Image
-  src="/sierra-bomvink-gempages-2.jpg"
-  alt="Sierra BOMVINK Beneficios"
-  width={1080}
-  height={3000}
-  className="w-full h-auto block"
-/>
+              <Image
+                src="/sierra-bomvink-gempages-2.jpg"
+                alt="Sierra BOMVINK Beneficios"
+                width={1080}
+                height={3000}
+                className="w-full h-auto block"
+              />
 
-{/* BOTON 2 */}
-<div className="px-4 pb-6 pt-2 bg-black">
-  <button
-    onClick={() => setOpenCheckout(true)}
-    className="
-      w-full
-      bg-yellow-400
-      hover:bg-yellow-300
-      text-black
-      font-black
-      text-2xl
-      py-5
-      rounded-[24px]
-      shadow-[0_10px_40px_rgba(255,215,0,0.35)]
-      transition
-      active:scale-[0.98]
-      flex
-      items-center
-      justify-center
-      gap-3
-      border-b-[6px]
-      border-yellow-600
-      animate-[pulse_1.5s_ease-in-out_infinite]
-    "
-  >
-    <ShoppingCart size={28} />
-    COMPRAR AHORA
-  </button>
-</div>
-{/* CUARTA IMAGEN */}
-<Image
-  src="/sierra-bomvink-gempages-4.png"
-  alt="Sierra BOMVINK Beneficios"
-  width={1080}
-  height={3000}
-  className="w-full h-auto block"
-/>
+              <div className="px-4 pb-6 pt-2 bg-black">
+                <button
+                  onClick={abrirCheckout}
+                  className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(255,215,0,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-yellow-600 animate-[pulse_1.5s_ease-in-out_infinite]"
+                >
+                  <ShoppingCart size={28} />
+                  COMPRAR AHORA
+                </button>
+              </div>
 
-{/* BOTON 4 */}
-<div className="px-4 pb-6 pt-2 bg-black">
-  <button
-    onClick={() => setOpenCheckout(true)}
-    className="
-      w-full
-      bg-yellow-400
-      hover:bg-yellow-300
-      text-black
-      font-black
-      text-2xl
-      py-5
-      rounded-[24px]
-      shadow-[0_10px_40px_rgba(255,215,0,0.35)]
-      transition
-      active:scale-[0.98]
-      flex
-      items-center
-      justify-center
-      gap-3
-      border-b-[6px]
-      border-yellow-600
-      animate-[pulse_1.5s_ease-in-out_infinite]
-    "
-  >
-    <ShoppingCart size={28} />
-    COMPRAR AHORA
-  </button>
-</div>
-{/* QUINTA IMAGEN */}
-<Image
-  src="/sierra-bomvink-gempages-5.png"
-  alt="Clientes reales BOMVINK"
-  width={1080}
-  height={3000}
-  className="w-full h-auto block"
-/>
+              <Image
+                src="/sierra-bomvink-gempages-4.png"
+                alt="Sierra BOMVINK Beneficios"
+                width={1080}
+                height={3000}
+                className="w-full h-auto block"
+              />
 
-{/* BOTON 5 */}
-<div className="px-4 pb-6 pt-2 bg-black">
-  <button
-    onClick={() => setOpenCheckout(true)}
-    className="
-      w-full
-      bg-yellow-400
-      hover:bg-yellow-300
-      text-black
-      font-black
-      text-2xl
-      py-5
-      rounded-[24px]
-      shadow-[0_10px_40px_rgba(255,215,0,0.35)]
-      transition
-      active:scale-[0.98]
-      flex
-      items-center
-      justify-center
-      gap-3
-      border-b-[6px]
-      border-yellow-600
-      animate-[pulse_1.5s_ease-in-out_infinite]
-    "
-  >
-    <ShoppingCart size={28} />
-    COMPRAR AHORA
-  </button>
-</div>
-{/* SEXTA IMAGEN */}
-<Image
-  src="/sierra-bomvink-gempages-6.png"
-  alt="Oferta especial BOMVINK"
-  width={1080}
-  height={3000}
-  className="w-full h-auto block"
-/>
+              <div className="px-4 pb-6 pt-2 bg-black">
+                <button
+                  onClick={abrirCheckout}
+                  className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(255,215,0,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-yellow-600 animate-[pulse_1.5s_ease-in-out_infinite]"
+                >
+                  <ShoppingCart size={28} />
+                  COMPRAR AHORA
+                </button>
+              </div>
 
-{/* BOTON 6 */}
-<div className="px-4 pb-6 pt-2 bg-black">
-  <button
-    onClick={() => setOpenCheckout(true)}
-    className="
-      w-full
-      bg-yellow-400
-      hover:bg-yellow-300
-      text-black
-      font-black
-      text-2xl
-      py-5
-      rounded-[24px]
-      shadow-[0_10px_40px_rgba(255,215,0,0.35)]
-      transition
-      active:scale-[0.98]
-      flex
-      items-center
-      justify-center
-      gap-3
-      border-b-[6px]
-      border-yellow-600
-      animate-[pulse_1.5s_ease-in-out_infinite]
-    "
-  >
-    <ShoppingCart size={28} />
-    COMPRAR AHORA
-  </button>
-</div>
-{/* SEPTIMA IMAGEN */}
-<Image
-  src="/sierra-bomvink-gempages-7.png"
-  alt="FAQ y pagos BOMVINK"
-  width={1080}
-  height={3000}
-  className="w-full h-auto block"
-/>
+              <Image
+                src="/sierra-bomvink-gempages-5.png"
+                alt="Clientes reales BOMVINK"
+                width={1080}
+                height={3000}
+                className="w-full h-auto block"
+              />
 
-{/* BOTON FINAL */}
-<div className="px-4 pb-10 pt-2 bg-black">
-  <button
-    onClick={() => setOpenCheckout(true)}
-    className="
-      w-full
-      bg-yellow-400
-      hover:bg-yellow-300
-      text-black
-      font-black
-      text-2xl
-      py-5
-      rounded-[24px]
-      shadow-[0_10px_40px_rgba(255,215,0,0.35)]
-      transition
-      active:scale-[0.98]
-      flex
-      items-center
-      justify-center
-      gap-3
-      border-b-[6px]
-      border-yellow-600
-      animate-[pulse_1.5s_ease-in-out_infinite]
-    "
-  >
-    <ShoppingCart size={28} />
-    COMPRAR AHORA
-  </button>
-</div>
-      </div>
-    </section>
-  </>
-) : (
+              <div className="px-4 pb-6 pt-2 bg-black">
+                <button
+                  onClick={abrirCheckout}
+                  className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(255,215,0,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-yellow-600 animate-[pulse_1.5s_ease-in-out_infinite]"
+                >
+                  <ShoppingCart size={28} />
+                  COMPRAR AHORA
+                </button>
+              </div>
+
+              <Image
+                src="/sierra-bomvink-gempages-6.png"
+                alt="Oferta especial BOMVINK"
+                width={1080}
+                height={3000}
+                className="w-full h-auto block"
+              />
+
+              <div className="px-4 pb-6 pt-2 bg-black">
+                <button
+                  onClick={abrirCheckout}
+                  className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(255,215,0,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-yellow-600 animate-[pulse_1.5s_ease-in-out_infinite]"
+                >
+                  <ShoppingCart size={28} />
+                  COMPRAR AHORA
+                </button>
+              </div>
+
+              <Image
+                src="/sierra-bomvink-gempages-7.png"
+                alt="FAQ y pagos BOMVINK"
+                width={1080}
+                height={3000}
+                className="w-full h-auto block"
+              />
+
+              <div className="px-4 pb-10 pt-2 bg-black">
+                <button
+                  onClick={abrirCheckout}
+                  className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(255,215,0,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-yellow-600 animate-[pulse_1.5s_ease-in-out_infinite]"
+                >
+                  <ShoppingCart size={28} />
+                  COMPRAR AHORA
+                </button>
+              </div>
+            </div>
+          </section>
+        </>
+      ) : (
         <>
           <div className="max-w-7xl mx-auto py-10 px-4 md:px-6 grid md:grid-cols-2 gap-12">
             <div>
@@ -634,14 +602,14 @@ export default function ProductoPage() {
 
               <div className="mt-8 space-y-4">
                 <button
-                  onClick={() => setOpenCheckout(true)}
+                  onClick={abrirCheckout}
                   className="bg-green-500 hover:bg-green-600 text-white w-full py-5 rounded-2xl text-2xl font-black transition shadow-xl"
                 >
                   Agregar al carrito
                 </button>
 
                 <button
-                  onClick={() => setOpenCheckout(true)}
+                  onClick={abrirCheckout}
                   className="bg-pink-600 hover:bg-pink-700 text-white w-full py-5 rounded-2xl text-2xl font-black shadow-xl animate-[pulse_1.2s_ease-in-out_infinite]"
                 >
                   Comprar ahora
@@ -761,213 +729,201 @@ export default function ProductoPage() {
       )}
 
       {openCheckout && (
-  <div
-    onClick={() => setOpenCheckout(false)}
-    className="fixed inset-0 bg-black/70 z-[999] overflow-y-auto"
-  >
-    <div className="min-h-screen flex items-start justify-center p-4">
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="bg-white text-black w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative my-10"
-      >
-        <button
+        <div
           onClick={() => setOpenCheckout(false)}
-          className="absolute top-4 right-4 text-zinc-500 hover:text-black z-10"
+          className="fixed inset-0 bg-black/70 z-[999] overflow-y-auto"
         >
-          <X />
-        </button>
-
-        {!pedidoFinalizado ? (
-          <>
-            <div className="bg-gradient-to-r from-yellow-400 to-yellow-300 p-4 border-b">
-              <p className="text-xs font-black uppercase tracking-wide">
-                OFERTA ESPECIAL
-              </p>
-
-              <h2 className="text-2xl font-black leading-tight">
-                FINALIZA TU PEDIDO
-              </h2>
-
-              <p className="text-sm font-semibold text-black/80 mt-1">
-                🚚 Envíos rápidos a todo el Perú 🇵🇪
-              </p>
-            </div>
-
-            <div className="p-4 border-b bg-white">
-              <div className="flex gap-3">
-                <Image
-                  src={producto.imagen}
-                  alt={producto.nombre}
-                  width={85}
-                  height={85}
-                  className="rounded-2xl object-cover bg-zinc-100 border"
-                />
-
-                <div className="flex-1">
-                  <h3 className="font-black text-[15px] leading-tight">
-                    {producto.nombre}
-                  </h3>
-
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-2xl font-black text-black">
-                      S/{precio}
-                    </span>
-
-                    <span className="line-through text-zinc-400 text-sm">
-                      S/{producto.precioAntes}
-                    </span>
-                  </div>
-
-                  <div className="mt-2 inline-flex items-center gap-2 bg-green-100 text-green-700 px-2 py-1 rounded-lg text-xs font-bold">
-                    <Truck size={14} />
-                    ENVÍO GRATIS
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 border-b bg-zinc-50">
-              <div className="bg-white border rounded-2xl overflow-hidden">
-                <div className="flex justify-between px-4 py-3 border-b text-sm">
-                  <span className="font-medium text-zinc-600">Subtotal</span>
-                  <strong className="font-black">S/{total}</strong>
-                </div>
-
-                <div className="flex justify-between px-4 py-3 border-b text-sm">
-                  <span className="font-medium text-zinc-600">Envío</span>
-                  <strong className="font-black text-green-600">Gratis</strong>
-                </div>
-
-                <div className="flex justify-between px-4 py-4 bg-yellow-50">
-                  <span className="text-lg font-black">Total</span>
-                  <strong className="text-2xl font-black text-black">
-                    S/{total}
-                  </strong>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 space-y-3">
-              <Input
-                icon={<User size={18} />}
-                placeholder="Nombre completo *"
-                value={nombre}
-                onChange={setNombre}
-                name="name"
-                autoComplete="name"
-              />
-
-              <Input
-                icon={<Phone size={18} />}
-                placeholder="Celular *"
-                value={celular}
-                onChange={setCelular}
-                name="tel"
-                type="tel"
-                autoComplete="tel"
-              />
-
-              <Input
-                icon={<MapPin size={18} />}
-                placeholder="Ciudad o distrito *"
-                value={ciudad}
-                onChange={setCiudad}
-                name="address-level2"
-                autoComplete="address-level2"
-              />
-
-              <select
-                required
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-                name="region"
-                autoComplete="address-level1"
-                className="w-full px-5 py-4 border rounded-2xl outline-none bg-white text-zinc-700 text-lg font-semibold"
+          <div className="min-h-screen flex items-start justify-center p-4">
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white text-black w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative my-10"
+            >
+              <button
+                onClick={() => setOpenCheckout(false)}
+                className="absolute top-4 right-4 text-zinc-500 hover:text-black z-10"
               >
-                <option value="">Selecciona tu región *</option>
-                {regionesPeru.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
+                <X />
+              </button>
 
-              {region && (
-                <div className="bg-green-50 border border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-700">
-                  {region === "Lima"
-                    ? "✅ Pago contra entrega disponible en Lima Metropolitana"
-                    : "✅ Envío a provincia disponible con adelanto mínimo"}
+              {!pedidoFinalizado ? (
+                <>
+                  <div className="bg-gradient-to-r from-yellow-400 to-yellow-300 p-4 border-b">
+                    <p className="text-xs font-black uppercase tracking-wide">
+                      OFERTA ESPECIAL
+                    </p>
+
+                    <h2 className="text-2xl font-black leading-tight">
+                      FINALIZA TU PEDIDO
+                    </h2>
+
+                    <p className="text-sm font-semibold text-black/80 mt-1">
+                      🚚 Envíos rápidos a todo el Perú 🇵🇪
+                    </p>
+                  </div>
+
+                  <div className="p-4 border-b bg-white">
+                    <div className="flex gap-3">
+                      <Image
+                        src={producto.imagen}
+                        alt={producto.nombre}
+                        width={85}
+                        height={85}
+                        className="rounded-2xl object-cover bg-zinc-100 border"
+                      />
+
+                      <div className="flex-1">
+                        <h3 className="font-black text-[15px] leading-tight">
+                          {producto.nombre}
+                        </h3>
+
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="text-2xl font-black text-black">
+                            S/{precio}
+                          </span>
+
+                          <span className="line-through text-zinc-400 text-sm">
+                            S/{producto.precioAntes}
+                          </span>
+                        </div>
+
+                        <div className="mt-2 inline-flex items-center gap-2 bg-green-100 text-green-700 px-2 py-1 rounded-lg text-xs font-bold">
+                          <Truck size={14} />
+                          ENVÍO GRATIS
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 border-b bg-zinc-50">
+                    <div className="bg-white border rounded-2xl overflow-hidden">
+                      <div className="flex justify-between px-4 py-3 border-b text-sm">
+                        <span className="font-medium text-zinc-600">
+                          Subtotal
+                        </span>
+                        <strong className="font-black">S/{total}</strong>
+                      </div>
+
+                      <div className="flex justify-between px-4 py-3 border-b text-sm">
+                        <span className="font-medium text-zinc-600">Envío</span>
+                        <strong className="font-black text-green-600">
+                          Gratis
+                        </strong>
+                      </div>
+
+                      <div className="flex justify-between px-4 py-4 bg-yellow-50">
+                        <span className="text-lg font-black">Total</span>
+                        <strong className="text-2xl font-black text-black">
+                          S/{total}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 space-y-3">
+                    <Input
+                      icon={<User size={18} />}
+                      placeholder="Nombre completo *"
+                      value={nombre}
+                      onChange={setNombre}
+                      name="name"
+                      autoComplete="name"
+                    />
+
+                    <Input
+                      icon={<Phone size={18} />}
+                      placeholder="Celular *"
+                      value={celular}
+                      onChange={setCelular}
+                      name="tel"
+                      type="tel"
+                      autoComplete="tel"
+                    />
+
+                    <Input
+                      icon={<MapPin size={18} />}
+                      placeholder="Ciudad o distrito *"
+                      value={ciudad}
+                      onChange={setCiudad}
+                      name="address-level2"
+                      autoComplete="address-level2"
+                    />
+
+                    <select
+                      required
+                      value={region}
+                      onChange={(e) => setRegion(e.target.value)}
+                      name="region"
+                      autoComplete="address-level1"
+                      className="w-full px-5 py-4 border rounded-2xl outline-none bg-white text-zinc-700 text-lg font-semibold"
+                    >
+                      <option value="">Selecciona tu región *</option>
+                      {regionesPeru.map((item) => (
+                        <option key={item} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+
+                    {region && (
+                      <div className="bg-green-50 border border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-700">
+                        {region === "Lima"
+                          ? "✅ Pago contra entrega disponible en Lima Metropolitana"
+                          : "✅ Envío a provincia disponible con adelanto mínimo"}
+                      </div>
+                    )}
+
+                    <Input
+                      icon={<Home size={18} />}
+                      placeholder="Dirección exacta *"
+                      value={direccion}
+                      onChange={setDireccion}
+                      name="street-address"
+                      autoComplete="street-address"
+                    />
+
+                    <Input
+                      icon={<MapPin size={18} />}
+                      placeholder="Referencia"
+                      value={referencia}
+                      onChange={setReferencia}
+                      name="address-line2"
+                      autoComplete="address-line2"
+                    />
+
+                    <button
+                      onClick={finalizarPedido}
+                      disabled={loading}
+                      className="w-full bg-yellow-400 hover:bg-yellow-300 text-black py-5 rounded-2xl font-black text-lg transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[5px] border-yellow-600 shadow-xl animate-[pulse_1.5s_ease-in-out_infinite]"
+                    >
+                      <Truck size={22} />
+                      {loading ? "ENVIANDO..." : "REALIZAR PEDIDO"}
+                    </button>
+
+                    <p className="text-center text-xs text-zinc-500 font-semibold mt-3">
+                      🔒 Tus datos están protegidos y tu pedido será confirmado
+                      por WhatsApp
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <div className="p-10 text-center">
+                  <div className="flex justify-center mb-5">
+                    <CheckCircle size={90} className="text-green-500" />
+                  </div>
+
+                  <h2 className="text-3xl font-black mb-4">
+                    ¡Pedido recibido!
+                  </h2>
+
+                  <p className="text-zinc-600 text-lg leading-8">
+                    Gracias por confiar en KAFES ONLINE.
+                  </p>
                 </div>
               )}
-
-              <Input
-                icon={<Home size={18} />}
-                placeholder="Dirección exacta *"
-                value={direccion}
-                onChange={setDireccion}
-                name="street-address"
-                autoComplete="street-address"
-              />
-
-              <Input
-                icon={<MapPin size={18} />}
-                placeholder="Referencia"
-                value={referencia}
-                onChange={setReferencia}
-                name="address-line2"
-                autoComplete="address-line2"
-              />
-
-              <button
-  onClick={finalizarPedido}
-  disabled={loading}
-  className="
-    w-full
-    bg-yellow-400
-    hover:bg-yellow-300
-    text-black
-    py-5
-    rounded-2xl
-    font-black
-    text-lg
-    transition
-    active:scale-[0.98]
-    flex
-    items-center
-    justify-center
-    gap-3
-    border-b-[5px]
-    border-yellow-600
-    shadow-xl
-    animate-[pulse_1.5s_ease-in-out_infinite]
-  "
->
-  <Truck size={22} />
-  {loading ? "ENVIANDO..." : "REALIZAR PEDIDO"}
-</button>
-
-<p className="text-center text-xs text-zinc-500 font-semibold mt-3">
-  🔒 Tus datos están protegidos y tu pedido será confirmado por WhatsApp
-</p>
             </div>
-          </>
-        ) : (
-          <div className="p-10 text-center">
-            <div className="flex justify-center mb-5">
-              <CheckCircle size={90} className="text-green-500" />
-            </div>
-
-            <h2 className="text-3xl font-black mb-4">¡Pedido recibido!</h2>
-
-            <p className="text-zinc-600 text-lg leading-8">
-              Gracias por confiar en KAFES ONLINE.
-            </p>
           </div>
-        )}
-      </div>
-    </div>
-  </div>
-)}
+        </div>
+      )}
 
       <WhatsAppButton />
     </main>
@@ -1051,10 +1007,7 @@ function Faq({ question, answer }: any) {
 
 function ProductCard({ name, price, image, href }: any) {
   return (
-    <Link
-      href={href}
-      className="bg-white border rounded-3xl p-4 shadow-sm block"
-    >
+    <Link href={href} className="bg-white border rounded-3xl p-4 shadow-sm block">
       <Image
         src={image}
         alt={name}
