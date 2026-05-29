@@ -86,7 +86,7 @@ export default function RootLayout({
                 e.parentNode.insertBefore(n,e)
               };
 
-              ttq.load('CUNLUQ3C77UCIANOL1D0');
+              ttq.load('D8D21TBC77UFK9KDRPDG');
               ttq.page();
 
             }(window, document, 'ttq');
