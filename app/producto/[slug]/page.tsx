@@ -298,15 +298,25 @@ export default function ProductoPage() {
         ],
       });
 
-      window.ttq?.track("Purchase", {
-        value: total,
-        currency: "PEN",
-        content_id: slug,
-        content_name: producto.nombre,
-        content_type: "product",
-        quantity: cantidad,
-        price: precio,
-      });
+      const telefonoLimpio = celular.replace(/\D/g, "");
+const telefonoConPais = telefonoLimpio.startsWith("51")
+  ? `+${telefonoLimpio}`
+  : `+51${telefonoLimpio}`;
+
+window.ttq?.identify({
+  phone_number: telefonoConPais,
+  external_id: telefonoLimpio,
+});
+
+window.ttq?.track("Purchase", {
+  value: total,
+  currency: "PEN",
+  content_id: slug,
+  content_name: producto.nombre,
+  content_type: "product",
+  quantity: cantidad,
+  price: precio,
+});
 
       window.ttq?.track("CompletePayment", {
         value: total,
@@ -865,12 +875,12 @@ export default function ProductoPage() {
                     </select>
 
                     {region && (
-                      <div className="bg-green-50 border border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-700">
-                        {region === "Lima"
-                          ? "✅ Pago contra entrega disponible en Lima Metropolitana"
-                          : "✅ Envío a provincia disponible con adelanto mínimo"}
-                      </div>
-                    )}
+  <div className="bg-green-50 border border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-700">
+    {region === "Lima"
+      ? "✅ Pago contra entrega disponible en Lima Metropolitana"
+      : "✅ Envío seguro disponible a tu ciudad. Confirmamos tu pedido por WhatsApp"}
+  </div>
+)}
 
                     <Input
                       icon={<Home size={18} />}
