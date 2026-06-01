@@ -18,10 +18,14 @@ export default function WhatsAppButton() {
   }, []);
 
   const abrirWhatsApp = (nombre: string, numero: string) => {
-    const mensaje = `Hola ${nombre}, quiero hacer mi pedido de la ${producto}. Vengo de la página web.`;
-    const url = `https://wa.me/51${numero}?text=${encodeURIComponent(mensaje)}`;
-    window.open(url, "_blank");
-  };
+  const mensaje = `Hola ${nombre}, quiero hacer mi pedido de la ${producto}. Vengo de la página web.`;
+
+  const url = `https://wa.me/51${numero}?text=${encodeURIComponent(mensaje)}`;
+
+  setOpen(false); // cerrar popup
+
+  window.open(url, "_blank");
+};
 
   if (!visible) return null;
 
@@ -29,7 +33,7 @@ export default function WhatsAppButton() {
     <>
       <div className="fixed bottom-24 right-5 z-[998]">
         <button
-          onClick={() => setOpen(true)}
+          onClick={() => setOpen(!open)}
           className="
             w-16 h-16 rounded-full
             shadow-[0_10px_30px_rgba(37,211,102,0.45)]
