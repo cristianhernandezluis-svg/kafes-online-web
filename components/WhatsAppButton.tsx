@@ -53,8 +53,13 @@ export default function WhatsAppButton() {
       </div>
 
       {open && (
-        <div className="fixed bottom-44 right-5 z-[999] w-[320px] max-w-[90vw] rounded-2xl overflow-hidden shadow-2xl border border-yellow-400 bg-neutral-950 text-white">
-          <div className="bg-yellow-400 text-black px-4 py-3 flex justify-between items-center">
+        className="fixed bottom-44 right-5 z-[999] w-[360px]
+max-w-[90vw]
+rounded-[28px]
+overflow-hidden
+shadow-[0_20px_60px_rgba(0,0,0,0.25)]
+bg-white"
+          <div className="bg-[#0B7A68] text-white px-6 py-5" flex justify-between items-center">
             <div>
               <h3 className="font-black text-lg">¿En qué podemos ayudarte?</h3>
               <p className="text-xs font-semibold">Elige un asesor disponible</p>
@@ -71,13 +76,13 @@ export default function WhatsAppButton() {
           <div className="p-4 space-y-3">
             <button
               onClick={() => abrirWhatsApp("Kathi", "945360973")}
-              className="w-full text-left bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 rounded-xl p-4 transition-all"
+              className="w-full text-left bg-white hover:bg-neutral-800 border border-gray-200 rounded-xl p-4 transition-all"
             >
               <p className="font-black text-yellow-400">Kathi</p>
               <p className="text-sm text-neutral-300">Representante de ventas</p>
-              <p className="mt-2 text-sm font-bold text-green-400">
-                Hablar por WhatsApp
-              </p>
+              <div className="mt-3 bg-[#25D366] text-white text-center py-3 rounded-full font-bold">
+  Hablar por WhatsApp
+</div>
             </button>
 
             <button
