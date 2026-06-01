@@ -53,9 +53,8 @@ export default function WhatsAppButton() {
       </div>
 
       {open && (
-        {open && (
   <div className="fixed bottom-44 right-5 z-[999] w-[360px] max-w-[90vw] rounded-[28px] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.25)] bg-white">
-          <div className="bg-[#0B7A68] text-white px-6 py-5" flex justify-between items-center">
+          <div className="bg-[#0B7A68] text-white px-6 py-5 flex justify-between items-center">
             <div>
               <h3 className="font-black text-lg">¿En qué podemos ayudarte?</h3>
               <p className="text-xs font-semibold">Elige un asesor disponible</p>
