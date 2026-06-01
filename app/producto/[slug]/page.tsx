@@ -922,12 +922,26 @@ window.ttq?.track("Purchase", {
                   </div>
 
                   <h2 className="text-3xl font-black mb-4">
-                    ¡Pedido recibido!
-                  </h2>
+  ¡Pedido recibido!
+</h2>
 
-                  <p className="text-zinc-600 text-lg leading-8">
-                    Gracias por confiar en KAFES ONLINE.
-                  </p>
+<p className="text-zinc-600 text-lg leading-8">
+  Gracias por confiar en KAFES ONLINE.
+</p>
+
+<div className="mt-6 bg-green-50 border border-green-200 rounded-2xl p-4 text-left space-y-3">
+  <p className="font-bold text-green-700">
+    ✅ Un asesor se comunicará contigo por WhatsApp para confirmar tu pedido.
+  </p>
+
+  <p className="font-bold text-green-700">
+    📦 Envíos a todo el Perú.
+  </p>
+
+  <p className="font-bold text-green-700">
+    ☎️ Mantén tu celular disponible.
+  </p>
+</div>
                 </div>
               )}
             </div>
