@@ -420,121 +420,43 @@ window.ttq?.track("Purchase", {
       )}
 
       {producto.modoGempages ? (
-        <>
-          <section className="w-full bg-black">
-            <div className="w-full max-w-[430px] mx-auto bg-black">
-              <Image
-                src={producto.imagen}
-                alt={producto.nombre}
-                width={1080}
-                height={3000}
-                className="w-full h-auto block"
-                priority
-              />
+  <>
+    <section className="w-full bg-black">
+      <div className="w-full max-w-[430px] mx-auto bg-black">
+        {[
+          producto.imagen,
+          `/${slug}-2.jpg`,
+          `/${slug}-3.png`,
+          `/${slug}-4.png`,
+          `/${slug}-5.png`,
+          `/${slug}-6.png`,
+          `/${slug}-7.png`,
+        ].map((src, index) => (
+          <div key={src}>
+            <Image
+              src={src}
+              alt={`${producto.nombre} ${index + 1}`}
+              width={1365}
+              height={2048}
+              className="w-full h-auto block"
+              priority={index === 0}
+            />
 
-              <div className="px-4 pb-6 pt-2 bg-black">
-                <button
-                  onClick={abrirCheckout}
-                  className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(255,215,0,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-yellow-600 animate-[pulse_1.5s_ease-in-out_infinite]"
-                >
-                  <ShoppingCart size={28} />
-                  COMPRAR AHORA
-                </button>
-              </div>
-
-              <Image
-                src="/sierra-bomvink-gempages-2.jpg"
-                alt="Sierra BOMVINK Beneficios"
-                width={1080}
-                height={3000}
-                className="w-full h-auto block"
-              />
-
-              <div className="px-4 pb-6 pt-2 bg-black">
-                <button
-                  onClick={abrirCheckout}
-                  className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(255,215,0,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-yellow-600 animate-[pulse_1.5s_ease-in-out_infinite]"
-                >
-                  <ShoppingCart size={28} />
-                  COMPRAR AHORA
-                </button>
-              </div>
-
-              <Image
-                src="/sierra-bomvink-gempages-4.png"
-                alt="Sierra BOMVINK Beneficios"
-                width={1080}
-                height={3000}
-                className="w-full h-auto block"
-              />
-
-              <div className="px-4 pb-6 pt-2 bg-black">
-                <button
-                  onClick={abrirCheckout}
-                  className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(255,215,0,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-yellow-600 animate-[pulse_1.5s_ease-in-out_infinite]"
-                >
-                  <ShoppingCart size={28} />
-                  COMPRAR AHORA
-                </button>
-              </div>
-
-              <Image
-                src="/sierra-bomvink-gempages-5.png"
-                alt="Clientes reales BOMVINK"
-                width={1080}
-                height={3000}
-                className="w-full h-auto block"
-              />
-
-              <div className="px-4 pb-6 pt-2 bg-black">
-                <button
-                  onClick={abrirCheckout}
-                  className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(255,215,0,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-yellow-600 animate-[pulse_1.5s_ease-in-out_infinite]"
-                >
-                  <ShoppingCart size={28} />
-                  COMPRAR AHORA
-                </button>
-              </div>
-
-              <Image
-                src="/sierra-bomvink-gempages-6.png"
-                alt="Oferta especial BOMVINK"
-                width={1080}
-                height={3000}
-                className="w-full h-auto block"
-              />
-
-              <div className="px-4 pb-6 pt-2 bg-black">
-                <button
-                  onClick={abrirCheckout}
-                  className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(255,215,0,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-yellow-600 animate-[pulse_1.5s_ease-in-out_infinite]"
-                >
-                  <ShoppingCart size={28} />
-                  COMPRAR AHORA
-                </button>
-              </div>
-
-              <Image
-                src="/sierra-bomvink-gempages-7.png"
-                alt="FAQ y pagos BOMVINK"
-                width={1080}
-                height={3000}
-                className="w-full h-auto block"
-              />
-
-              <div className="px-4 pb-10 pt-2 bg-black">
-                <button
-                  onClick={abrirCheckout}
-                  className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(255,215,0,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-yellow-600 animate-[pulse_1.5s_ease-in-out_infinite]"
-                >
-                  <ShoppingCart size={28} />
-                  COMPRAR AHORA
-                </button>
-              </div>
+            <div className="px-4 pb-6 pt-2 bg-black">
+              <button
+                onClick={abrirCheckout}
+                className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(255,215,0,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-yellow-600 animate-[pulse_1.5s_ease-in-out_infinite]"
+              >
+                <ShoppingCart size={28} />
+                REALIZAR PEDIDO
+              </button>
             </div>
-          </section>
-        </>
-      ) : (
+          </div>
+        ))}
+      </div>
+    </section>
+  </>
+) : (
         <>
           <div className="max-w-7xl mx-auto py-10 px-4 md:px-6 grid md:grid-cols-2 gap-12">
             <div>
