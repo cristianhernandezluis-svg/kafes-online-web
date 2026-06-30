@@ -443,7 +443,7 @@ window.ttq?.track("Purchase", {
             <div className="px-4 pb-6 pt-2 bg-black">
               <button
                 onClick={abrirCheckout}
-                className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(255,215,0,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-yellow-600 animate-[pulse_1.5s_ease-in-out_infinite]"
+                className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(16,185,129,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-emerald-700 animate-[pulse_1.5s_ease-in-out_infinite]"
               >
                 <ShoppingCart size={28} />
                 REALIZAR PEDIDO
