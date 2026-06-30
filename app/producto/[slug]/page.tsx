@@ -425,12 +425,10 @@ window.ttq?.track("Purchase", {
       <div className="w-full max-w-[430px] mx-auto bg-black">
         {[
           producto.imagen,
-          `/${slug}-2.jpg`,
+          `/${slug}-2.png`,
           `/${slug}-3.png`,
-          `/${slug}-4.png`,
-          `/${slug}-5.png`,
-          `/${slug}-6.png`,
-          `/${slug}-7.png`,
+          `/${slug}-4.jpg`,
+          `/${slug}-5.jpg`,
         ].map((src, index) => (
           <div key={src}>
             <Image
