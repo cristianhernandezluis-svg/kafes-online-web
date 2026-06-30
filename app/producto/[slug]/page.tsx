@@ -60,6 +60,32 @@ const productos: any = {
     beneficios: ["Batería 21V", "Corte rápido", "Garantía 12 meses"],
   },
 
+"soporte-diagonal-gempages": {
+    nombre: "Soporte Diagonal para Amoladora",
+    nombreCorto: "Soporte Diagonal",
+    precio: 99,
+    precioAntes: 149,
+    imagen: "/soporte-diagonal-gempages.jpg",
+    etiqueta: "OFERTA",
+    modoGempages: true,
+
+    descripcion:
+      "Soporte profesional para realizar cortes diagonales de 45° con mayor precisión, rapidez y seguridad.",
+
+    mini: [
+      "45°",
+      "Universal",
+      "Alta precisión",
+    ],
+
+    beneficios: [
+      "Cortes diagonales perfectos",
+      "Compatible con amoladoras 4\" y 4½\"",
+      "Mayor estabilidad y seguridad",
+      "Ideal para porcelanato, cerámica y mármol",
+    ],
+  },
+
   "soporte-telescopico-xtd": {
     nombre: "Soporte Telescópico XTD para Amoladora",
     nombreCorto: "Soporte Telescópico XTD",
