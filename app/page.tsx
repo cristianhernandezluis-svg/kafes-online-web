@@ -11,7 +11,7 @@ import {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-white text-black">
       <header className="bg-yellow-400 text-black p-4 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <h1 className="text-2xl md:text-3xl font-black">KAFES ONLINE</h1>
@@ -30,6 +30,14 @@ export default function Home() {
         </div>
       </header>
 
+<div
+  className="h-4 w-full"
+  style={{
+    background:
+      "repeating-linear-gradient(-45deg, #000 0px, #000 12px, #facc15 12px, #facc15 24px)",
+  }}
+/>
+
       <section className="max-w-7xl mx-auto py-20 px-6 grid md:grid-cols-2 gap-10 items-center">
         <div>
           <span className="bg-yellow-400 text-black px-4 py-2 rounded-full font-bold">
@@ -40,7 +48,7 @@ export default function Home() {
             Herramientas Profesionales
           </h2>
 
-          <p className="text-zinc-300 mt-6 text-lg">
+          <p className="text-zinc-700 mt-6 text-lg">
             Compra herramientas de calidad con envío a todo el Perú y pago seguro mediante Izipay.
           </p>
 
@@ -62,7 +70,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="bg-zinc-900 rounded-[40px] p-6 md:p-10 border border-zinc-800">
+        <div className="bg-white rounded-[40px] p-6 md:p-10 border border-zinc-200 shadow-2xl">
           <img
             src="/logo-kafes.jpg"
             alt="Kafes Online"
@@ -115,7 +123,7 @@ export default function Home() {
 
 function Benefit({ icon, title, text }: any) {
   return (
-    <div className="bg-zinc-900 p-6 rounded-3xl border border-zinc-800 hover:border-yellow-400 transition">
+    <div className="bg-white p-6 rounded-3xl border border-zinc-200 shadow-lg hover:border-yellow-400 transition">
       <div className="text-yellow-400">{icon}</div>
       <h3 className="text-2xl font-black mt-4">{title}</h3>
       <p className="text-zinc-400 mt-2">{text}</p>
@@ -136,7 +144,7 @@ function ProductCard({
   return (
     <a
       href={href}
-      className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden cursor-pointer hover:-translate-y-2 hover:border-yellow-400 transition duration-300 block group"
+      className="bg-white border border-zinc-200 shadow-lg rounded-3xl overflow-hidden cursor-pointer hover:-translate-y-2 hover:border-yellow-400 transition duration-300 block group"
     >
       <div className="bg-white p-6 overflow-hidden">
         <img
