@@ -2,132 +2,523 @@
 
 import WhatsAppButton from "@/components/WhatsAppButton";
 import {
-  ShoppingCart,
   Search,
+  ShoppingCart,
   Truck,
   ShieldCheck,
   Headphones,
+  CreditCard,
+  ChevronRight,
+  Droplets,
+  Trees,
+  Zap,
+  Drill,
+  Sparkles,
+  BadgePercent,
 } from "lucide-react";
+
+const categories = [
+  {
+    name: "Sierras",
+    image: "/categorias/sierras.png",
+    href: "/categoria/sierras",
+  },
+  {
+    name: "Hidrolavadoras",
+    image: "/categorias/hidrolavadoras.png",
+    href: "/categoria/hidrolavadoras",
+  },
+  {
+    name: "Bombas de agua",
+    image: "/categorias/bombas.png",
+    href: "/categoria/bombas-de-agua",
+  },
+  {
+    name: "Generadores",
+    image: "/categorias/generadores.png",
+    href: "/categoria/generadores",
+  },
+  {
+    name: "Jardinería",
+    image: "/categorias/jardineria.png",
+    href: "/categoria/jardineria",
+  },
+  {
+    name: "Herramientas",
+    image: "/categorias/herramientas.png",
+    href: "/categoria/herramientas",
+  },
+  {
+    name: "Ofertas",
+    image: "/categorias/ofertas.png",
+    href: "#ofertas",
+  },
+];
+
+const products = [
+  {
+    href: "/producto/sierra-bomvink-8",
+    image: "/sierra-bomvink-8.jpg",
+    alt: "Sierra inalámbrica BOMVINK",
+    badge: "MÁS VENDIDO",
+    title: 'Sierra Inalámbrica BOMVINK 8"',
+    description:
+      "Incluye 2 baterías de 21V. Ideal para poda, corte de madera y trabajos de campo.",
+    price: "S/249",
+    beforePrice: "S/299",
+  },
+  {
+    href: "/producto/soporte-telescopico-xtd",
+    image: "/soporte-telescopico-xtd.jpg",
+    alt: "Soporte telescópico XTD",
+    badge: "NUEVO",
+    title: "Soporte Telescópico XTD",
+    description:
+      "Mayor estabilidad, precisión y seguridad para realizar cortes profesionales.",
+    price: "S/209",
+    beforePrice: "S/249",
+  },
+  {
+    href: "/producto/hidrolavadora-bomder",
+    image: "/hidrolavadora-bomder.jpg",
+    alt: "Hidrolavadora BOMDER",
+    badge: "OFERTA PATRIA",
+    title: "Hidrolavadora BOMDER 2500W",
+    description:
+      "Potente equipo para lavar autos, motos, fachadas, patios y maquinaria.",
+    price: "S/299",
+    beforePrice: "S/349",
+  },
+];
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white text-black">
-      <header className="bg-yellow-400 text-black p-4 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          <h1 className="text-2xl md:text-3xl font-black">KAFES ONLINE</h1>
+    <main className="min-h-screen bg-[#f7f7f7] text-black">
+      {/* Barra informativa superior */}
+      <div className="bg-black text-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-center gap-2 px-4 py-2 text-center text-xs font-bold md:text-sm">
+          <Truck size={16} className="text-yellow-400" />
+          <span>
+            Envíos rápidos a todo el Perú
+            <span className="mx-2 text-zinc-500">|</span>
+            🇵🇪 Especial Fiestas Patrias
+            <span className="mx-2 text-zinc-500">|</span>
+            Hasta 30% de descuento
+          </span>
+        </div>
+      </div>
 
-          <div className="hidden md:flex items-center gap-2 bg-white rounded-full px-4 py-2 w-[400px]">
-            <Search className="text-black" size={20} />
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b border-zinc-200 bg-yellow-400 shadow-sm">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-6">
+          <a href="/" className="shrink-0">
+            <h1 className="text-xl font-black tracking-tight md:text-2xl">
+              KAFES ONLINE
+            </h1>
+          </a>
+
+          <div className="hidden max-w-xl flex-1 items-center gap-3 rounded-full bg-white px-5 py-3 shadow-sm md:flex">
+            <Search size={20} className="text-zinc-500" />
+
             <input
-              placeholder="Buscar productos..."
-              className="outline-none text-black w-full"
+              type="search"
+              placeholder="¿Qué herramienta estás buscando?"
+              className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-400"
             />
           </div>
 
-          <button className="bg-black text-yellow-400 p-3 rounded-full">
-            <ShoppingCart />
-          </button>
+          <div className="flex items-center gap-2">
+            <a
+              href="https://wa.me/51980296583?text=Hola,%20quiero%20información%20de%20sus%20productos"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden rounded-full bg-white px-5 py-3 text-sm font-black transition hover:scale-105 lg:block"
+            >
+              Hablar con un asesor
+            </a>
+
+            <button
+              aria-label="Ver carrito"
+              className="rounded-full bg-black p-3 text-yellow-400 transition hover:scale-105"
+            >
+              <ShoppingCart size={22} />
+            </button>
+          </div>
+        </div>
+
+        {/* Buscador móvil */}
+        <div className="px-4 pb-4 md:hidden">
+          <div className="flex items-center gap-2 rounded-full bg-white px-4 py-3 shadow-sm">
+            <Search size={18} className="text-zinc-500" />
+
+            <input
+              type="search"
+              placeholder="Buscar productos..."
+              className="w-full bg-transparent text-sm outline-none"
+            />
+          </div>
         </div>
       </header>
 
-<div
-  className="h-4 w-full"
-  style={{
-    background:
-      "repeating-linear-gradient(-45deg, #000 0px, #000 12px, #facc15 12px, #facc15 24px)",
-  }}
-/>
+      {/* Franja industrial */}
+      <div
+        className="h-3 w-full"
+        style={{
+          background:
+            "repeating-linear-gradient(-45deg, #000 0px, #000 12px, #facc15 12px, #facc15 24px)",
+        }}
+      />
 
-      <section className="max-w-7xl mx-auto py-20 px-6 grid md:grid-cols-2 gap-10 items-center">
-        <div>
-          <span className="bg-yellow-400 text-black px-4 py-2 rounded-full font-bold">
-            NUEVO INGRESO
-          </span>
+      {/* Categorías rápidas */}
+      <section className="border-b border-zinc-200 bg-white">
+        <div className="mx-auto max-w-7xl overflow-x-auto px-4 py-6 md:px-6">
+          <div className="flex min-w-max justify-start gap-4 md:justify-center md:gap-6">
+            {categories.map((category) => (
+              <a
+                key={category.name}
+                href={category.href}
+                className="group w-24 text-center md:w-28"
+              >
+                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 p-2 transition duration-300 group-hover:-translate-y-1 group-hover:border-yellow-400 group-hover:shadow-lg md:h-28 md:w-28">
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="h-full w-full object-contain transition duration-300 group-hover:scale-105"
+                  />
+                </div>
 
-          <h2 className="text-5xl md:text-6xl font-black mt-6 leading-tight">
-            Herramientas Profesionales
-          </h2>
+                <p className="mt-2 text-xs font-bold md:text-sm">
+                  {category.name}
+                </p>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <p className="text-zinc-700 mt-6 text-lg">
-            Compra herramientas de calidad con envío a todo el Perú y pago seguro mediante Izipay.
-          </p>
+      {/* Banner Fiestas Patrias */}
+      <section className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
+        <div className="relative min-h-[480px] overflow-hidden rounded-[32px] bg-gradient-to-r from-[#be0000] via-[#e20d18] to-[#ff3b30] shadow-xl md:min-h-[500px]">
+          {/* Decoraciones */}
+          <div className="absolute -left-20 -top-20 h-72 w-72 rounded-full bg-white/10" />
+          <div className="absolute -bottom-32 right-0 h-96 w-96 rounded-full bg-white/10" />
 
-          <div className="flex flex-col md:flex-row gap-4 mt-8">
+          <div className="relative z-10 grid min-h-[480px] items-center md:grid-cols-2 md:min-h-[500px]">
+            <div className="px-7 py-12 text-white md:px-14">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-red-600 shadow-md">
+                🇵🇪 ESPECIAL FIESTAS PATRIAS
+              </span>
+
+              <h2 className="mt-6 max-w-2xl text-4xl font-black leading-[1.05] md:text-6xl">
+                Herramientas que construyen el Perú
+              </h2>
+
+              <p className="mt-5 max-w-xl text-lg font-medium text-white/90 md:text-xl">
+                Aprovecha precios especiales en herramientas profesionales para
+                el hogar, el campo y tu negocio.
+              </p>
+
+              <div className="mt-6 flex flex-wrap gap-3 text-sm font-bold">
+                <span className="rounded-full bg-black/25 px-4 py-2">
+                  ✓ Garantía
+                </span>
+
+                <span className="rounded-full bg-black/25 px-4 py-2">
+                  ✓ Envíos nacionales
+                </span>
+
+                <span className="rounded-full bg-black/25 px-4 py-2">
+                  ✓ Atención por WhatsApp
+                </span>
+              </div>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <a
+                  href="#ofertas"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-7 py-4 text-lg font-black text-black shadow-lg transition hover:scale-105 hover:bg-yellow-300"
+                >
+                  VER OFERTAS
+                  <ChevronRight size={22} />
+                </a>
+
+                <a
+                  href="#productos"
+                  className="inline-flex items-center justify-center rounded-2xl border-2 border-white px-7 py-4 text-lg font-black text-white transition hover:bg-white hover:text-red-600"
+                >
+                  VER CATÁLOGO
+                </a>
+              </div>
+            </div>
+
+            <div className="relative flex h-full min-h-[330px] items-end justify-center px-6 md:min-h-[500px]">
+              <div className="absolute bottom-8 h-20 w-4/5 rounded-[100%] bg-black/20 blur-xl" />
+
+              <img
+                src="/banner-fiestas-patrias.png"
+                alt="Ofertas de herramientas por Fiestas Patrias"
+                className="relative z-10 max-h-[450px] w-full object-contain object-bottom drop-shadow-2xl"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Beneficios */}
+      <section className="mx-auto max-w-7xl px-4 pb-10 md:px-6">
+        <div className="grid overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-sm sm:grid-cols-2 lg:grid-cols-4">
+          <Benefit
+            icon={<Truck size={28} />}
+            title="Envíos nacionales"
+            text="Llegamos a todo el Perú."
+          />
+
+          <Benefit
+            icon={<ShieldCheck size={28} />}
+            title="Compra confiable"
+            text="Productos con garantía."
+          />
+
+          <Benefit
+            icon={<CreditCard size={28} />}
+            title="Pago seguro"
+            text="Compra mediante Izipay."
+          />
+
+          <Benefit
+            icon={<Headphones size={28} />}
+            title="Atención personalizada"
+            text="Asesoría rápida por WhatsApp."
+          />
+        </div>
+      </section>
+
+      {/* Ofertas rápidas */}
+      <section id="ofertas" className="mx-auto max-w-7xl px-4 pb-12 md:px-6">
+        <div className="mb-6 flex items-end justify-between">
+          <div>
+            <span className="text-sm font-black uppercase tracking-widest text-red-600">
+              Solo por tiempo limitado
+            </span>
+
+            <h2 className="mt-1 text-3xl font-black md:text-4xl">
+              Ofertas de Fiestas Patrias
+            </h2>
+          </div>
+
+          <a
+            href="#productos"
+            className="hidden items-center gap-1 font-bold text-zinc-700 transition hover:text-red-600 md:flex"
+          >
+            Ver todos
+            <ChevronRight size={18} />
+          </a>
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-3">
+          <PromoCard
+            icon={<Droplets size={38} />}
+            title="Hidrolavadoras"
+            text="Potencia para autos, motos y maquinaria."
+            href="/categoria/hidrolavadoras"
+            background="bg-blue-600"
+          />
+
+          <PromoCard
+            icon={<Trees size={38} />}
+            title="Jardinería"
+            text="Sierras, podadoras y cortasetos."
+            href="/categoria/jardineria"
+            background="bg-green-600"
+          />
+
+          <PromoCard
+            icon={<Zap size={38} />}
+            title="Generadores"
+            text="Energía segura donde la necesites."
+            href="/categoria/generadores"
+            background="bg-zinc-900"
+          />
+        </div>
+      </section>
+
+      {/* Productos */}
+      <section
+        id="productos"
+        className="border-y border-zinc-200 bg-white py-14"
+      >
+        <div className="mx-auto max-w-7xl px-4 md:px-6">
+          <div className="mb-9 flex items-end justify-between">
+            <div>
+              <span className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-yellow-600">
+                <Sparkles size={18} />
+                Selección KAFES
+              </span>
+
+              <h2 className="mt-2 text-3xl font-black md:text-4xl">
+                Productos destacados
+              </h2>
+            </div>
+
+            <span className="hidden rounded-full bg-red-100 px-4 py-2 text-sm font-black text-red-600 md:block">
+              Stock limitado
+            </span>
+          </div>
+
+          <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+            {products.map((product) => (
+              <ProductCard key={product.title} {...product} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Banner secundario */}
+      <section className="mx-auto max-w-7xl px-4 py-12 md:px-6">
+        <div className="grid overflow-hidden rounded-[32px] bg-black text-white shadow-xl md:grid-cols-2">
+          <div className="flex flex-col justify-center px-8 py-12 md:px-14">
+            <span className="flex w-fit items-center gap-2 rounded-full bg-yellow-400 px-4 py-2 text-sm font-black text-black">
+              <BadgePercent size={18} />
+              PRECIOS ESPECIALES
+            </span>
+
+            <h2 className="mt-6 text-4xl font-black md:text-5xl">
+              Equipa tu taller con herramientas profesionales
+            </h2>
+
+            <p className="mt-5 max-w-xl text-lg text-zinc-300">
+              Encuentra equipos para construcción, agricultura, mantenimiento y
+              trabajos especializados.
+            </p>
+
             <a
               href="#productos"
-              className="bg-yellow-400 text-black px-8 py-4 rounded-2xl font-black text-xl hover:scale-105 transition text-center"
+              className="mt-8 inline-flex w-fit items-center gap-2 rounded-2xl bg-yellow-400 px-7 py-4 text-lg font-black text-black transition hover:scale-105 hover:bg-yellow-300"
             >
-              VER CATÁLOGO
+              COMPRAR AHORA
+              <ChevronRight size={22} />
             </a>
+          </div>
+
+          <div className="min-h-[330px] bg-zinc-900">
+            <img
+              src="/banner-taller-profesional.jpg"
+              alt="Herramientas profesionales Kafes Online"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Pie básico */}
+      <footer className="bg-black text-white">
+        <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 md:grid-cols-3">
+          <div>
+            <h2 className="text-2xl font-black text-yellow-400">
+              KAFES ONLINE
+            </h2>
+
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-zinc-400">
+              Herramientas profesionales con envíos a todo el Perú y atención
+              personalizada.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="font-black">Categorías</h3>
+
+            <div className="mt-4 flex flex-col gap-2 text-sm text-zinc-400">
+              <a href="/categoria/sierras">Sierras</a>
+              <a href="/categoria/hidrolavadoras">Hidrolavadoras</a>
+              <a href="/categoria/bombas-de-agua">Bombas de agua</a>
+              <a href="/categoria/generadores">Generadores</a>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-black">Atención</h3>
+
+            <p className="mt-4 text-sm text-zinc-400">
+              Escríbenos por WhatsApp para recibir información sobre precios,
+              stock y envíos.
+            </p>
 
             <a
-              href="https://wa.me/51980296583?text=Hola,%20quiero%20ver%20ofertas%20de%20Kafes%20Online"
+              href="https://wa.me/51980296583"
               target="_blank"
-              className="border border-yellow-400 text-yellow-400 px-8 py-4 rounded-2xl font-black text-xl hover:bg-yellow-400 hover:text-black transition text-center"
+              rel="noopener noreferrer"
+              className="mt-4 inline-block rounded-xl bg-yellow-400 px-5 py-3 font-black text-black"
             >
-              OFERTAS
+              Contactar ahora
             </a>
           </div>
         </div>
 
-        <div className="bg-white rounded-[40px] p-6 md:p-10 border border-zinc-200 shadow-2xl">
-          <img
-            src="/logo-kafes.jpg"
-            alt="Kafes Online"
-            className="rounded-3xl w-full"
-          />
+        <div className="border-t border-zinc-800 py-5 text-center text-xs text-zinc-500">
+          © 2026 KAFES ONLINE. Todos los derechos reservados.
         </div>
-      </section>
-
-      <section className="max-w-7xl mx-auto grid md:grid-cols-3 gap-6 px-6 pb-20">
-        <Benefit icon={<Truck />} title="Envíos a todo el Perú" text="Despachamos rápido y seguro." />
-        <Benefit icon={<ShieldCheck />} title="Pago Seguro" text="Compra segura y atención confiable." />
-        <Benefit icon={<Headphones />} title="Atención Personalizada" text="Soporte rápido por WhatsApp." />
-      </section>
-
-      <section id="productos" className="max-w-7xl mx-auto px-6 pb-24">
-        <div className="flex items-center justify-between mb-10">
-          <h2 className="text-4xl font-black">Productos Destacados</h2>
-          <span className="text-yellow-400 font-bold">Stock limitado</span>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <ProductCard
-            href="/producto/sierra-bomvink-8"
-            image="/sierra-bomvink-8.jpg"
-            alt="Sierra BOMVINK"
-            badge="MÁS VENDIDO"
-            title='Sierra Inalámbrica BOMVINK 8"'
-            description="Incluye 2 baterías de 21V. Ideal para poda, corte de madera y trabajos de campo."
-            price="S/249"
-            beforePrice="S/299"
-          />
-
-          <ProductCard
-            href="/producto/soporte-telescopico-xtd"
-            image="/soporte-telescopico-xtd.jpg"
-            alt="Soporte Telescópico XTD"
-            badge="NUEVO"
-            title="Soporte Telescópico XTD"
-            description="Soporte profesional para amoladora con mayor estabilidad, precisión y seguridad al cortar."
-            price="S/209"
-            beforePrice="S/249"
-          />
-        </div>
-      </section>
+      </footer>
 
       <WhatsAppButton />
     </main>
   );
 }
 
-function Benefit({ icon, title, text }: any) {
+function Benefit({
+  icon,
+  title,
+  text,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  text: string;
+}) {
   return (
-    <div className="bg-white p-6 rounded-3xl border border-zinc-200 shadow-lg hover:border-yellow-400 transition">
-      <div className="text-yellow-400">{icon}</div>
-      <h3 className="text-2xl font-black mt-4">{title}</h3>
-      <p className="text-zinc-400 mt-2">{text}</p>
+    <div className="flex items-center gap-4 border-b border-zinc-200 p-6 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
+      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-yellow-400 text-black">
+        {icon}
+      </div>
+
+      <div>
+        <h3 className="font-black">{title}</h3>
+        <p className="mt-1 text-sm text-zinc-500">{text}</p>
+      </div>
     </div>
+  );
+}
+
+function PromoCard({
+  icon,
+  title,
+  text,
+  href,
+  background,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  text: string;
+  href: string;
+  background: string;
+}) {
+  return (
+    <a
+      href={href}
+      className={`${background} group relative min-h-[210px] overflow-hidden rounded-3xl p-7 text-white shadow-lg transition duration-300 hover:-translate-y-1`}
+    >
+      <div className="absolute -bottom-16 -right-16 h-44 w-44 rounded-full bg-white/10 transition duration-300 group-hover:scale-125" />
+
+      <div className="relative z-10">
+        {icon}
+
+        <h3 className="mt-6 text-3xl font-black">{title}</h3>
+
+        <p className="mt-2 max-w-xs text-sm text-white/80">{text}</p>
+
+        <span className="mt-5 inline-flex items-center gap-1 font-black">
+          Ver productos
+          <ChevronRight size={18} />
+        </span>
+      </div>
+    </a>
   );
 }
 
@@ -140,52 +531,61 @@ function ProductCard({
   description,
   price,
   beforePrice,
-}: any) {
+}: {
+  href: string;
+  image: string;
+  alt: string;
+  badge: string;
+  title: string;
+  description: string;
+  price: string;
+  beforePrice: string;
+}) {
   return (
     <a
       href={href}
-      className="bg-white border border-zinc-200 shadow-lg rounded-3xl overflow-hidden cursor-pointer hover:-translate-y-2 hover:border-yellow-400 transition duration-300 block group"
+      className="group block overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-sm transition duration-300 hover:-translate-y-2 hover:border-yellow-400 hover:shadow-xl"
     >
-      <div className="bg-white p-6 overflow-hidden">
+      <div className="relative overflow-hidden bg-zinc-50 p-6">
+        <span className="absolute left-5 top-5 z-10 rounded-full bg-red-600 px-3 py-1.5 text-xs font-black text-white">
+          {badge}
+        </span>
+
         <img
           src={image}
           alt={alt}
-          className="w-full h-72 object-contain group-hover:scale-105 transition duration-300"
+          className="h-72 w-full object-contain transition duration-500 group-hover:scale-105"
         />
       </div>
 
       <div className="p-6">
         <div className="flex items-center justify-between">
-          <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-black">
-            {badge}
+          <span className="text-xs font-bold text-green-600">
+            ● Disponible
           </span>
 
-          <span className="text-green-400 text-sm font-bold">
-            Disponible
+          <span className="text-xs font-bold text-zinc-500">
+            Envíos nacionales
           </span>
         </div>
 
-        <h3 className="text-2xl font-black mt-4 leading-tight">
-          {title}
-        </h3>
+        <h3 className="mt-4 text-xl font-black leading-tight">{title}</h3>
 
-        <p className="text-zinc-400 mt-3 leading-relaxed">
+        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-zinc-500">
           {description}
         </p>
 
-        <div className="mt-5 flex items-center gap-3">
-          <p className="text-yellow-400 text-4xl font-black">
-            {price}
-          </p>
+        <div className="mt-5 flex items-end gap-3">
+          <p className="text-3xl font-black text-red-600">{price}</p>
 
-          <span className="line-through text-zinc-500 text-lg">
+          <span className="pb-1 text-base text-zinc-400 line-through">
             {beforePrice}
           </span>
         </div>
 
-        <button className="mt-6 w-full bg-yellow-400 hover:bg-yellow-300 text-black py-4 rounded-2xl font-black text-lg transition">
-          Ver detalles
-        </button>
+        <div className="mt-6 flex w-full items-center justify-center rounded-2xl bg-yellow-400 py-4 font-black text-black transition group-hover:bg-black group-hover:text-yellow-400">
+          Ver producto
+        </div>
       </div>
     </a>
   );
