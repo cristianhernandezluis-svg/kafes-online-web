@@ -439,14 +439,14 @@ function HeroSlider() {
   };
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
+    <section className="w-full px-2 py-5 md:px-10">
       <div className="group relative overflow-hidden rounded-3xl bg-zinc-100 shadow-xl">
         <a href={banners[activeBanner].href} className="block">
           <img
-            src={banners[activeBanner].image}
-            alt={banners[activeBanner].alt}
-            className="h-[230px] w-full object-cover sm:h-[300px] md:h-[390px] lg:h-[420px]"
-          />
+  src={banners[activeBanner].image}
+  alt={banners[activeBanner].alt}
+  className="block h-auto w-full"
+/>
         </a>
 
         <button
