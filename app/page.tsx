@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import {
   Search,
@@ -8,11 +9,11 @@ import {
   ShieldCheck,
   Headphones,
   CreditCard,
+  ChevronLeft,
   ChevronRight,
   Droplets,
   Trees,
   Zap,
-  Drill,
   Sparkles,
   BadgePercent,
 } from "lucide-react";
@@ -88,6 +89,24 @@ const products = [
       "Potente equipo para lavar autos, motos, fachadas, patios y maquinaria.",
     price: "S/299",
     beforePrice: "S/349",
+  },
+];
+
+const banners = [
+  {
+    image: "/banners/banner-fiestas-patrias.jpg",
+    alt: "Ofertas por Fiestas Patrias en Kafes Online",
+    href: "#ofertas",
+  },
+  {
+    image: "/banners/banner-hidrolavadoras.jpg",
+    alt: "Ofertas en hidrolavadoras Kafes Online",
+    href: "/categoria/hidrolavadoras",
+  },
+  {
+    image: "/banners/banner-jardineria.jpg",
+    alt: "Herramientas de jardinería Kafes Online",
+    href: "/categoria/jardineria",
   },
 ];
 
@@ -196,72 +215,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Banner Fiestas Patrias */}
-      <section className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
-        <div className="relative min-h-[480px] overflow-hidden rounded-[32px] bg-gradient-to-r from-[#be0000] via-[#e20d18] to-[#ff3b30] shadow-xl md:min-h-[500px]">
-          {/* Decoraciones */}
-          <div className="absolute -left-20 -top-20 h-72 w-72 rounded-full bg-white/10" />
-          <div className="absolute -bottom-32 right-0 h-96 w-96 rounded-full bg-white/10" />
-
-          <div className="relative z-10 grid min-h-[480px] items-center md:grid-cols-2 md:min-h-[500px]">
-            <div className="px-7 py-12 text-white md:px-14">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-red-600 shadow-md">
-                🇵🇪 ESPECIAL FIESTAS PATRIAS
-              </span>
-
-              <h2 className="mt-6 max-w-2xl text-4xl font-black leading-[1.05] md:text-6xl">
-                Herramientas que construyen el Perú
-              </h2>
-
-              <p className="mt-5 max-w-xl text-lg font-medium text-white/90 md:text-xl">
-                Aprovecha precios especiales en herramientas profesionales para
-                el hogar, el campo y tu negocio.
-              </p>
-
-              <div className="mt-6 flex flex-wrap gap-3 text-sm font-bold">
-                <span className="rounded-full bg-black/25 px-4 py-2">
-                  ✓ Garantía
-                </span>
-
-                <span className="rounded-full bg-black/25 px-4 py-2">
-                  ✓ Envíos nacionales
-                </span>
-
-                <span className="rounded-full bg-black/25 px-4 py-2">
-                  ✓ Atención por WhatsApp
-                </span>
-              </div>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a
-                  href="#ofertas"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-7 py-4 text-lg font-black text-black shadow-lg transition hover:scale-105 hover:bg-yellow-300"
-                >
-                  VER OFERTAS
-                  <ChevronRight size={22} />
-                </a>
-
-                <a
-                  href="#productos"
-                  className="inline-flex items-center justify-center rounded-2xl border-2 border-white px-7 py-4 text-lg font-black text-white transition hover:bg-white hover:text-red-600"
-                >
-                  VER CATÁLOGO
-                </a>
-              </div>
-            </div>
-
-            <div className="relative flex h-full min-h-[330px] items-end justify-center px-6 md:min-h-[500px]">
-              <div className="absolute bottom-8 h-20 w-4/5 rounded-[100%] bg-black/20 blur-xl" />
-
-              <img
-                src="/banner-fiestas-patrias.png"
-                alt="Ofertas de herramientas por Fiestas Patrias"
-                className="relative z-10 max-h-[450px] w-full object-contain object-bottom drop-shadow-2xl"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+<HeroSlider />
 
       {/* Beneficios */}
       <section className="mx-auto max-w-7xl px-4 pb-10 md:px-6">
@@ -460,6 +414,76 @@ export default function Home() {
 
       <WhatsAppButton />
     </main>
+  );
+}
+
+function HeroSlider() {
+  const [activeBanner, setActiveBanner] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActiveBanner((current) => (current + 1) % banners.length);
+    }, 5000);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
+  const previousBanner = () => {
+    setActiveBanner((current) =>
+      current === 0 ? banners.length - 1 : current - 1
+    );
+  };
+
+  const nextBanner = () => {
+    setActiveBanner((current) => (current + 1) % banners.length);
+  };
+
+  return (
+    <section className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
+      <div className="group relative overflow-hidden rounded-3xl bg-zinc-100 shadow-xl">
+        <a href={banners[activeBanner].href} className="block">
+          <img
+            src={banners[activeBanner].image}
+            alt={banners[activeBanner].alt}
+            className="h-[230px] w-full object-cover sm:h-[300px] md:h-[390px] lg:h-[420px]"
+          />
+        </a>
+
+        <button
+          type="button"
+          aria-label="Banner anterior"
+          onClick={previousBanner}
+          className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white opacity-0 backdrop-blur-sm transition hover:bg-black/80 group-hover:opacity-100"
+        >
+          <ChevronLeft size={28} />
+        </button>
+
+        <button
+          type="button"
+          aria-label="Banner siguiente"
+          onClick={nextBanner}
+          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white opacity-0 backdrop-blur-sm transition hover:bg-black/80 group-hover:opacity-100"
+        >
+          <ChevronRight size={28} />
+        </button>
+
+        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
+          {banners.map((banner, index) => (
+            <button
+              key={banner.image}
+              type="button"
+              aria-label={`Mostrar banner ${index + 1}`}
+              onClick={() => setActiveBanner(index)}
+              className={`h-2.5 rounded-full transition-all ${
+                activeBanner === index
+                  ? "w-9 bg-white"
+                  : "w-2.5 bg-white/60 hover:bg-white"
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
