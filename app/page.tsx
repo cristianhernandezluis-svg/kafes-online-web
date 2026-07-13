@@ -68,6 +68,17 @@ const products = [
     price: "S/249",
     beforePrice: "S/299",
   },
+{
+  href: "/producto/rotomartillo-demoledor-powfull",
+  image: "/rotomartillo-demoledor-powfull.jpg",
+  alt: "Rotomartillo Demoledor POWFULL",
+  badge: "TECNOLOGÍA BRASILEÑA",
+  title: "Rotomartillo Demoledor POWFULL",
+  description:
+    "Equipo profesional de 1600W y 45J para trabajos exigentes de demolición.",
+  price: "S/659",
+  beforePrice: "S/849",
+},
   {
     href: "/producto/soporte-telescopico-xtd",
     image: "/soporte-telescopico-xtd.jpg",
