@@ -207,30 +207,30 @@ const regionesPeru = [
 export default function ProductoPage() {
   const comprarAhoraRef = useRef<HTMLButtonElement | null>(null);
   const [mostrarCompraFija, setMostrarCompraFija] = useState(false);
-  const [botonOriginalVisto, setBotonOriginalVisto] = useState(false);
-  const params = useParams();
-  const slug = params.slug as string;
-  const producto = productos[slug];
+const params = useParams();
+const slug = params.slug as string;
+const producto = productos[slug];
 
 const [imagenActiva, setImagenActiva] = useState(0);
-  const [openCheckout, setOpenCheckout] = useState(false);
-  const [pedidoFinalizado, setPedidoFinalizado] = useState(false);
-  const [loading, setLoading] = useState(false);
+const [openCheckout, setOpenCheckout] = useState(false);
+const [pedidoFinalizado, setPedidoFinalizado] = useState(false);
+const [loading, setLoading] = useState(false);
 
-  const [cantidad, setCantidad] = useState(1);
-  const [nombre, setNombre] = useState("");
-  const [celular, setCelular] = useState("");
-  const [ciudad, setCiudad] = useState("");
-  const [region, setRegion] = useState("");
-  const [direccion, setDireccion] = useState("");
-  const [referencia, setReferencia] = useState("");
+const [cantidad, setCantidad] = useState(1);
+const [nombre, setNombre] = useState("");
+const [celular, setCelular] = useState("");
+const [ciudad, setCiudad] = useState("");
+const [region, setRegion] = useState("");
+const [direccion, setDireccion] = useState("");
+const [referencia, setReferencia] = useState("");
 
-  const [timeLeft, setTimeLeft] = useState(3 * 60 * 60);
+const [timeLeft, setTimeLeft] = useState(3 * 60 * 60);
 
-  const viewContentTrackedSlug = useRef<string | null>(null);
+const viewContentTrackedSlug = useRef<string | null>(null);
 
-  const precio = producto?.precio || 0;
-  const total = precio * cantidad;
+const precio = producto?.precio || 0;
+const total = precio * cantidad;
+
 const galeria =
   producto?.imagenes && producto.imagenes.length > 0
     ? producto.imagenes
@@ -241,38 +241,26 @@ const galeria =
 const imagenPrincipal = galeria[imagenActiva] || producto?.imagen;
 
 useEffect(() => {
-  const botonOriginal = comprarAhoraRef.current;
+  const onScroll = () => {
+    if (!comprarAhoraRef.current) return;
 
-  if (!botonOriginal) return;
+    const rect = comprarAhoraRef.current.getBoundingClientRect();
 
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      if (entry.isIntersecting) {
-        // El usuario ya llegó hasta el botón original
-        setBotonOriginalVisto(true);
-        setMostrarCompraFija(false);
-        return;
-      }
-
-      const botonPasoPorArriba = entry.boundingClientRect.bottom < 0;
-
-      // Solo aparece si el usuario ya vio el botón
-      // y luego siguió bajando hasta dejarlo atrás
-      if (botonOriginalVisto && botonPasoPorArriba) {
-        setMostrarCompraFija(true);
-      } else {
-        setMostrarCompraFija(false);
-      }
-    },
-    {
-      threshold: 0.15,
+    // Solo aparece cuando el botón original ya pasó por arriba
+    if (rect.bottom < 0) {
+      setMostrarCompraFija(true);
+    } else {
+      setMostrarCompraFija(false);
     }
-  );
+  };
 
-  observer.observe(botonOriginal);
+  window.addEventListener("scroll", onScroll);
 
-  return () => observer.disconnect();
-}, [botonOriginalVisto, slug]);
+  // Ejecutar una vez
+  onScroll();
+
+  return () => window.removeEventListener("scroll", onScroll);
+}, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
