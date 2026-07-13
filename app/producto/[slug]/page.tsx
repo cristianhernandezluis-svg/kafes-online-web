@@ -140,6 +140,35 @@ const productos: any = {
     "1 cincel punta HEX 30 × 400 mm",
     "1 cincel plano HEX 30 × 400 mm",
   ],
+aida: {
+  atencion: {
+    titulo: "¿Cansado de perder tiempo con equipos sin fuerza?",
+    texto:
+      "Rompe concreto, pisos y paredes con 1600W de potencia y 45J de impacto.",
+    imagen: "/rotomartillo-aida-atencion.jpg",
+  },
+
+  interes: {
+    titulo: "Potencia profesional para trabajos exigentes",
+    texto:
+      "Motor de 1600W, energía de impacto de 45J, 1900 golpes por minuto y encastre HEX30.",
+    imagen: "/rotomartillo-aida-interes.jpg",
+  },
+
+  deseo: {
+    titulo: "Trabaja más rápido y reduce el esfuerzo",
+    texto:
+      "Ideal para construcción, remodelación, demolición de pisos, paredes, concreto y mampostería.",
+    imagen: "/rotomartillo-aida-deseo.jpg",
+  },
+
+  accion: {
+    titulo: "Llévate hoy el Rotomartillo Demoledor POWFULL",
+    texto:
+      "Tecnología brasileña, accesorios incluidos y envíos a todo el Perú.",
+    imagen: "/rotomartillo-aida-accion.jpg",
+  },
+},
 },
    "soporte-telescopico-xtd": {
     nombre: "Soporte Telescópico XTD para Amoladora",
@@ -725,7 +754,150 @@ window.ttq?.track("Purchase", {
 
           <section className="max-w-7xl mx-auto px-6 py-20">
             <h2 className="text-4xl font-black text-center mb-10">
-              Clientes Felices
+              
+{producto.aida && (
+  <section className="bg-zinc-50 py-12 md:py-20">
+    <div className="mx-auto max-w-6xl px-4 md:px-6">
+      <div className="space-y-10 md:space-y-16">
+        {[
+          {
+            letra: "A",
+            nombre: "Atención",
+            ...producto.aida.atencion,
+          },
+          {
+            letra: "I",
+            nombre: "Interés",
+            ...producto.aida.interes,
+          },
+          {
+            letra: "D",
+            nombre: "Deseo",
+            ...producto.aida.deseo,
+          },
+        ].map((bloque, index) => (
+          <div
+            key={bloque.nombre}
+            className={`grid items-center gap-7 overflow-hidden rounded-3xl bg-white p-5 shadow-md md:grid-cols-2 md:p-8 ${
+              index % 2 === 1 ? "md:[&>div:first-child]:order-2" : ""
+            }`}
+          >
+            <div className="overflow-hidden rounded-2xl bg-zinc-100">
+              <Image
+                src={bloque.imagen}
+                alt={bloque.titulo}
+                width={900}
+                height={900}
+                className="h-auto w-full object-cover"
+              />
+            </div>
+
+            <div className="px-1 py-3 md:px-6">
+              <div className="flex items-center gap-3">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-400 text-2xl font-black">
+                  {bloque.letra}
+                </span>
+
+                <span className="text-sm font-black uppercase tracking-widest text-zinc-500">
+                  {bloque.nombre}
+                </span>
+              </div>
+
+              <h2 className="mt-5 text-3xl font-black leading-tight md:text-5xl">
+                {bloque.titulo}
+              </h2>
+
+              <p className="mt-5 text-lg leading-8 text-zinc-600">
+                {bloque.texto}
+              </p>
+
+              {bloque.nombre === "Interés" && (
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  {["1600W", "45J", "1900/min", "HEX30"].map((item) => (
+                    <div
+                      key={item}
+                      className="rounded-2xl bg-zinc-100 p-4 text-center font-black"
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {bloque.nombre === "Deseo" && producto.accesorios && (
+                <div className="mt-6 space-y-3">
+                  {producto.accesorios.map((item: string) => (
+                    <div key={item} className="flex items-start gap-3">
+                      <CheckCircle className="mt-0.5 shrink-0 text-green-500" />
+                      <span className="font-semibold">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-12 grid items-center gap-8 overflow-hidden rounded-3xl bg-black p-6 text-white shadow-2xl md:grid-cols-2 md:p-10">
+        <div className="overflow-hidden rounded-2xl bg-white">
+          <Image
+            src={producto.aida.accion.imagen}
+            alt={producto.aida.accion.titulo}
+            width={900}
+            height={900}
+            className="h-auto w-full object-contain"
+          />
+        </div>
+
+        <div>
+          <div className="flex items-center gap-3">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-400 text-2xl font-black text-black">
+              A
+            </span>
+
+            <span className="text-sm font-black uppercase tracking-widest text-yellow-400">
+              Acción
+            </span>
+          </div>
+
+          <h2 className="mt-5 text-3xl font-black leading-tight md:text-5xl">
+            {producto.aida.accion.titulo}
+          </h2>
+
+          <p className="mt-5 text-lg leading-8 text-zinc-300">
+            {producto.aida.accion.texto}
+          </p>
+
+          <div className="mt-7 flex items-end gap-4">
+            <span className="text-5xl font-black text-yellow-400">
+              S/{precio}
+            </span>
+
+            <span className="pb-1 text-2xl text-zinc-500 line-through">
+              S/{producto.precioAntes}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={abrirCheckout}
+            className="mt-8 w-full rounded-2xl bg-green-600 py-5 text-xl font-black text-white shadow-xl transition hover:bg-green-500 active:scale-[0.98]"
+          >
+            🛒 COMPRAR AHORA
+          </button>
+
+          <div className="mt-5 space-y-2 text-sm font-bold text-zinc-300">
+            <p>🚚 Envíos a todo el Perú</p>
+            <p>📱 Confirmación por WhatsApp</p>
+            <p>🛡️ Compra segura</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+)}
+Clientes Felices
             </h2>
 
             <div className="grid md:grid-cols-3 gap-6">
