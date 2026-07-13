@@ -451,7 +451,7 @@ window.ttq?.track("Purchase", {
 
   return (
     <main
-      className={`min-h-screen text-black pb-28 ${
+  className={`min-h-screen w-full overflow-x-hidden text-black pb-28 ${
         producto.modoGempages ? "bg-black" : "bg-white"
       }`}
     >
@@ -461,38 +461,49 @@ window.ttq?.track("Purchase", {
             🚚 ENVÍOS GRATIS A TODO EL PERÚ
           </div>
 
-          <header className="bg-white border-b sticky top-0 z-50">
-            <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
-              <Link href="/" className="text-2xl md:text-3xl font-black">
-                KAFES ONLINE
-              </Link>
+          <header className="sticky top-0 z-50 border-b bg-white">
+  <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-2 px-3 py-3 md:gap-4 md:px-6 md:py-4">
+    <Link
+      href="/"
+      className="min-w-0 shrink text-lg font-black leading-none md:text-3xl"
+    >
+      KAFES ONLINE
+    </Link>
 
-              <div className="hidden md:flex items-center gap-2 bg-zinc-100 rounded-full px-4 py-2 w-[420px]">
-                <Search size={20} className="text-zinc-500" />
-                <input
-                  placeholder="Busca productos..."
-                  className="bg-transparent outline-none w-full"
-                />
-              </div>
+    <div className="hidden w-full max-w-[420px] items-center gap-2 rounded-full bg-zinc-100 px-4 py-2 md:flex">
+      <Search size={20} className="shrink-0 text-zinc-500" />
 
-              <div className="flex items-center gap-3">
-                <Link href="/" className="font-bold hover:text-yellow-500">
-                  Inicio
-                </Link>
+      <input
+        placeholder="Busca productos..."
+        className="min-w-0 flex-1 bg-transparent outline-none"
+      />
+    </div>
 
-                <Link
-                  href="/#productos"
-                  className="hidden md:block font-bold hover:text-yellow-500"
-                >
-                  Catálogo
-                </Link>
+    <div className="flex shrink-0 items-center gap-2 md:gap-3">
+      <Link
+        href="/"
+        className="hidden text-sm font-bold hover:text-yellow-500 sm:block md:text-base"
+      >
+        Inicio
+      </Link>
 
-                <button className="bg-yellow-400 text-black p-3 rounded-full">
-                  <ShoppingCart />
-                </button>
-              </div>
-            </div>
-          </header>
+      <Link
+        href="/#productos"
+        className="hidden font-bold hover:text-yellow-500 md:block"
+      >
+        Catálogo
+      </Link>
+
+      <button
+        type="button"
+        aria-label="Carrito"
+        className="rounded-full bg-yellow-400 p-2.5 text-black md:p-3"
+      >
+        <ShoppingCart size={20} />
+      </button>
+    </div>
+  </div>
+</header>
         </>
       )}
 
@@ -533,41 +544,41 @@ window.ttq?.track("Purchase", {
   </>
 ) : (
         <>
-          <div className="max-w-7xl mx-auto py-10 px-4 md:px-6 grid md:grid-cols-2 gap-12">
+          <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 px-3 py-6 sm:px-4 md:grid-cols-2 md:gap-12 md:px-6 md:py-10">
             <div>
   {/* Imagen principal */}
-  <div className="bg-zinc-100 rounded-3xl p-5 md:p-8 overflow-hidden">
-    <Image
-      src={imagenPrincipal}
-      alt={producto.nombre}
-      width={700}
-      height={700}
-      className="w-full aspect-square rounded-2xl object-contain transition duration-300"
-      priority
-    />
-  </div>
+  <div className="w-full overflow-hidden rounded-3xl bg-zinc-100 p-3 sm:p-5 md:p-8">
+  <Image
+    src={imagenPrincipal}
+    alt={producto.nombre}
+    width={700}
+    height={700}
+    className="block h-auto w-full rounded-2xl object-contain"
+    priority
+  />
+</div>
 
   {/* Miniaturas */}
   {galeria.length > 1 && (
-    <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
+    <div className="mt-4 flex w-full gap-2 overflow-x-auto pb-2">
       {galeria.map((src: string, index: number) => (
         <button
           key={`${src}-${index}`}
           type="button"
           onClick={() => setImagenActiva(index)}
           aria-label={`Ver imagen ${index + 1} de ${producto.nombre}`}
-          className={`shrink-0 rounded-2xl border-2 bg-white p-2 transition ${
-            imagenActiva === index
-              ? "border-yellow-400 shadow-lg"
-              : "border-zinc-200 hover:border-yellow-300"
-          }`}
+          className={`shrink-0 rounded-xl border-2 bg-white p-1.5 transition sm:rounded-2xl sm:p-2 ${
+  imagenActiva === index
+    ? "border-yellow-400 shadow-lg"
+    : "border-zinc-200"
+}`}
         >
           <Image
             src={src}
             alt={`${producto.nombre} - imagen ${index + 1}`}
             width={110}
             height={110}
-            className="h-20 w-20 object-contain md:h-24 md:w-24"
+            className="h-16 w-16 object-contain sm:h-24 sm:w-24"
           />
         </button>
       ))}
@@ -575,7 +586,7 @@ window.ttq?.track("Purchase", {
   )}
 
   {/* Características rápidas */}
-  <div className="grid grid-cols-3 gap-4 mt-5">
+  <div className="mt-5 grid w-full grid-cols-3 gap-2 sm:gap-4">
     {producto.mini.map((item: string) => (
       <MiniBox key={item} text={item} />
     ))}
@@ -1047,7 +1058,7 @@ function InfoBox({ icon, title, text }: any) {
 
 function MiniBox({ text }: any) {
   return (
-    <div className="bg-zinc-100 rounded-2xl p-4 text-center font-black">
+    <div className="min-w-0 rounded-xl bg-zinc-100 px-2 py-3 text-center text-xs font-black break-words sm:rounded-2xl sm:p-4 sm:text-base">
       {text}
     </div>
   );
