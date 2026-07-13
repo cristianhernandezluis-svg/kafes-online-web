@@ -205,6 +205,8 @@ const regionesPeru = [
 ];
 
 export default function ProductoPage() {
+  const comprarAhoraRef = useRef<HTMLButtonElement | null>(null);
+  const [mostrarCompraFija, setMostrarCompraFija] = useState(false);
   const params = useParams();
   const slug = params.slug as string;
   const producto = productos[slug];
@@ -236,6 +238,25 @@ const galeria =
       : [];
 
 const imagenPrincipal = galeria[imagenActiva] || producto?.imagen;
+
+useEffect(() => {
+  const botonOriginal = comprarAhoraRef.current;
+
+  if (!botonOriginal) return;
+
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      setMostrarCompraFija(!entry.isIntersecting);
+    },
+    {
+      threshold: 0.15,
+    }
+  );
+
+  observer.observe(botonOriginal);
+
+  return () => observer.disconnect();
+}, [producto]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -682,11 +703,12 @@ window.ttq?.track("Purchase", {
                 </button>
 
                 <button
-                  onClick={abrirCheckout}
-                  className="bg-pink-600 hover:bg-pink-700 text-white w-full py-5 rounded-2xl text-2xl font-black shadow-xl animate-[pulse_1.2s_ease-in-out_infinite]"
-                >
-                  Comprar ahora
-                </button>
+  ref={comprarAhoraRef}
+  onClick={abrirCheckout}
+  className="bg-pink-600 hover:bg-pink-700 text-white w-full py-5 rounded-2xl text-2xl font-black shadow-xl animate-[pulse_1.2s_ease-in-out_infinite]"
+>
+  Comprar ahora
+</button>
               </div>
 
               <div className="mt-6 bg-zinc-100 rounded-2xl p-5 space-y-3 text-sm">
@@ -1012,12 +1034,13 @@ window.ttq?.track("Purchase", {
         </div>
       )}
 
-{/* Barra de compra fija en móvil */}
-{!producto.modoGempages && (
+{!producto.modoGempages && mostrarCompraFija && (
   <div className="fixed bottom-0 left-0 right-0 z-[100] border-t border-zinc-200 bg-white/95 px-3 py-3 shadow-[0_-8px_30px_rgba(0,0,0,0.15)] backdrop-blur md:hidden">
     <div className="mx-auto flex max-w-md items-center gap-3">
       <div className="shrink-0">
-        <p className="text-xs font-bold text-zinc-500">Precio oferta</p>
+        <p className="text-[11px] font-bold text-zinc-500">
+          Precio oferta
+        </p>
 
         <div className="flex items-end gap-1">
           <span className="text-xl font-black text-pink-600">
@@ -1033,9 +1056,9 @@ window.ttq?.track("Purchase", {
       <button
         type="button"
         onClick={abrirCheckout}
-        className="flex-1 rounded-2xl bg-pink-600 py-4 text-lg font-black text-white shadow-lg transition active:scale-[0.98]"
+        className="flex-1 rounded-xl bg-green-500 py-3.5 text-base font-black text-white shadow-lg transition active:scale-[0.98]"
       >
-        Comprar ahora
+        🛍 COMPRAR AHORA 🛍
       </button>
     </div>
   </div>
