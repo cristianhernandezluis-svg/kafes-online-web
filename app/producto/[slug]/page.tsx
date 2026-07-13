@@ -207,6 +207,7 @@ const regionesPeru = [
 export default function ProductoPage() {
   const comprarAhoraRef = useRef<HTMLButtonElement | null>(null);
   const [mostrarCompraFija, setMostrarCompraFija] = useState(false);
+  const [botonOriginalVisto, setBotonOriginalVisto] = useState(false);
   const params = useParams();
   const slug = params.slug as string;
   const producto = productos[slug];
@@ -246,7 +247,22 @@ useEffect(() => {
 
   const observer = new IntersectionObserver(
     ([entry]) => {
-      setMostrarCompraFija(!entry.isIntersecting);
+      if (entry.isIntersecting) {
+        // El usuario ya llegó hasta el botón original
+        setBotonOriginalVisto(true);
+        setMostrarCompraFija(false);
+        return;
+      }
+
+      const botonPasoPorArriba = entry.boundingClientRect.bottom < 0;
+
+      // Solo aparece si el usuario ya vio el botón
+      // y luego siguió bajando hasta dejarlo atrás
+      if (botonOriginalVisto && botonPasoPorArriba) {
+        setMostrarCompraFija(true);
+      } else {
+        setMostrarCompraFija(false);
+      }
     },
     {
       threshold: 0.15,
@@ -256,7 +272,7 @@ useEffect(() => {
   observer.observe(botonOriginal);
 
   return () => observer.disconnect();
-}, [producto]);
+}, [botonOriginalVisto, slug]);
 
   useEffect(() => {
     const timer = setInterval(() => {
