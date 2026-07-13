@@ -86,17 +86,30 @@ const productos: any = {
     ],
   },
 
-  "soporte-telescopico-xtd": {
+   "soporte-telescopico-xtd": {
     nombre: "Soporte Telescópico XTD para Amoladora",
     nombreCorto: "Soporte Telescópico XTD",
     precio: 209,
     precioAntes: 249,
+
     imagen: "/soporte-telescopico-xtd.jpg",
+
+    imagenes: [
+      "/soporte-telescopico-xtd.jpg",
+      "/soporte-telescopico-xtd-2.jpg",
+      "/soporte-telescopico-xtd-3.jpg",
+      "/soporte-telescopico-xtd-4.jpg",
+      "/soporte-telescopico-xtd-5.jpg",
+    ],
+
     etiqueta: "NUEVO INGRESO",
     modoGempages: false,
+
     descripcion:
       "Soporte telescópico para amoladora, ideal para cortes más precisos, seguros y profesionales.",
+
     mini: ["115/125 mm", "Base de hierro", "Ajustable"],
+
     beneficios: [
       "Base de hierro resistente",
       "Soportes con ajuste variable",
@@ -141,6 +154,7 @@ export default function ProductoPage() {
   const slug = params.slug as string;
   const producto = productos[slug];
 
+const [imagenActiva, setImagenActiva] = useState(0);
   const [openCheckout, setOpenCheckout] = useState(false);
   const [pedidoFinalizado, setPedidoFinalizado] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -159,6 +173,14 @@ export default function ProductoPage() {
 
   const precio = producto?.precio || 0;
   const total = precio * cantidad;
+const galeria =
+  producto?.imagenes && producto.imagenes.length > 0
+    ? producto.imagenes
+    : producto
+      ? [producto.imagen]
+      : [];
+
+const imagenPrincipal = galeria[imagenActiva] || producto?.imagen;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -458,23 +480,52 @@ window.ttq?.track("Purchase", {
         <>
           <div className="max-w-7xl mx-auto py-10 px-4 md:px-6 grid md:grid-cols-2 gap-12">
             <div>
-              <div className="bg-zinc-100 rounded-3xl p-8">
-                <Image
-                  src={producto.imagen}
-                  alt={producto.nombre}
-                  width={700}
-                  height={700}
-                  className="rounded-2xl object-contain"
-                  priority
-                />
-              </div>
+  {/* Imagen principal */}
+  <div className="bg-zinc-100 rounded-3xl p-5 md:p-8 overflow-hidden">
+    <Image
+      src={imagenPrincipal}
+      alt={producto.nombre}
+      width={700}
+      height={700}
+      className="w-full aspect-square rounded-2xl object-contain transition duration-300"
+      priority
+    />
+  </div>
 
-              <div className="grid grid-cols-3 gap-4 mt-4">
-                {producto.mini.map((item: string) => (
-                  <MiniBox key={item} text={item} />
-                ))}
-              </div>
-            </div>
+  {/* Miniaturas */}
+  {galeria.length > 1 && (
+    <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
+      {galeria.map((src: string, index: number) => (
+        <button
+          key={`${src}-${index}`}
+          type="button"
+          onClick={() => setImagenActiva(index)}
+          aria-label={`Ver imagen ${index + 1} de ${producto.nombre}`}
+          className={`shrink-0 rounded-2xl border-2 bg-white p-2 transition ${
+            imagenActiva === index
+              ? "border-yellow-400 shadow-lg"
+              : "border-zinc-200 hover:border-yellow-300"
+          }`}
+        >
+          <Image
+            src={src}
+            alt={`${producto.nombre} - imagen ${index + 1}`}
+            width={110}
+            height={110}
+            className="h-20 w-20 object-contain md:h-24 md:w-24"
+          />
+        </button>
+      ))}
+    </div>
+  )}
+
+  {/* Características rápidas */}
+  <div className="grid grid-cols-3 gap-4 mt-5">
+    {producto.mini.map((item: string) => (
+      <MiniBox key={item} text={item} />
+    ))}
+  </div>
+</div>
 
             <div>
               <span className="bg-yellow-400 text-black px-4 py-2 rounded-full font-bold">
