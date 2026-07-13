@@ -1012,6 +1012,35 @@ window.ttq?.track("Purchase", {
         </div>
       )}
 
+{/* Barra de compra fija en móvil */}
+{!producto.modoGempages && (
+  <div className="fixed bottom-0 left-0 right-0 z-[100] border-t border-zinc-200 bg-white/95 px-3 py-3 shadow-[0_-8px_30px_rgba(0,0,0,0.15)] backdrop-blur md:hidden">
+    <div className="mx-auto flex max-w-md items-center gap-3">
+      <div className="shrink-0">
+        <p className="text-xs font-bold text-zinc-500">Precio oferta</p>
+
+        <div className="flex items-end gap-1">
+          <span className="text-xl font-black text-pink-600">
+            S/{total}
+          </span>
+
+          <span className="text-xs text-zinc-400 line-through">
+            S/{producto.precioAntes * cantidad}
+          </span>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={abrirCheckout}
+        className="flex-1 rounded-2xl bg-pink-600 py-4 text-lg font-black text-white shadow-lg transition active:scale-[0.98]"
+      >
+        Comprar ahora
+      </button>
+    </div>
+  </div>
+)}
+
       <WhatsAppButton />
     </main>
   );
