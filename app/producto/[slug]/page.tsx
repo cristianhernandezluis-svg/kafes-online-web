@@ -85,7 +85,62 @@ const productos: any = {
       "Ideal para porcelanato, cerámica y mármol",
     ],
   },
+"rotomartillo-demoledor-powfull": {
+  nombre: "Rotomartillo Demoledor POWFULL",
+  nombreCorto: "Rotomartillo POWFULL",
+  precio: 659,
+  precioAntes: 849,
 
+  imagen: "/rotomartillo-demoledor-powfull.jpg",
+
+  imagenes: [
+    "/rotomartillo-demoledor-powfull.jpg",
+    "/rotomartillo-demoledor-powfull-2.jpg",
+    "/rotomartillo-demoledor-powfull-3.jpg",
+    "/rotomartillo-demoledor-powfull-4.jpg",
+  ],
+
+  etiqueta: "TECNOLOGÍA BRASILEÑA",
+  modoGempages: false,
+
+  descripcion:
+    "Rotomartillo demoledor POWFULL de 1600W y 45J de impacto, ideal para trabajos exigentes de demolición en concreto, ladrillo y mampostería.",
+
+  mini: [
+    "1600W",
+    "45J",
+    "HEX30",
+  ],
+
+  beneficios: [
+    "Potencia nominal de 1600W",
+    "Energía de impacto de 45J",
+    "Frecuencia de impacto de 1900 golpes por minuto",
+    "Portaherramientas HEX30",
+    "Voltaje de 220V a 240V",
+    "Frecuencia de 50Hz/60Hz",
+    "Ideal para demolición de concreto y mampostería",
+    "Incluye accesorios para trabajo profesional",
+  ],
+
+  fichaTecnica: [
+    { nombre: "Modelo", valor: "POW2534" },
+    { nombre: "Voltaje", valor: "220V–240V" },
+    { nombre: "Frecuencia", valor: "50Hz/60Hz" },
+    { nombre: "Potencia nominal", valor: "1600W" },
+    { nombre: "Frecuencia de impacto", valor: "1900/min" },
+    { nombre: "Energía de impacto", valor: "45J" },
+    { nombre: "Portaherramientas", valor: "HEX30" },
+  ],
+
+  accesorios: [
+    "1 juego de carbones",
+    "1 mango auxiliar",
+    "1 recipiente para aceite",
+    "1 cincel punta HEX 30 × 400 mm",
+    "1 cincel plano HEX 30 × 400 mm",
+  ],
+},
    "soporte-telescopico-xtd": {
     nombre: "Soporte Telescópico XTD para Amoladora",
     nombreCorto: "Soporte Telescópico XTD",
