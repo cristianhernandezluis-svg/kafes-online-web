@@ -16,7 +16,7 @@ export async function GET(
     const { id } = await context.params;
     const productoId = Number(id);
 
-    if (!Number.isInteger(productoId)) {
+    if (!Number.isInteger(productoId) || productoId <= 0) {
       return NextResponse.json(
         { error: "Producto inválido." },
         { status: 400 },
@@ -59,6 +59,7 @@ export async function POST(
 
     if (
       !Number.isInteger(productoId) ||
+      productoId <= 0 ||
       !body.url ||
       !body.publicId
     ) {
@@ -122,17 +123,87 @@ export async function PATCH(
 
     const body = (await request.json()) as {
       imagenId?: number;
-      accion?: "principal" | "subir" | "bajar";
+      accion?: "principal" | "subir" | "bajar" | "ordenar";
+      imagenIds?: number[];
     };
+
+    if (!Number.isInteger(productoId) || productoId <= 0) {
+      return NextResponse.json(
+        { error: "Producto inválido." },
+        { status: 400 },
+      );
+    }
+
+    if (body.accion === "ordenar") {
+      const imagenIds = body.imagenIds;
+
+      if (
+        !Array.isArray(imagenIds) ||
+        imagenIds.length === 0 ||
+        imagenIds.some(
+          (imagenId) =>
+            !Number.isInteger(imagenId) || imagenId <= 0,
+        )
+      ) {
+        return NextResponse.json(
+          { error: "El orden enviado no es válido." },
+          { status: 400 },
+        );
+      }
+
+      const idsSinDuplicados = new Set(imagenIds);
+
+      if (idsSinDuplicados.size !== imagenIds.length) {
+        return NextResponse.json(
+          { error: "El orden contiene imágenes duplicadas." },
+          { status: 400 },
+        );
+      }
+
+      const imagenesProducto =
+        await prisma.productoImagen.findMany({
+          where: {
+            productoId,
+            id: {
+              in: imagenIds,
+            },
+          },
+          select: {
+            id: true,
+          },
+        });
+
+      if (imagenesProducto.length !== imagenIds.length) {
+        return NextResponse.json(
+          {
+            error:
+              "Una o más imágenes no pertenecen al producto.",
+          },
+          { status: 400 },
+        );
+      }
+
+      await prisma.$transaction(
+        imagenIds.map((imagenId, indice) =>
+          prisma.productoImagen.update({
+            where: {
+              id: imagenId,
+            },
+            data: {
+              orden: indice,
+            },
+          }),
+        ),
+      );
+
+      return NextResponse.json({ ok: true });
+    }
 
     const imagenId = Number(body.imagenId);
 
-    if (
-      !Number.isInteger(productoId) ||
-      !Number.isInteger(imagenId)
-    ) {
+    if (!Number.isInteger(imagenId) || imagenId <= 0) {
       return NextResponse.json(
-        { error: "Información inválida." },
+        { error: "Imagen inválida." },
         { status: 400 },
       );
     }
@@ -171,6 +242,8 @@ export async function PATCH(
           },
         }),
       ]);
+
+      return NextResponse.json({ ok: true });
     }
 
     if (body.accion === "subir" || body.accion === "bajar") {
@@ -210,9 +283,14 @@ export async function PATCH(
           }),
         ]);
       }
+
+      return NextResponse.json({ ok: true });
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json(
+      { error: "Acción no válida." },
+      { status: 400 },
+    );
   } catch (error) {
     console.error("Error actualizando imagen:", error);
 
@@ -237,6 +315,18 @@ export async function DELETE(
 
     const imagenId = Number(body.imagenId);
 
+    if (
+      !Number.isInteger(productoId) ||
+      productoId <= 0 ||
+      !Number.isInteger(imagenId) ||
+      imagenId <= 0
+    ) {
+      return NextResponse.json(
+        { error: "Información inválida." },
+        { status: 400 },
+      );
+    }
+
     const imagen = await prisma.productoImagen.findFirst({
       where: {
         id: imagenId,
@@ -254,10 +344,10 @@ export async function DELETE(
     if (imagen.publicId) {
       const cloudinary = getCloudinary();
 
-await cloudinary.uploader.destroy(imagen.publicId, {
-  invalidate: true,
-  resource_type: "image",
-});
+      await cloudinary.uploader.destroy(imagen.publicId, {
+        invalidate: true,
+        resource_type: "image",
+      });
     }
 
     await prisma.productoImagen.delete({
@@ -266,26 +356,38 @@ await cloudinary.uploader.destroy(imagen.publicId, {
       },
     });
 
-    if (imagen.esPrincipal) {
-      const primeraImagen = await prisma.productoImagen.findFirst({
+    const imagenesRestantes =
+      await prisma.productoImagen.findMany({
         where: {
           productoId,
         },
         orderBy: {
           orden: "asc",
         },
+        select: {
+          id: true,
+          esPrincipal: true,
+        },
       });
 
-      if (primeraImagen) {
-        await prisma.productoImagen.update({
+    const operaciones = imagenesRestantes.map(
+      (imagenRestante, indice) =>
+        prisma.productoImagen.update({
           where: {
-            id: primeraImagen.id,
+            id: imagenRestante.id,
           },
           data: {
-            esPrincipal: true,
+            orden: indice,
+            esPrincipal:
+              imagen.esPrincipal && indice === 0
+                ? true
+                : imagenRestante.esPrincipal,
           },
-        });
-      }
+        }),
+    );
+
+    if (operaciones.length > 0) {
+      await prisma.$transaction(operaciones);
     }
 
     return NextResponse.json({ ok: true });

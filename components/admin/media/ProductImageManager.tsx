@@ -1,33 +1,34 @@
 "use client";
 
 import {
-  ArrowDown,
-  ArrowUp,
-  ImagePlus,
-  LoaderCircle,
-  Star,
-  Trash2,
-  Upload,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 
-type ImagenProducto = {
-  id: number;
-  productoId: number;
-  url: string;
-  publicId: string | null;
-  alt: string | null;
-  orden: number;
-  esPrincipal: boolean;
-};
+import {
+  arrayMove,
+  rectSortingStrategy,
+  SortableContext,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
 
-type CloudinaryUploadResponse = {
-  secure_url: string;
-  public_id: string;
-  error?: {
-    message?: string;
-  };
-};
+import { LoaderCircle } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+
+import SortableImageCard from "./SortableImageCard";
+import UploadZone from "./UploadZone";
+
+import type {
+  CloudinarySignatureResponse,
+  CloudinaryUploadResponse,
+  ImagenProducto,
+} from "./types";
 
 type ProductImageManagerProps = {
   productoId: number;
@@ -38,14 +39,33 @@ export default function ProductImageManager({
   productoId,
   productoNombre,
 }: ProductImageManagerProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-
   const [imagenes, setImagenes] = useState<ImagenProducto[]>([]);
   const [cargando, setCargando] = useState(true);
   const [subiendo, setSubiendo] = useState(false);
+  const [ordenando, setOrdenando] = useState(false);
+  const [procesandoId, setProcesandoId] = useState<number | null>(
+    null,
+  );
   const [error, setError] = useState("");
 
-  async function cargarImagenes() {
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 180,
+        tolerance: 6,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const cargarImagenes = useCallback(async () => {
     try {
       const response = await fetch(
         `/api/admin/productos/${productoId}/imagenes`,
@@ -59,7 +79,10 @@ export default function ProductImageManager({
       }
 
       const data = (await response.json()) as ImagenProducto[];
-      setImagenes(data);
+
+      setImagenes(
+        [...data].sort((a, b) => a.orden - b.orden),
+      );
     } catch (error) {
       setError(
         error instanceof Error
@@ -69,68 +92,79 @@ export default function ProductImageManager({
     } finally {
       setCargando(false);
     }
-  }
+  }, [productoId]);
 
   useEffect(() => {
     void cargarImagenes();
-  }, [productoId]);
+  }, [cargarImagenes]);
 
-  async function subirArchivo(file: File) {
-    const signatureResponse = await fetch(
-      "/api/cloudinary/signature",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productoId,
-        }),
+  async function obtenerFirma() {
+    const response = await fetch("/api/cloudinary/signature", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        productoId,
+      }),
+    });
 
-    if (!signatureResponse.ok) {
+    if (!response.ok) {
       throw new Error("No se pudo preparar la carga.");
     }
 
-    const signatureData = (await signatureResponse.json()) as {
-      timestamp: number;
-      signature: string;
-      folder: string;
-      apiKey: string;
-      cloudName: string;
-    };
+    return (await response.json()) as CloudinarySignatureResponse;
+  }
 
-    const cloudinaryData = new FormData();
+  async function subirACloudinary(
+    file: File,
+    signatureData: CloudinarySignatureResponse,
+  ) {
+    const formData = new FormData();
 
-    cloudinaryData.append("file", file);
-    cloudinaryData.append("api_key", signatureData.apiKey);
-    cloudinaryData.append(
+    formData.append("file", file);
+    formData.append("api_key", signatureData.apiKey);
+    formData.append(
       "timestamp",
       String(signatureData.timestamp),
     );
-    cloudinaryData.append("signature", signatureData.signature);
-    cloudinaryData.append("folder", signatureData.folder);
+    formData.append("signature", signatureData.signature);
+    formData.append("folder", signatureData.folder);
 
-    const uploadResponse = await fetch(
+    const response = await fetch(
       `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/image/upload`,
       {
         method: "POST",
-        body: cloudinaryData,
+        body: formData,
       },
     );
 
-    const uploadResult =
-      (await uploadResponse.json()) as CloudinaryUploadResponse;
+    const result =
+      (await response.json()) as CloudinaryUploadResponse;
 
-    if (!uploadResponse.ok || !uploadResult.secure_url) {
+    if (
+      !response.ok ||
+      !result.secure_url ||
+      !result.public_id
+    ) {
       throw new Error(
-        uploadResult.error?.message ||
+        result.error?.message ||
           `No se pudo subir ${file.name}.`,
       );
     }
 
-    const saveResponse = await fetch(
+    return {
+      url: result.secure_url,
+      publicId: result.public_id,
+    };
+  }
+
+  async function guardarImagen(
+    url: string,
+    publicId: string,
+    fileName: string,
+  ) {
+    const response = await fetch(
       `/api/admin/productos/${productoId}/imagenes`,
       {
         method: "POST",
@@ -138,21 +172,23 @@ export default function ProductImageManager({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          url: uploadResult.secure_url,
-          publicId: uploadResult.public_id,
+          url,
+          publicId,
           alt: productoNombre,
         }),
       },
     );
 
-    if (!saveResponse.ok) {
+    if (!response.ok) {
       throw new Error(
-        `La imagen ${file.name} subió, pero no pudo guardarse.`,
+        `La imagen ${fileName} subió, pero no pudo guardarse.`,
       );
     }
   }
 
-  async function procesarArchivos(files: FileList | File[]) {
+  async function procesarArchivos(
+    files: FileList | File[],
+  ) {
     const lista = Array.from(files).filter((file) =>
       file.type.startsWith("image/"),
     );
@@ -182,8 +218,19 @@ export default function ProductImageManager({
     setError("");
 
     try {
+      const signatureData = await obtenerFirma();
+
       for (const file of lista) {
-        await subirArchivo(file);
+        const subida = await subirACloudinary(
+          file,
+          signatureData,
+        );
+
+        await guardarImagen(
+          subida.url,
+          subida.publicId,
+          file.name,
+        );
       }
 
       await cargarImagenes();
@@ -195,39 +242,49 @@ export default function ProductImageManager({
       );
     } finally {
       setSubiendo(false);
-
-      if (inputRef.current) {
-        inputRef.current.value = "";
-      }
     }
   }
 
-  async function ejecutarAccion(
-    imagenId: number,
-    accion: "principal" | "subir" | "bajar",
-  ) {
+  async function ponerComoPrincipal(imagenId: number) {
+    setProcesandoId(imagenId);
     setError("");
 
-    const response = await fetch(
-      `/api/admin/productos/${productoId}/imagenes`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      const response = await fetch(
+        `/api/admin/productos/${productoId}/imagenes`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            imagenId,
+            accion: "principal",
+          }),
         },
-        body: JSON.stringify({
-          imagenId,
-          accion,
-        }),
-      },
-    );
+      );
 
-    if (!response.ok) {
-      setError("No se pudo actualizar la imagen.");
-      return;
+      if (!response.ok) {
+        throw new Error(
+          "No se pudo cambiar la imagen principal.",
+        );
+      }
+
+      setImagenes((actuales) =>
+        actuales.map((imagen) => ({
+          ...imagen,
+          esPrincipal: imagen.id === imagenId,
+        })),
+      );
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "No se pudo actualizar la imagen.",
+      );
+    } finally {
+      setProcesandoId(null);
     }
-
-    await cargarImagenes();
   }
 
   async function eliminarImagen(imagen: ImagenProducto) {
@@ -239,104 +296,144 @@ export default function ProductImageManager({
       return;
     }
 
+    setProcesandoId(imagen.id);
     setError("");
 
+    try {
+      const response = await fetch(
+        `/api/admin/productos/${productoId}/imagenes`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            imagenId: imagen.id,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("No se pudo eliminar la imagen.");
+      }
+
+      await cargarImagenes();
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "No se pudo eliminar la imagen.",
+      );
+    } finally {
+      setProcesandoId(null);
+    }
+  }
+
+  async function guardarOrden(
+    imagenesOrdenadas: ImagenProducto[],
+  ) {
     const response = await fetch(
       `/api/admin/productos/${productoId}/imagenes`,
       {
-        method: "DELETE",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          imagenId: imagen.id,
+          accion: "ordenar",
+          imagenIds: imagenesOrdenadas.map(
+            (imagen) => imagen.id,
+          ),
         }),
       },
     );
 
     if (!response.ok) {
-      setError("No se pudo eliminar la imagen.");
+      const result = (await response
+        .json()
+        .catch(() => null)) as { error?: string } | null;
+
+      throw new Error(
+        result?.error ||
+          "No se pudo guardar el nuevo orden.",
+      );
+    }
+  }
+
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (
+      !over ||
+      active.id === over.id ||
+      ordenando
+    ) {
       return;
     }
 
-    await cargarImagenes();
+    const indiceAnterior = imagenes.findIndex(
+      (imagen) => imagen.id === active.id,
+    );
+
+    const indiceNuevo = imagenes.findIndex(
+      (imagen) => imagen.id === over.id,
+    );
+
+    if (indiceAnterior === -1 || indiceNuevo === -1) {
+      return;
+    }
+
+    const ordenAnterior = imagenes;
+
+    const nuevoOrden = arrayMove(
+      imagenes,
+      indiceAnterior,
+      indiceNuevo,
+    ).map((imagen, indice) => ({
+      ...imagen,
+      orden: indice,
+    }));
+
+    setImagenes(nuevoOrden);
+    setOrdenando(true);
+    setError("");
+
+    try {
+      await guardarOrden(nuevoOrden);
+    } catch (error) {
+      setImagenes(ordenAnterior);
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "No se pudo guardar el orden.",
+      );
+    } finally {
+      setOrdenando(false);
+    }
   }
 
   if (cargando) {
     return (
       <div className="flex min-h-52 items-center justify-center">
-        <LoaderCircle className="animate-spin" size={28} />
+        <LoaderCircle
+          className="animate-spin"
+          size={30}
+        />
       </div>
     );
   }
 
+  const procesando =
+    subiendo || ordenando || procesandoId !== null;
+
   return (
     <div className="space-y-6">
-      <div
-        className="flex min-h-56 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-8 text-center transition hover:border-slate-500 hover:bg-white"
-        onClick={() => inputRef.current?.click()}
-        onDragOver={(event) => {
-          event.preventDefault();
-        }}
-        onDrop={(event) => {
-          event.preventDefault();
-          void procesarArchivos(event.dataTransfer.files);
-        }}
-      >
-        {subiendo ? (
-          <>
-            <LoaderCircle
-              size={36}
-              className="animate-spin text-slate-700"
-            />
-
-            <p className="mt-4 font-black text-slate-950">
-              Subiendo imágenes…
-            </p>
-
-            <p className="mt-2 text-sm text-slate-500">
-              No cierres esta página.
-            </p>
-          </>
-        ) : (
-          <>
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm">
-              <ImagePlus size={27} />
-            </div>
-
-            <p className="mt-5 text-base font-black text-slate-950">
-              Arrastra imágenes aquí
-            </p>
-
-            <p className="mt-2 text-sm text-slate-500">
-              o presiona para seleccionar archivos
-            </p>
-
-            <span className="mt-5 inline-flex h-10 items-center gap-2 rounded-xl bg-slate-950 px-4 text-sm font-bold text-white">
-              <Upload size={17} />
-              Seleccionar imágenes
-            </span>
-
-            <p className="mt-4 text-xs text-slate-400">
-              JPG, PNG, WEBP. Máximo 10 MB por imagen.
-            </p>
-          </>
-        )}
-
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          multiple
-          disabled={subiendo}
-          className="hidden"
-          onChange={(event) => {
-            if (event.target.files) {
-              void procesarArchivos(event.target.files);
-            }
-          }}
-        />
-      </div>
+      <UploadZone
+        subiendo={subiendo}
+        disabled={ordenando}
+        onFiles={(files) => void procesarArchivos(files)}
+      />
 
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
@@ -351,87 +448,59 @@ export default function ProductImageManager({
           </p>
         </div>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {imagenes.map((imagen, index) => (
-            <article
-              key={imagen.id}
-              className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-            >
-              <div className="relative aspect-square bg-slate-100">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={imagen.url}
-                  alt={imagen.alt || productoNombre}
-                  className="h-full w-full object-contain"
+        <>
+          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+            <div>
+              <h3 className="font-black text-slate-950">
+                Galería del producto
+              </h3>
+
+              <p className="mt-1 text-sm text-slate-500">
+                Arrastra el icono de cada imagen para cambiar
+                su posición.
+              </p>
+            </div>
+
+            {ordenando && (
+              <span className="inline-flex items-center gap-2 self-start rounded-full bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700">
+                <LoaderCircle
+                  size={15}
+                  className="animate-spin"
                 />
+                Guardando orden
+              </span>
+            )}
+          </div>
 
-                {imagen.esPrincipal && (
-                  <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-slate-950 px-3 py-1.5 text-xs font-bold text-white">
-                    <Star size={13} fill="currentColor" />
-                    Principal
-                  </span>
-                )}
-
-                <span className="absolute right-3 top-3 rounded-full bg-white px-2.5 py-1 text-xs font-black shadow">
-                  {index + 1}
-                </span>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={(event) => void handleDragEnd(event)}
+          >
+            <SortableContext
+              items={imagenes.map((imagen) => imagen.id)}
+              strategy={rectSortingStrategy}
+            >
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {imagenes.map((imagen, index) => (
+                  <SortableImageCard
+                    key={imagen.id}
+                    imagen={imagen}
+                    index={index}
+                    cantidad={imagenes.length}
+                    productoNombre={productoNombre}
+                    procesando={
+                      procesando ||
+                      procesandoId === imagen.id
+                    }
+                    onPrincipal={ponerComoPrincipal}
+                    onEliminar={eliminarImagen}
+                  />
+                ))}
               </div>
-
-              <div className="space-y-3 p-4">
-                {!imagen.esPrincipal && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      void ejecutarAccion(
-                        imagen.id,
-                        "principal",
-                      )
-                    }
-                    className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 text-sm font-bold transition hover:bg-slate-50"
-                  >
-                    <Star size={16} />
-                    Poner como principal
-                  </button>
-                )}
-
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    type="button"
-                    disabled={index === 0}
-                    onClick={() =>
-                      void ejecutarAccion(imagen.id, "subir")
-                    }
-                    className="flex h-10 items-center justify-center rounded-xl border border-slate-300 disabled:opacity-30"
-                    title="Mover antes"
-                  >
-                    <ArrowUp size={17} />
-                  </button>
-
-                  <button
-                    type="button"
-                    disabled={index === imagenes.length - 1}
-                    onClick={() =>
-                      void ejecutarAccion(imagen.id, "bajar")
-                    }
-                    className="flex h-10 items-center justify-center rounded-xl border border-slate-300 disabled:opacity-30"
-                    title="Mover después"
-                  >
-                    <ArrowDown size={17} />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => void eliminarImagen(imagen)}
-                    className="flex h-10 items-center justify-center rounded-xl border border-red-200 text-red-600 transition hover:bg-red-50"
-                    title="Eliminar imagen"
-                  >
-                    <Trash2 size={17} />
-                  </button>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
+            </SortableContext>
+          </DndContext>
+        </>
       )}
     </div>
   );
