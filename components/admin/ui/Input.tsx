@@ -11,11 +11,12 @@ export default function Input({
   error,
   description,
   id,
+  name,
   className = "",
   required,
   ...props
 }: InputProps) {
-  const inputId = id ?? props.name;
+  const inputId = id ?? name;
 
   return (
     <div>
@@ -30,11 +31,11 @@ export default function Input({
 
       <input
         id={inputId}
+        name={name}
         required={required}
         className={[
           "h-11 w-full rounded-xl border bg-white px-4 text-sm text-slate-950",
-          "outline-none transition placeholder:text-slate-400",
-          "focus:ring-4",
+          "outline-none transition placeholder:text-slate-400 focus:ring-4",
           error
             ? "border-red-400 focus:border-red-500 focus:ring-red-100"
             : "border-slate-300 focus:border-slate-500 focus:ring-slate-100",
