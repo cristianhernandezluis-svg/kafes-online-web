@@ -1,0 +1,161 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EstadoProducto {
+  BORRADOR
+  PUBLICADO
+  OCULTO
+  AGOTADO
+  ARCHIVADO
+}
+
+model Categoria {
+  id          Int        @id @default(autoincrement())
+  nombre      String
+  slug        String     @unique
+  descripcion String?
+  imagenUrl   String?
+  activa      Boolean    @default(true)
+  orden       Int        @default(0)
+  productos   Producto[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("categorias")
+}
+
+model Marca {
+  id          Int        @id @default(autoincrement())
+  nombre      String
+  slug        String     @unique
+  descripcion String?
+  logoUrl     String?
+  activa      Boolean    @default(true)
+  productos   Producto[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("marcas")
+}
+
+model Producto {
+  id               Int                    @id @default(autoincrement())
+  nombre           String
+  slug             String                 @unique
+  sku              String?                @unique
+  descripcionCorta String?
+  descripcion      String?
+  precio           Decimal                @db.Decimal(10, 2)
+  precioAntes      Decimal?               @db.Decimal(10, 2)
+  stock            Int                    @default(0)
+  estado           EstadoProducto         @default(BORRADOR)
+  destacado        Boolean                @default(false)
+  categoriaId      Int?
+  marcaId          Int?
+  seoTitulo        String?
+  seoDescripcion   String?
+  publishedAt      DateTime?
+  categoria        Categoria?             @relation(fields: [categoriaId], references: [id], onDelete: SetNull)
+  marca            Marca?                 @relation(fields: [marcaId], references: [id], onDelete: SetNull)
+  imagenes         ProductoImagen[]
+  beneficios       ProductoBeneficio[]
+  fichaTecnica     ProductoFichaTecnica[]
+  accesorios       ProductoAccesorio[]
+  secciones        ProductoSeccion[]
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+
+  @@index([categoriaId])
+  @@index([marcaId])
+  @@index([estado])
+  @@index([destacado])
+  @@map("productos")
+}
+
+model ProductoImagen {
+  id          Int      @id @default(autoincrement())
+  productoId  Int
+  url         String
+  publicId    String?
+  alt         String?
+  orden       Int      @default(0)
+  esPrincipal Boolean  @default(false)
+  producto    Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([productoId])
+  @@index([productoId, orden])
+  @@map("producto_imagenes")
+}
+
+model ProductoBeneficio {
+  id          Int      @id @default(autoincrement())
+  productoId  Int
+  titulo      String
+  descripcion String?
+  icono       String?
+  orden       Int      @default(0)
+  producto    Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([productoId, orden])
+  @@map("producto_beneficios")
+}
+
+model ProductoFichaTecnica {
+  id         Int      @id @default(autoincrement())
+  productoId Int
+  nombre     String
+  valor      String
+  orden      Int      @default(0)
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([productoId, orden])
+  @@map("producto_ficha_tecnica")
+}
+
+model ProductoAccesorio {
+  id          Int      @id @default(autoincrement())
+  productoId  Int
+  nombre      String
+  descripcion String?
+  imagenUrl   String?
+  incluido    Boolean  @default(true)
+  orden       Int      @default(0)
+  producto    Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([productoId, orden])
+  @@map("producto_accesorios")
+}
+
+model ProductoSeccion {
+  id            Int      @id @default(autoincrement())
+  productoId    Int
+  tipo          String
+  titulo        String?
+  subtitulo     String?
+  contenido     String?
+  imagenUrl     String?
+  videoUrl      String?
+  configuracion Json?
+  orden         Int      @default(0)
+  visible       Boolean  @default(true)
+  producto      Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([productoId, orden])
+  @@map("producto_secciones")
+}
