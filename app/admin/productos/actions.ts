@@ -116,6 +116,7 @@ export async function actualizarProducto(formData: FormData) {
     throw new Error("Producto inválido.");
   }
 
+  const contenidoHtml = obtenerTexto(formData, "contenidoHtml");
   const nombre = obtenerTexto(formData, "nombre");
   const slugIngresado = obtenerTexto(formData, "slug");
   const descripcionCorta = obtenerTexto(
@@ -220,29 +221,30 @@ export async function actualizarProducto(formData: FormData) {
     : "BORRADOR";
 
   await prisma.producto.update({
-    where: {
-      id: productoId,
-    },
-    data: {
-      nombre,
-      slug: slugFinal,
-      sku: sku || null,
-      descripcionCorta: descripcionCorta || null,
-      descripcion: descripcion || null,
-      precio,
-      precioAntes: precioAntes > 0 ? precioAntes : null,
-      stock,
-      estado,
-      destacado,
-      seoTitulo: seoTitulo || nombre,
-      seoDescripcion:
-        seoDescripcion || descripcionCorta || null,
-      publishedAt:
-        estado === "PUBLICADO"
-          ? productoActual.publishedAt ?? new Date()
-          : productoActual.publishedAt,
-    },
-  });
+  where: {
+    id: productoId,
+  },
+  data: {
+    nombre,
+    slug: slugFinal,
+    sku: sku || null,
+    descripcionCorta: descripcionCorta || null,
+    descripcion: descripcion || null,
+    contenidoHtml: contenidoHtml || null,
+    precio,
+    precioAntes: precioAntes > 0 ? precioAntes : null,
+    stock,
+    estado,
+    destacado,
+    seoTitulo: seoTitulo || nombre,
+    seoDescripcion:
+      seoDescripcion || descripcionCorta || null,
+    publishedAt:
+      estado === "PUBLICADO"
+        ? productoActual.publishedAt ?? new Date()
+        : productoActual.publishedAt,
+  },
+});
 
   revalidatePath("/admin");
   revalidatePath("/admin/productos");

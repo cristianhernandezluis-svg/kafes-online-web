@@ -12,6 +12,7 @@ import Input from "@/components/admin/ui/Input";
 import Textarea from "@/components/admin/ui/Textarea";
 import PageHeader from "@/components/admin/ui/PageHeader";
 import ProductImageManager from "@/components/admin/media/ProductImageManager";
+import ContenidoEditor from "@/components/admin/editor/ContenidoEditor";
 import { actualizarProducto } from "../../actions";
 
 type EditarProductoPageProps = {
@@ -37,16 +38,8 @@ const tabs = [
     valor: "imagenes",
   },
   {
-    nombre: "Beneficios",
-    valor: "beneficios",
-  },
-  {
-    nombre: "Ficha técnica",
-    valor: "ficha-tecnica",
-  },
-  {
-    nombre: "Landing",
-    valor: "landing",
+    nombre: "Contenido",
+    valor: "contenido",
   },
 ];
 
@@ -342,48 +335,79 @@ export default async function EditarProductoPage({
         </Card>
       )}
 
-      {tabActiva === "beneficios" && (
-        <ModuloPendiente
-          titulo="Beneficios"
-          descripcion="Aquí agregaremos ventajas comerciales como motor brushless, dos baterías, garantía y envío."
-        />
-      )}
+      {tabActiva === "contenido" && (
+  <form action={actualizarProducto}>
+    <input
+      type="hidden"
+      name="productoId"
+      value={producto.id}
+    />
 
-      {tabActiva === "ficha-tecnica" && (
-        <ModuloPendiente
-          titulo="Ficha técnica"
-          descripcion="Aquí podrás agregar campos como potencia, voltaje, peso, velocidad y capacidad."
-        />
-      )}
+    <input
+      type="hidden"
+      name="nombre"
+      value={producto.nombre}
+    />
 
-      {tabActiva === "landing" && (
-        <ModuloPendiente
-          titulo="Landing Builder"
-          descripcion="Aquí construiremos secciones con imágenes grandes, títulos, textos, videos y botones."
-        />
-      )}
-    </section>
-  );
-}
+    <input
+      type="hidden"
+      name="slug"
+      value={producto.slug}
+    />
 
-function ModuloPendiente({
-  titulo,
-  descripcion,
-}: {
-  titulo: string;
-  descripcion: string;
-}) {
-  return (
-    <Card title={titulo}>
-      <div className="rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 p-12 text-center">
-        <p className="text-lg font-black text-slate-900">
-          Próximo módulo
-        </p>
+    <input
+      type="hidden"
+      name="precio"
+      value={Number(producto.precio)}
+    />
 
-        <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-500">
-          {descripcion}
-        </p>
-      </div>
+    <input
+      type="hidden"
+      name="precioAntes"
+      value={
+        producto.precioAntes
+          ? Number(producto.precioAntes)
+          : ""
+      }
+    />
+
+    <input
+      type="hidden"
+      name="stock"
+      value={producto.stock}
+    />
+
+    <input
+      type="hidden"
+      name="sku"
+      value={producto.sku ?? ""}
+    />
+
+    <input
+      type="hidden"
+      name="estado"
+      value={producto.estado}
+    />
+
+    <Card
+      title="Contenido promocional"
+      description="Este contenido aparecerá debajo del botón Comprar."
+    >
+      <ContenidoEditor
+        name="contenidoHtml"
+        initialContent={producto.contenidoHtml ?? ""}
+      />
+
+      <button
+        type="submit"
+        className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 text-sm font-bold text-white"
+      >
+        <Save size={18} />
+        Guardar contenido
+      </button>
     </Card>
+  </form>
+)}
+    </section>
   );
 }
