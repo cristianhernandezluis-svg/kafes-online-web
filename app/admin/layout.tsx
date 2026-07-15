@@ -1,5 +1,15 @@
+<form action={cerrarSesion}>
+  <button
+    type="submit"
+    className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-bold hover:bg-slate-100"
+  >
+    Cerrar sesión
+  </button>
+</form>
 import Link from "next/link";
+import { requerirAdmin } from "@/lib/auth";
 import type { ReactNode } from "react";
+import { cerrarSesion } from "@/app/login/actions";
 import {
   BarChart3,
   Boxes,
@@ -60,11 +70,12 @@ const menu = [
   },
 ];
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: Readonly<{
   children: ReactNode;
 }>) {
+await requerirAdmin();
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-slate-200 bg-white lg:block">

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requerirAdmin } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
 function crearSlug(texto: string) {
@@ -25,6 +26,7 @@ function obtenerNumero(formData: FormData, campo: string, defecto = 0) {
 }
 
 export async function crearProducto(formData: FormData) {
+  await requerirAdmin();
   const nombre = obtenerTexto(formData, "nombre");
   const slugIngresado = obtenerTexto(formData, "slug");
   const descripcionCorta = obtenerTexto(formData, "descripcionCorta");
@@ -110,6 +112,7 @@ export async function crearProducto(formData: FormData) {
   redirect("/admin/productos");
 }
 export async function actualizarProducto(formData: FormData) {
+  await requerirAdmin();
   const productoId = Number(formData.get("productoId"));
 
   if (!Number.isInteger(productoId) || productoId <= 0) {
