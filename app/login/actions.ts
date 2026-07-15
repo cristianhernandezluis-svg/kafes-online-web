@@ -26,7 +26,7 @@ export async function iniciarSesion(
   const adminEmail = "tu-cristianhernandezluis@gmail.com";
 
 const passwordHash =
-  "$2b$12$dNy7Pp4U8oo9VP8O5nvtnuYwm7umLeYTh3gxO1YmMo1oXlXHAyy72";
+  "$2b$12$4n2lW.K0eRphuCPgp4MGHOa566GASlve72TyjxocsXKYJCwZigQDi";
 
   if (!adminEmail || !passwordHash) {
     return {
