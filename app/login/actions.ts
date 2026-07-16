@@ -27,8 +27,12 @@ export async function iniciarSesion(
     ?.trim()
     .toLowerCase();
 
-  const passwordHash =
-    process.env.ADMIN_PASSWORD_HASH;
+  const passwordHashBase64 =
+  process.env.ADMIN_PASSWORD_HASH_B64;
+
+const passwordHash = passwordHashBase64
+  ? Buffer.from(passwordHashBase64, "base64").toString("utf8")
+  : undefined;
 
   if (!adminEmail || !passwordHash) {
     return {
