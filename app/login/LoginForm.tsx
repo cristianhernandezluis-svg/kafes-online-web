@@ -1,7 +1,14 @@
 "use client";
 
-import { useActionState } from "react";
-import { LockKeyhole, LogIn, Mail } from "lucide-react";
+import { useActionState, useState } from "react";
+import {
+  Eye,
+  EyeOff,
+  LockKeyhole,
+  LogIn,
+  Mail,
+} from "lucide-react";
+
 import { iniciarSesion } from "./actions";
 
 const initialState = {
@@ -13,6 +20,9 @@ export default function LoginForm() {
     iniciarSesion,
     initialState,
   );
+
+  const [mostrarPassword, setMostrarPassword] =
+    useState(false);
 
   return (
     <form action={action} className="space-y-5">
@@ -57,12 +67,37 @@ export default function LoginForm() {
           <input
             id="password"
             name="password"
-            type="password"
+            type={
+              mostrarPassword
+                ? "text"
+                : "password"
+            }
             autoComplete="current-password"
             required
             className="h-12 min-w-0 flex-1 px-4 outline-none"
             placeholder="Tu contraseña"
           />
+
+          <button
+            type="button"
+            onClick={() =>
+              setMostrarPassword(
+                !mostrarPassword,
+              )
+            }
+            className="flex items-center justify-center border-l border-slate-200 bg-white px-4 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+            aria-label={
+              mostrarPassword
+                ? "Ocultar contraseña"
+                : "Ver contraseña"
+            }
+          >
+            {mostrarPassword ? (
+              <EyeOff size={18} />
+            ) : (
+              <Eye size={18} />
+            )}
+          </button>
         </div>
       </div>
 
@@ -79,7 +114,9 @@ export default function LoginForm() {
       >
         <LogIn size={19} />
 
-        {pending ? "Ingresando..." : "Iniciar sesión"}
+        {pending
+          ? "Ingresando..."
+          : "Iniciar sesión"}
       </button>
     </form>
   );
