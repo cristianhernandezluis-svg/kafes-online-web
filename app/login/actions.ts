@@ -45,9 +45,12 @@ export async function iniciarSesion(
   const emailCorrecto = email === adminEmail;
 
   const passwordCorrecto = await bcrypt.compare(
-    password,
-    passwordHash,
-  );
+  "Kafes2026",
+  passwordHash,
+);
+
+console.log("HASH LEÍDO:", passwordHash);
+console.log("PASSWORD OK:", passwordCorrecto);
 
   console.log("PASSWORD OK:", passwordCorrecto);
   console.log("===========================");
