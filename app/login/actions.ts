@@ -23,10 +23,10 @@ export async function iniciarSesion(
     formData.get("password") ?? "",
   );
 
-  const adminEmail = "tu-cristianhernandezluis@gmail.com";
+  const adminEmail = "cristianhernandezluis@gmail.com";
 
 const passwordHash =
-  "$2b$12$4n2lW.K0eRphuCPgp4MGHOa566GASlve72TyjxocsXKYJCwZigQDi";
+  "$2b$12$JT/dianEmcDrnpCW2x9qVuG8.ixonN9c1Qhhdkr0cbhRLuBlF.XW.";
 
   if (!adminEmail || !passwordHash) {
     return {
