@@ -24,11 +24,11 @@ export async function iniciarSesion(
   );
 
   const adminEmail = process.env.ADMIN_EMAIL
-  ?.trim()
-  .toLowerCase();
+    ?.trim()
+    .toLowerCase();
 
-const passwordHash =
-  process.env.ADMIN_PASSWORD_HASH;
+  const passwordHash =
+    process.env.ADMIN_PASSWORD_HASH;
 
   if (!adminEmail || !passwordHash) {
     return {
@@ -36,12 +36,21 @@ const passwordHash =
     };
   }
 
+  console.log("========== LOGIN ==========");
+  console.log("ADMIN_EMAIL:", adminEmail);
+  console.log("EMAIL INGRESADO:", email);
+  console.log("EMAIL OK:", email === adminEmail);
+  console.log("HASH EXISTE:", Boolean(passwordHash));
+
   const emailCorrecto = email === adminEmail;
 
   const passwordCorrecto = await bcrypt.compare(
     password,
     passwordHash,
   );
+
+  console.log("PASSWORD OK:", passwordCorrecto);
+  console.log("===========================");
 
   if (!emailCorrecto || !passwordCorrecto) {
     return {
