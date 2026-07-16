@@ -49,7 +49,7 @@ export async function iniciarSesion(
   passwordHash,
 );
 
-console.log("HASH LEÍDO:", passwordHash);
+console.log("HASH LEÍDO JSON:", JSON.stringify(passwordHash));
 console.log("PASSWORD OK:", passwordCorrecto);
 
   console.log("PASSWORD OK:", passwordCorrecto);
