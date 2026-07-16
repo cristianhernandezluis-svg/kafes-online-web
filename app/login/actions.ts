@@ -2,6 +2,7 @@
 
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
+
 import {
   cerrarSesionAdmin,
   crearSesionAdmin,
@@ -15,7 +16,9 @@ export async function iniciarSesion(
   _state: LoginState,
   formData: FormData,
 ): Promise<LoginState> {
-  const email = String(formData.get("email") ?? "")
+  const email = String(
+    formData.get("email") ?? "",
+  )
     .trim()
     .toLowerCase();
 
@@ -28,11 +31,14 @@ export async function iniciarSesion(
     .toLowerCase();
 
   const passwordHashBase64 =
-  process.env.ADMIN_PASSWORD_HASH_B64;
+    process.env.ADMIN_PASSWORD_HASH_B64;
 
-const passwordHash = passwordHashBase64
-  ? Buffer.from(passwordHashBase64, "base64").toString("utf8")
-  : undefined;
+  const passwordHash = passwordHashBase64
+    ? Buffer.from(
+        passwordHashBase64,
+        "base64",
+      ).toString("utf8")
+    : undefined;
 
   if (!adminEmail || !passwordHash) {
     return {
@@ -40,24 +46,14 @@ const passwordHash = passwordHashBase64
     };
   }
 
-  console.log("========== LOGIN ==========");
-  console.log("ADMIN_EMAIL:", adminEmail);
-  console.log("EMAIL INGRESADO:", email);
-  console.log("EMAIL OK:", email === adminEmail);
-  console.log("HASH EXISTE:", Boolean(passwordHash));
+  const emailCorrecto =
+    email === adminEmail;
 
-  const emailCorrecto = email === adminEmail;
-
-  const passwordCorrecto = await bcrypt.compare(
-  "Kafes2026",
-  passwordHash,
-);
-
-console.log("HASH LEÍDO JSON:", JSON.stringify(passwordHash));
-console.log("PASSWORD OK:", passwordCorrecto);
-
-  console.log("PASSWORD OK:", passwordCorrecto);
-  console.log("===========================");
+  const passwordCorrecto =
+    await bcrypt.compare(
+      password,
+      passwordHash,
+    );
 
   if (!emailCorrecto || !passwordCorrecto) {
     return {
