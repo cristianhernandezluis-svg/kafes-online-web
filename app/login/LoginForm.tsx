@@ -13,11 +13,17 @@ import {
 
 import { iniciarSesion } from "./actions";
 
+type LoginFormProps = {
+  passwordActualizado?: boolean;
+};
+
 const initialState = {
   error: "",
 };
 
-export default function LoginForm() {
+export default function LoginForm({
+  passwordActualizado = false,
+}: LoginFormProps) {
   const [state, action, pending] = useActionState(
     iniciarSesion,
     initialState,
@@ -97,6 +103,13 @@ export default function LoginForm() {
         </div>
       </div>
 
+      {passwordActualizado && !state.error && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
+          ¡Contraseña actualizada correctamente! Ya puedes iniciar
+          sesión con tu nueva contraseña.
+        </div>
+      )}
+
       {state.error && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
           {state.error}
@@ -117,9 +130,11 @@ export default function LoginForm() {
 
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-slate-200" />
+
         <span className="text-xs font-medium text-slate-400">
           o
         </span>
+
         <div className="h-px flex-1 bg-slate-200" />
       </div>
 

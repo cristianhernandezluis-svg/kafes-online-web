@@ -1,13 +1,28 @@
 import { redirect } from "next/navigation";
+
 import { obtenerSesionAdmin } from "@/lib/auth";
+
 import LoginForm from "./LoginForm";
 
-export default async function LoginPage() {
+type LoginPageProps = {
+  searchParams: Promise<{
+    passwordActualizado?: string;
+  }>;
+};
+
+export default async function LoginPage({
+  searchParams,
+}: LoginPageProps) {
   const session = await obtenerSesionAdmin();
 
   if (session) {
     redirect("/admin");
   }
+
+  const params = await searchParams;
+
+  const passwordActualizado =
+    params.passwordActualizado === "1";
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
@@ -26,7 +41,11 @@ export default async function LoginPage() {
           </p>
         </div>
 
-        <LoginForm />
+        <LoginForm
+          passwordActualizado={
+            passwordActualizado
+          }
+        />
       </section>
     </main>
   );
