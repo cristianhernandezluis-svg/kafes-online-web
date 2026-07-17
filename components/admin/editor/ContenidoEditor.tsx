@@ -1,9 +1,13 @@
 "use client";
 
-import { EditorContent, useEditor } from "@tiptap/react";
+import {
+  EditorContent,
+  useEditor,
+} from "@tiptap/react";
+
+import ImageResize from "tiptap-extension-resize-image";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
-import Image from "@tiptap/extension-image";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { useRef, useState } from "react";
 import {
@@ -52,13 +56,10 @@ export default function ContenidoEditor({
     extensions: [
       StarterKit,
       TextStyle,
-      Image.configure({
-        allowBase64: false,
-        HTMLAttributes: {
-          class:
-            "mx-auto my-6 h-auto max-w-full rounded-2xl object-contain",
-        },
-      }),
+      ImageResize.configure({
+  minWidth: 120,
+  maxWidth: 900,
+}),
       TextAlign.configure({
         types: ["heading", "paragraph"],
       }),
