@@ -3,6 +3,7 @@
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 
+import prisma from "@/lib/prisma";
 import {
   cerrarSesionAdmin,
   crearSesionAdmin,
@@ -26,42 +27,57 @@ export async function iniciarSesion(
     formData.get("password") ?? "",
   );
 
-  const adminEmail = process.env.ADMIN_EMAIL
-    ?.trim()
-    .toLowerCase();
-
-  const passwordHashBase64 =
-    process.env.ADMIN_PASSWORD_HASH_B64;
-
-  const passwordHash = passwordHashBase64
-    ? Buffer.from(
-        passwordHashBase64,
-        "base64",
-      ).toString("utf8")
-    : undefined;
-
-  if (!adminEmail || !passwordHash) {
+  if (!email || !password) {
     return {
-      error: "El administrador no está configurado.",
+      error: "Ingresa tu correo y contraseña.",
     };
   }
 
-  const emailCorrecto =
-    email === adminEmail;
+  try {
+    const administrador =
+      await prisma.administrador.findUnique({
+        where: {
+          email,
+        },
+      });
 
-  const passwordCorrecto =
-    await bcrypt.compare(
-      password,
-      passwordHash,
+    if (
+      !administrador ||
+      !administrador.activo
+    ) {
+      return {
+        error:
+          "Correo o contraseña incorrectos.",
+      };
+    }
+
+    const passwordCorrecto =
+      await bcrypt.compare(
+        password,
+        administrador.passwordHash,
+      );
+
+    if (!passwordCorrecto) {
+      return {
+        error:
+          "Correo o contraseña incorrectos.",
+      };
+    }
+
+    await crearSesionAdmin(
+      administrador.email,
+    );
+  } catch (error) {
+    console.error(
+      "Error al iniciar sesión:",
+      error,
     );
 
-  if (!emailCorrecto || !passwordCorrecto) {
     return {
-      error: "Correo o contraseña incorrectos.",
+      error:
+        "No se pudo iniciar sesión. Inténtalo nuevamente.",
     };
   }
-
-  await crearSesionAdmin(email);
 
   redirect("/admin");
 }
