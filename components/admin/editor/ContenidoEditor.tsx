@@ -1,11 +1,11 @@
 "use client";
 
-import { useEditor, EditorContent } from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
 import Image from "@tiptap/extension-image";
 import { TextStyle } from "@tiptap/extension-text-style";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   AlignCenter,
   AlignLeft,
@@ -17,20 +17,35 @@ import {
   Italic,
   List,
   ListOrdered,
+  LoaderCircle,
   Redo2,
   Undo2,
 } from "lucide-react";
 
 type ContenidoEditorProps = {
+  productoId: number;
   name: string;
   initialContent?: string;
 };
 
+type CloudinaryUploadResponse = {
+  secure_url?: string;
+  public_id?: string;
+  error?: {
+    message?: string;
+  };
+};
+
 export default function ContenidoEditor({
+  productoId,
   name,
   initialContent = "",
 }: ContenidoEditorProps) {
+  const inputImagenRef = useRef<HTMLInputElement>(null);
+
   const [html, setHtml] = useState(initialContent);
+  const [subiendoImagen, setSubiendoImagen] = useState(false);
+  const [errorImagen, setErrorImagen] = useState("");
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -60,14 +75,107 @@ export default function ContenidoEditor({
     },
   });
 
-  function insertarImagen() {
-    const url = window.prompt("Pega aquí la URL de la imagen de Cloudinary:");
-
-    if (!url || !editor) {
+  async function subirImagen(file: File) {
+    if (!editor) {
       return;
     }
 
-    editor.chain().focus().setImage({ src: url }).run();
+    if (!file.type.startsWith("image/")) {
+      setErrorImagen("Selecciona un archivo de imagen válido.");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setErrorImagen("La imagen supera el máximo permitido de 10 MB.");
+      return;
+    }
+
+    setSubiendoImagen(true);
+    setErrorImagen("");
+
+    try {
+      const signatureResponse = await fetch(
+        "/api/cloudinary/signature",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productoId,
+          }),
+        },
+      );
+
+      if (!signatureResponse.ok) {
+        throw new Error("No se pudo preparar la carga.");
+      }
+
+      const signatureData =
+        (await signatureResponse.json()) as {
+          timestamp: number;
+          signature: string;
+          folder: string;
+          apiKey: string;
+          cloudName: string;
+        };
+
+      const cloudinaryData = new FormData();
+
+      cloudinaryData.append("file", file);
+      cloudinaryData.append("api_key", signatureData.apiKey);
+      cloudinaryData.append(
+        "timestamp",
+        String(signatureData.timestamp),
+      );
+      cloudinaryData.append(
+        "signature",
+        signatureData.signature,
+      );
+      cloudinaryData.append("folder", signatureData.folder);
+
+      const uploadResponse = await fetch(
+        `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/image/upload`,
+        {
+          method: "POST",
+          body: cloudinaryData,
+        },
+      );
+
+      const uploadResult =
+        (await uploadResponse.json()) as CloudinaryUploadResponse;
+
+      if (!uploadResponse.ok || !uploadResult.secure_url) {
+        throw new Error(
+          uploadResult.error?.message ||
+            "No se pudo subir la imagen.",
+        );
+      }
+
+      editor
+        .chain()
+        .focus()
+        .setImage({
+          src: uploadResult.secure_url,
+          alt: file.name,
+        })
+        .insertContent("<p></p>")
+        .run();
+
+      setHtml(editor.getHTML());
+    } catch (error) {
+      setErrorImagen(
+        error instanceof Error
+          ? error.message
+          : "Ocurrió un error al subir la imagen.",
+      );
+    } finally {
+      setSubiendoImagen(false);
+
+      if (inputImagenRef.current) {
+        inputImagenRef.current.value = "";
+      }
+    }
   }
 
   if (!editor) {
@@ -107,7 +215,9 @@ export default function ContenidoEditor({
         <button
           type="button"
           className={boton(editor.isActive("bold"))}
-          onClick={() => editor.chain().focus().toggleBold().run()}
+          onClick={() =>
+            editor.chain().focus().toggleBold().run()
+          }
           title="Negrita"
         >
           <Bold size={17} />
@@ -116,7 +226,9 @@ export default function ContenidoEditor({
         <button
           type="button"
           className={boton(editor.isActive("italic"))}
-          onClick={() => editor.chain().focus().toggleItalic().run()}
+          onClick={() =>
+            editor.chain().focus().toggleItalic().run()
+          }
           title="Cursiva"
         >
           <Italic size={17} />
@@ -128,7 +240,11 @@ export default function ContenidoEditor({
             editor.isActive("heading", { level: 1 }),
           )}
           onClick={() =>
-            editor.chain().focus().toggleHeading({ level: 1 }).run()
+            editor
+              .chain()
+              .focus()
+              .toggleHeading({ level: 1 })
+              .run()
           }
           title="Título grande"
         >
@@ -141,7 +257,11 @@ export default function ContenidoEditor({
             editor.isActive("heading", { level: 2 }),
           )}
           onClick={() =>
-            editor.chain().focus().toggleHeading({ level: 2 }).run()
+            editor
+              .chain()
+              .focus()
+              .toggleHeading({ level: 2 })
+              .run()
           }
           title="Subtítulo"
         >
@@ -211,14 +331,48 @@ export default function ContenidoEditor({
 
         <button
           type="button"
-          className={boton()}
-          onClick={insertarImagen}
+          disabled={subiendoImagen}
+          className={`${boton()} disabled:cursor-not-allowed disabled:opacity-50`}
+          onClick={() => inputImagenRef.current?.click()}
           title="Insertar imagen"
         >
-          <ImagePlus size={17} />
-          <span className="ml-2">Imagen</span>
+          {subiendoImagen ? (
+            <LoaderCircle
+              size={17}
+              className="animate-spin"
+            />
+          ) : (
+            <ImagePlus size={17} />
+          )}
+
+          <span className="ml-2">
+            {subiendoImagen
+              ? "Subiendo..."
+              : "Imagen"}
+          </span>
         </button>
+
+        <input
+          ref={inputImagenRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          disabled={subiendoImagen}
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+
+            if (file) {
+              void subirImagen(file);
+            }
+          }}
+        />
       </div>
+
+      {errorImagen && (
+        <div className="border-b border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-700">
+          {errorImagen}
+        </div>
+      )}
 
       <EditorContent editor={editor} />
 

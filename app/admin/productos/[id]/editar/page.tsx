@@ -394,9 +394,10 @@ export default async function EditarProductoPage({
       description="Este contenido aparecerá debajo del botón Comprar."
     >
       <ContenidoEditor
-        name="contenidoHtml"
-        initialContent={producto.contenidoHtml ?? ""}
-      />
+  productoId={producto.id}
+  name="contenidoHtml"
+  initialContent={producto.contenidoHtml ?? ""}
+/>
 
       <button
         type="submit"
