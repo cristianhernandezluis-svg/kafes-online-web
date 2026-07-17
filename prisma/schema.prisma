@@ -176,10 +176,11 @@ model Administrador {
 
 model TokenRecuperacion {
   id              Int      @id @default(autoincrement())
-  tokenHash       String   @unique
+  codigoHash      String
   administradorId Int
   expiraEn        DateTime
   utilizado       Boolean  @default(false)
+  intentos        Int      @default(0)
   createdAt       DateTime @default(now())
 
   administrador Administrador @relation(fields: [administradorId], references: [id], onDelete: Cascade)

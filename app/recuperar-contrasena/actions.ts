@@ -1,5 +1,7 @@
 "use server";
 
+import crypto from "node:crypto";
+
 type RecuperacionState = {
   error: string;
   success: string;
@@ -22,9 +24,16 @@ export async function solicitarRecuperacion(
     };
   }
 
+  const codigo = crypto
+    .randomInt(0, 1000000)
+    .toString()
+    .padStart(6, "0");
+
+  console.log("Código generado:", codigo);
+
   return {
     error: "",
     success:
-      "La solicitud fue recibida. En el siguiente paso conectaremos el envío del correo.",
+      "Código generado correctamente. Revisa la consola del servidor.",
   };
 }
