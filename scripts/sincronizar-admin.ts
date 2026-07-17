@@ -1,5 +1,7 @@
 import "dotenv/config";
 
+import bcrypt from "bcryptjs";
+
 import prisma from "../lib/prisma";
 
 async function main() {
@@ -8,7 +10,7 @@ async function main() {
     .toLowerCase();
 
   const passwordHashBase64 =
-    process.env.ADMIN_PASSWORD_HASH_B64;
+    process.env.ADMIN_PASSWORD_HASH_B64?.trim();
 
   if (!email || !passwordHashBase64) {
     throw new Error(
@@ -19,14 +21,30 @@ async function main() {
   const passwordHash = Buffer.from(
     passwordHashBase64,
     "base64",
-  ).toString("utf8");
+  )
+    .toString("utf8")
+    .trim();
 
-  if (
-    !passwordHash.startsWith("$2a$") &&
-    !passwordHash.startsWith("$2b$")
-  ) {
+  try {
+    bcrypt.getRounds(passwordHash);
+  } catch {
+    console.log(
+      "Longitud del valor Base64:",
+      passwordHashBase64.length,
+    );
+
+    console.log(
+      "Inicio del valor decodificado:",
+      passwordHash.slice(0, 4),
+    );
+
+    console.log(
+      "Longitud del valor decodificado:",
+      passwordHash.length,
+    );
+
     throw new Error(
-      "La contraseña decodificada no contiene un hash bcrypt válido.",
+      "ADMIN_PASSWORD_HASH_B64 no contiene un hash bcrypt válido.",
     );
   }
 
