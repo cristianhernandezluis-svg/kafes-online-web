@@ -160,3 +160,31 @@ model ProductoSeccion {
   @@index([productoId, orden])
   @@map("producto_secciones")
 }
+model Administrador {
+  id           Int      @id @default(autoincrement())
+  nombre       String?
+  email        String   @unique
+  passwordHash String
+  activo       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tokensRecuperacion TokenRecuperacion[]
+
+  @@map("administradores")
+}
+
+model TokenRecuperacion {
+  id              Int      @id @default(autoincrement())
+  tokenHash       String   @unique
+  administradorId Int
+  expiraEn        DateTime
+  utilizado       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  administrador Administrador @relation(fields: [administradorId], references: [id], onDelete: Cascade)
+
+  @@index([administradorId])
+  @@index([expiraEn])
+  @@map("tokens_recuperacion")
+}

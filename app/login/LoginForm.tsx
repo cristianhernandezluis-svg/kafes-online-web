@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import {
   Eye,
   EyeOff,
+  KeyRound,
   LockKeyhole,
   LogIn,
   Mail,
@@ -67,11 +69,7 @@ export default function LoginForm() {
           <input
             id="password"
             name="password"
-            type={
-              mostrarPassword
-                ? "text"
-                : "password"
-            }
+            type={mostrarPassword ? "text" : "password"}
             autoComplete="current-password"
             required
             className="h-12 min-w-0 flex-1 px-4 outline-none"
@@ -81,9 +79,7 @@ export default function LoginForm() {
           <button
             type="button"
             onClick={() =>
-              setMostrarPassword(
-                !mostrarPassword,
-              )
+              setMostrarPassword(!mostrarPassword)
             }
             className="flex items-center justify-center border-l border-slate-200 bg-white px-4 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
             aria-label={
@@ -110,7 +106,7 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-950 font-bold text-white transition hover:bg-slate-800 disabled:opacity-50"
+        className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-950 font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <LogIn size={19} />
 
@@ -118,6 +114,24 @@ export default function LoginForm() {
           ? "Ingresando..."
           : "Iniciar sesión"}
       </button>
+
+      <div className="flex items-center gap-3">
+        <div className="h-px flex-1 bg-slate-200" />
+        <span className="text-xs font-medium text-slate-400">
+          o
+        </span>
+        <div className="h-px flex-1 bg-slate-200" />
+      </div>
+
+      <div className="text-center">
+        <Link
+          href="/recuperar-contrasena"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 transition hover:text-blue-700 hover:underline"
+        >
+          <KeyRound size={16} />
+          ¿Te olvidaste tu contraseña?
+        </Link>
+      </div>
     </form>
   );
 }
