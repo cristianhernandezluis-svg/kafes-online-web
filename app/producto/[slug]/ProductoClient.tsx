@@ -246,103 +246,118 @@ useEffect(() => {
   };
 
   const finalizarPedido = async () => {
-    if (!nombre || !celular || !ciudad || !region || !direccion) {
-      alert("Completa todos los campos obligatorios");
-      return;
+  if (!nombre || !celular || !ciudad || !region || !direccion) {
+    alert("Completa todos los campos obligatorios");
+    return;
+  }
+
+  const celularLimpio = celular.replace(/\D/g, "");
+
+  if (celularLimpio.length < 9) {
+    alert("Ingresa un número de celular válido");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const respuesta = await fetch("/api/pedidos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        productoId: producto.id,
+        cantidad,
+        nombre: nombre.trim(),
+        celular: celularLimpio,
+        ciudad: ciudad.trim(),
+        region: region.trim(),
+        direccion: direccion.trim(),
+        referencia: referencia.trim(),
+      }),
+    });
+
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok || !resultado.ok) {
+      throw new Error(
+        resultado.error || "No se pudo registrar el pedido",
+      );
     }
 
-    setLoading(true);
-
-    const pedido = {
-      producto: producto.nombre,
-      slug,
-      precio,
-      cantidad,
-      total,
-      nombre,
-      celular,
-      ciudad,
-      region,
-      direccion,
-      referencia,
-      estado: "NUEVO",
-      fecha: new Date().toLocaleString(),
-    };
-
+    /*
+     * Enviamos también la información a n8n.
+     * Si n8n falla, el pedido ya quedó guardado
+     * correctamente en PostgreSQL.
+     */
     try {
       await fetch(
         "https://n8n-n8n.xhb7ax.easypanel.host/webhook/96372183-cc2d-468e-b1c3-5ee5564eb2b8",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(pedido),
-        }
-      );
-
-      setPedidoFinalizado(true);
-
-      window.fbq?.("track", "Purchase", {
-        value: total,
-        currency: "PEN",
-        content_ids: [slug],
-        content_name: producto.nombre,
-        content_type: "product",
-        contents: [
-          {
-            id: slug,
-            quantity: cantidad,
-            item_price: precio,
+          headers: {
+            "Content-Type": "application/json",
           },
-        ],
-      });
-
-      const telefonoLimpio = celular.replace(/\D/g, "");
-const telefonoConPais = telefonoLimpio.startsWith("51")
-  ? `+${telefonoLimpio}`
-  : `+51${telefonoLimpio}`;
-
-window.ttq?.identify({
-  phone_number: telefonoConPais,
-  external_id: telefonoLimpio,
-});
-
-window.ttq?.track("Purchase", {
-  value: total,
-  currency: "PEN",
-  content_id: slug,
-  content_name: producto.nombre,
-  content_type: "product",
-  quantity: cantidad,
-  price: precio,
-});
-
-      window.ttq?.track("CompletePayment", {
-        value: total,
-        currency: "PEN",
-        content_id: slug,
-        content_name: producto.nombre,
-        content_type: "product",
-        quantity: cantidad,
-        price: precio,
-      });
-
-      setTimeout(() => {
-        setOpenCheckout(false);
-        setPedidoFinalizado(false);
-        setNombre("");
-        setCelular("");
-        setCiudad("");
-        setRegion("");
-        setDireccion("");
-        setReferencia("");
-        setCantidad(1);
-      }, 6000);
-    } catch (error) {
-      alert("Error al enviar pedido");
+          body: JSON.stringify({
+            pedidoId: resultado.pedido.id,
+            codigo: resultado.pedido.codigo,
+            productoId: producto.id,
+            producto: producto.nombre,
+            precio,
+            cantidad,
+            total: resultado.pedido.total,
+            nombre: nombre.trim(),
+            celular: celularLimpio,
+            ciudad: ciudad.trim(),
+            region: region.trim(),
+            direccion: direccion.trim(),
+            referencia: referencia.trim(),
+            estado: resultado.pedido.estado,
+            fecha: new Date().toLocaleString("es-PE"),
+          }),
+        },
+      );
+    } catch (errorN8n) {
+      console.error(
+        "El pedido se guardó, pero n8n no respondió:",
+        errorN8n,
+      );
     }
 
+    setPedidoFinalizado(true);
+
+    if (typeof window !== "undefined") {
+      window.fbq?.("track", "Purchase", {
+        value: resultado.pedido.total,
+        currency: "PEN",
+        content_ids: [String(producto.id)],
+        content_name: producto.nombre,
+        content_type: "product",
+        num_items: cantidad,
+      });
+
+      window.ttq?.track("CompletePayment", {
+        value: resultado.pedido.total,
+        currency: "PEN",
+        content_id: String(producto.id),
+        content_name: producto.nombre,
+        quantity: cantidad,
+      });
+    }
+  } catch (error) {
+    console.error("Error al finalizar el pedido:", error);
+
+    const mensaje =
+      error instanceof Error
+        ? error.message
+        : "No pudimos registrar el pedido";
+
+    alert(`${mensaje}. Inténtalo nuevamente.`);
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
   return (
     <main
