@@ -15,6 +15,40 @@ enum EstadoProducto {
   ARCHIVADO
 }
 
+enum EstadoPedido {
+  NUEVO
+  CONFIRMADO
+  PREPARANDO
+  ENVIADO
+  ENTREGADO
+  CANCELADO
+}
+
+enum EstadoPago {
+  PENDIENTE
+  ADELANTO
+  PAGADO
+  REEMBOLSADO
+}
+
+enum MetodoPago {
+  CONTRA_ENTREGA
+  YAPE
+  PLIN
+  TRANSFERENCIA
+  EFECTIVO
+  OTRO
+}
+
+enum EstadoEnvio {
+  PENDIENTE
+  PREPARANDO
+  DESPACHADO
+  EN_TRANSITO
+  ENTREGADO
+  DEVUELTO
+}
+
 model Categoria {
   id          Int        @id @default(autoincrement())
   nombre      String
@@ -69,6 +103,7 @@ model Producto {
   fichaTecnica     ProductoFichaTecnica[]
   accesorios       ProductoAccesorio[]
   secciones        ProductoSeccion[]
+  itemsPedido      PedidoItem[]
   createdAt        DateTime               @default(now())
   updatedAt        DateTime               @updatedAt
 
@@ -188,4 +223,125 @@ model TokenRecuperacion {
   @@index([administradorId])
   @@index([expiraEn])
   @@map("tokens_recuperacion")
+}
+
+model Cliente {
+  id         Int      @id @default(autoincrement())
+  nombre     String
+  telefono   String
+  email      String?
+  dni        String?
+  ciudad     String?
+  region     String?
+  direccion  String?
+  referencia String?
+  notas      String?  @db.Text
+  activo     Boolean  @default(true)
+
+  pedidos Pedido[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([nombre])
+  @@index([telefono])
+  @@index([createdAt])
+  @@map("clientes")
+}
+
+model Pedido {
+  id     Int    @id @default(autoincrement())
+  codigo String @unique
+
+  clienteId Int?
+  cliente   Cliente? @relation(fields: [clienteId], references: [id], onDelete: SetNull)
+
+  nombreCliente   String
+  telefonoCliente String
+  emailCliente    String?
+  dniCliente      String?
+
+  region     String?
+  ciudad     String
+  direccion  String
+  referencia String?
+
+  estado      EstadoPedido @default(NUEVO)
+  estadoPago  EstadoPago   @default(PENDIENTE)
+  metodoPago  MetodoPago   @default(CONTRA_ENTREGA)
+  estadoEnvio EstadoEnvio  @default(PENDIENTE)
+
+  subtotal       Decimal @db.Decimal(10, 2)
+  descuento      Decimal @default(0) @db.Decimal(10, 2)
+  costoEnvio     Decimal @default(0) @db.Decimal(10, 2)
+  total          Decimal @db.Decimal(10, 2)
+  montoAdelanto  Decimal @default(0) @db.Decimal(10, 2)
+  montoPendiente Decimal @default(0) @db.Decimal(10, 2)
+
+  agenciaEnvio  String?
+  codigoEnvio   String?
+  observaciones String? @db.Text
+  notasInternas String? @db.Text
+
+  confirmadoAt DateTime?
+  enviadoAt    DateTime?
+  entregadoAt  DateTime?
+  canceladoAt  DateTime?
+
+  items     PedidoItem[]
+  historial PedidoHistorial[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clienteId])
+  @@index([codigo])
+  @@index([telefonoCliente])
+  @@index([estado])
+  @@index([estadoPago])
+  @@index([estadoEnvio])
+  @@index([createdAt])
+  @@map("pedidos")
+}
+
+model PedidoItem {
+  id         Int  @id @default(autoincrement())
+  pedidoId   Int
+  productoId Int?
+
+  nombreProducto String
+  skuProducto    String?
+  imagenUrl      String?
+
+  precioUnitario Decimal @db.Decimal(10, 2)
+  cantidad       Int     @default(1)
+  subtotal       Decimal @db.Decimal(10, 2)
+
+  pedido   Pedido    @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  producto Producto? @relation(fields: [productoId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([pedidoId])
+  @@index([productoId])
+  @@map("pedido_items")
+}
+
+model PedidoHistorial {
+  id          Int     @id @default(autoincrement())
+  pedidoId    Int
+  accion      String
+  descripcion String?
+  estadoAntes String?
+  estadoNuevo String?
+  autor       String?
+
+  pedido Pedido @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([pedidoId])
+  @@index([createdAt])
+  @@map("pedido_historial")
 }
