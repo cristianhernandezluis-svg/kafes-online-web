@@ -1,3 +1,4 @@
+import ActivarNotificaciones from "./ActivarNotificaciones";
 import MonitorPedidos from "./MonitorPedidos";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
@@ -128,9 +129,13 @@ export default async function PedidosPage({
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 shadow-sm">
-            {pedidos.length} pedidos encontrados
-          </div>
+          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+  <ActivarNotificaciones />
+
+  <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 shadow-sm">
+    {pedidos.length} pedidos encontrados
+  </div>
+</div>
         </div>
 
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { enviarNotificacionNuevoPedido } from "@/lib/enviar-notificacion-pedido";
 
 type CrearPedidoBody = {
   productoId?: number;
@@ -28,10 +29,19 @@ export async function POST(request: Request) {
     const body = (await request.json()) as CrearPedidoBody;
 
     const productoId = Number(body.productoId);
-    const cantidad = Math.max(1, Math.floor(Number(body.cantidad) || 1));
+
+    const cantidad = Math.max(
+      1,
+      Math.floor(Number(body.cantidad) || 1),
+    );
 
     const nombre = limpiarTexto(body.nombre);
-    const celular = limpiarTexto(body.celular).replace(/\s+/g, "");
+
+    const celular = limpiarTexto(body.celular).replace(
+      /\s+/g,
+      "",
+    );
+
     const ciudad = limpiarTexto(body.ciudad);
     const region = limpiarTexto(body.region);
     const direccion = limpiarTexto(body.direccion);
@@ -200,6 +210,7 @@ export async function POST(request: Request) {
         select: {
           id: true,
           codigo: true,
+          nombreCliente: true,
           total: true,
           estado: true,
         },
@@ -207,6 +218,33 @@ export async function POST(request: Request) {
 
       return pedido;
     });
+
+    /*
+     * Enviamos la notificación después de guardar el pedido.
+     *
+     * La notificación está dentro de su propio try/catch para
+     * evitar que un error de Firebase anule una compra que ya
+     * fue registrada correctamente en PostgreSQL.
+     */
+    try {
+      const resultadoNotificacion =
+        await enviarNotificacionNuevoPedido({
+          id: resultado.id,
+          codigo: resultado.codigo,
+          nombreCliente: resultado.nombreCliente,
+          total: Number(resultado.total),
+        });
+
+      console.log(
+        "Resultado de notificación push:",
+        resultadoNotificacion,
+      );
+    } catch (errorNotificacion) {
+      console.error(
+        "El pedido se registró, pero no se pudo enviar la notificación:",
+        errorNotificacion,
+      );
+    }
 
     return NextResponse.json(
       {
