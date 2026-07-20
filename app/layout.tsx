@@ -1,5 +1,4 @@
 import "./globals.css";
-import PantallaInicio from "./PantallaInicio";
 import ActualizadorPWA from "./ActualizadorPWA";
 import Script from "next/script";
 
@@ -136,7 +135,6 @@ export default function RootLayout({
           `}
         </Script>
 
-<PantallaInicio />
 <ActualizadorPWA />
 
 {children}

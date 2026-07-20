@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PantallaInicio from "../PantallaInicio";
 import NavegacionMovil from "./NavegacionMovil";
 import { requerirAdmin } from "@/lib/auth";
 import type { ReactNode } from "react";
@@ -71,68 +72,72 @@ export default async function AdminLayout({
   await requerirAdmin();
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-slate-200 bg-white lg:block">
-        <div className="flex h-20 items-center border-b border-slate-200 px-6">
-          <div>
-            <p className="text-xl font-black tracking-tight">
-              KAFES ONLINE
-            </p>
+    <>
+      <PantallaInicio />
 
-            <p className="text-xs font-medium text-slate-500">
-              Administrador de tienda
-            </p>
-          </div>
-        </div>
+      <div className="min-h-screen bg-slate-100 text-slate-900">
+        <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-slate-200 bg-white lg:block">
+          <div className="flex h-20 items-center border-b border-slate-200 px-6">
+            <div>
+              <p className="text-xl font-black tracking-tight">
+                KAFES ONLINE
+              </p>
 
-        <nav className="space-y-1 p-4">
-          {menu.map((item) => {
-            const Icono = item.icono;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-950"
-              >
-                <Icono size={19} />
-                {item.nombre}
-              </Link>
-            );
-          })}
-        </nav>
-      </aside>
-
-      <div className="lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-slate-200 bg-white px-5 lg:px-8">
-          <div>
-            <p className="text-sm font-semibold text-slate-500">
-              Panel administrativo
-            </p>
+              <p className="text-xs font-medium text-slate-500">
+                Administrador de tienda
+              </p>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-950 text-sm font-bold text-white">
-              K
+          <nav className="space-y-1 p-4">
+            {menu.map((item) => {
+              const Icono = item.icono;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-950"
+                >
+                  <Icono size={19} />
+                  {item.nombre}
+                </Link>
+              );
+            })}
+          </nav>
+        </aside>
+
+        <div className="lg:pl-64">
+          <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-slate-200 bg-white px-5 lg:px-8">
+            <div>
+              <p className="text-sm font-semibold text-slate-500">
+                Panel administrativo
+              </p>
             </div>
 
-            <form action={cerrarSesion}>
-              <button
-                type="submit"
-                className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
-              >
-                Cerrar sesión
-              </button>
-            </form>
-          </div>
-        </header>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-950 text-sm font-bold text-white">
+                K
+              </div>
 
-        <main className="p-5 pb-28 lg:p-8">
-  {children}
-</main>
+              <form action={cerrarSesion}>
+                <button
+                  type="submit"
+                  className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
+                >
+                  Cerrar sesión
+                </button>
+              </form>
+            </div>
+          </header>
 
-<NavegacionMovil />
+          <main className="p-5 pb-28 lg:p-8">
+            {children}
+          </main>
+
+          <NavegacionMovil />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
