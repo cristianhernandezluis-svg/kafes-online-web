@@ -153,17 +153,20 @@ export default function ContenidoEditor({
         );
       }
 
-      editor
-        .chain()
-        .focus()
-        .setImage({
-          src: uploadResult.secure_url,
-          alt: file.name,
-        })
-        .insertContent("<p></p>")
-        .run();
+      const imageUrl = uploadResult.secure_url;
 
-      setHtml(editor.getHTML());
+editor
+  .chain()
+  .focus()
+  .insertContent(
+    `<img src="${imageUrl}" alt="${file.name.replaceAll(
+      '"',
+      "&quot;",
+    )}" /><p></p>`,
+  )
+  .run();
+
+setHtml(editor.getHTML());
     } catch (error) {
       setErrorImagen(
         error instanceof Error
