@@ -1,3 +1,4 @@
+import MonitorPedidos from "./MonitorPedidos";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import {
@@ -110,8 +111,12 @@ export default async function PedidosPage({
   });
 
   return (
-    <main className="min-h-screen bg-slate-100 p-6">
-      <div className="mx-auto max-w-7xl">
+  <main className="min-h-screen bg-slate-100 p-6">
+    <MonitorPedidos
+      ultimoPedidoInicial={pedidos[0]?.id ?? null}
+    />
+
+    <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-black text-slate-950">
