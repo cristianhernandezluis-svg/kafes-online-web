@@ -208,12 +208,13 @@ export async function POST(request: Request) {
           },
         },
         select: {
-          id: true,
-          codigo: true,
-          nombreCliente: true,
-          total: true,
-          estado: true,
-        },
+  id: true,
+  codigo: true,
+  nombreCliente: true,
+  telefonoCliente: true,
+  total: true,
+  estado: true,
+},
       });
 
       return pedido;
@@ -229,11 +230,12 @@ export async function POST(request: Request) {
     try {
       const resultadoNotificacion =
         await enviarNotificacionNuevoPedido({
-          id: resultado.id,
-          codigo: resultado.codigo,
-          nombreCliente: resultado.nombreCliente,
-          total: Number(resultado.total),
-        });
+  id: resultado.id,
+  codigo: resultado.codigo,
+  nombreCliente: resultado.nombreCliente,
+  telefonoCliente: resultado.telefonoCliente,
+  total: Number(resultado.total),
+});
 
       console.log(
         "Resultado de notificación push:",

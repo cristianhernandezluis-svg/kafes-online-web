@@ -1,46 +1,137 @@
-/* global firebase */
+/*
+ * IMPORTANTE:
+ * El listener notificationclick debe declararse antes
+ * de importar Firebase para evitar que Firebase
+ * reemplace el comportamiento personalizado.
+ */
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  const datos = event.notification.data || {};
+
+  const urlPedido =
+    datos.url ||
+    "https://kafesonline.com/admin/pedidos";
+
+  const whatsappUrl = datos.whatsappUrl;
+
+  let urlDestino = urlPedido;
+
+  if (event.action === "whatsapp" && whatsappUrl) {
+    urlDestino = whatsappUrl;
+  }
+
+  if (event.action === "ver-pedido") {
+    urlDestino = urlPedido;
+  }
+
+  event.waitUntil(
+    (async () => {
+      /*
+       * Para WhatsApp abrimos directamente una nueva ventana.
+       */
+      if (event.action === "whatsapp") {
+        await clients.openWindow(urlDestino);
+        return;
+      }
+
+      /*
+       * Para el pedido intentamos reutilizar una pestaña
+       * ya abierta de KAFES ONLINE.
+       */
+      const ventanas = await clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+
+      for (const ventana of ventanas) {
+        if (
+          ventana.url.includes("kafesonline.com") &&
+          "focus" in ventana
+        ) {
+          if ("navigate" in ventana) {
+            await ventana.navigate(urlDestino);
+          }
+
+          await ventana.focus();
+          return;
+        }
+      }
+
+      await clients.openWindow(urlDestino);
+    })(),
+  );
+});
 
 importScripts(
-  "https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js",
+  "https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js",
 );
 
 importScripts(
-  "https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging-compat.js",
+  "https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js",
 );
 
 firebase.initializeApp({
-  apiKey: "BG6uW4ozkPILCQkhudmrC79rMn1VYLswqctukglNi05rTcN6sKy0bvmP8cScrQsHsR2PiZqJbrEPWCa7-mHRbXI",
-  authDomain: "kafes-online.firebaseapp.com",
-  projectId: "kafes-online",
+  apiKey:
+    "AIzaSyA65my-7A_U9N-mHMsbojU1tnLh7Jcc98A",
+  authDomain:
+    "kafes-online.firebaseapp.com",
+  projectId:
+    "kafes-online",
   storageBucket:
     "kafes-online.firebasestorage.app",
-  messagingSenderId: "48167082668",
-  appId: "TU_FIREBASE_APP_ID",
+  messagingSenderId:
+    "48167082668",
+  appId:
+    "1:48167082668:web:8c792aed47e433259c1d09",
 });
 
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
+  console.log(
+    "[firebase-messaging-sw.js] Nuevo pedido:",
+    payload,
+  );
+
   const datos = payload.data || {};
 
   const titulo =
-    datos.title || "🔔 Nuevo pedido en KAFES ONLINE";
+    datos.title ||
+    "🔔 Nuevo pedido en KAFES ONLINE";
 
   const opciones = {
     body:
       datos.body ||
-      "Acaba de ingresar un nuevo pedido.",
+      "Se ha registrado un nuevo pedido.",
+
     icon: "/pwa/icon-192.png",
     badge: "/pwa/icon-192.png",
-    tag: datos.pedidoId
-      ? `pedido-${datos.pedidoId}`
-      : "nuevo-pedido",
+
+    tag: `pedido-${datos.pedidoId || Date.now()}`,
     renotify: true,
+    requireInteraction: true,
+
     data: {
       url:
         datos.url ||
-        "/admin/pedidos",
+        "https://kafesonline.com/admin/pedidos",
+
+      whatsappUrl:
+        datos.whatsappUrl || "",
     },
+
+    actions: [
+      {
+        action: "ver-pedido",
+        title: "📦 Ver pedido",
+      },
+      {
+        action: "whatsapp",
+        title: "💬 WhatsApp",
+      },
+    ],
   };
 
   return self.registration.showNotification(
@@ -48,30 +139,3 @@ messaging.onBackgroundMessage((payload) => {
     opciones,
   );
 });
-
-self.addEventListener(
-  "notificationclick",
-  (event) => {
-    event.notification.close();
-
-    const url =
-      event.notification.data?.url ||
-      "/admin/pedidos";
-
-    event.waitUntil(
-      clients.matchAll({
-        type: "window",
-        includeUncontrolled: true,
-      }).then((ventanas) => {
-        for (const ventana of ventanas) {
-          if ("focus" in ventana) {
-            ventana.navigate(url);
-            return ventana.focus();
-          }
-        }
-
-        return clients.openWindow(url);
-      }),
-    );
-  },
-);
