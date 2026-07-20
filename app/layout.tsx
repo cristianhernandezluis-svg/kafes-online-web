@@ -16,7 +16,7 @@ export const metadata = {
 
   description: "Herramientas profesionales",
 
-  manifest: "/manifest.webmanifest",
+  manifest: "/manifest.json",
 
   applicationName: "Kafes Admin",
 
