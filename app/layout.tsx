@@ -1,4 +1,5 @@
 import "./globals.css";
+import ActualizadorPWA from "./ActualizadorPWA";
 import Script from "next/script";
 
 import { Poppins } from "next/font/google";
@@ -134,7 +135,9 @@ export default function RootLayout({
           `}
         </Script>
 
-        {children}
+<ActualizadorPWA />
+
+{children}
 
       </body>
     </html>
