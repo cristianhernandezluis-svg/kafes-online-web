@@ -78,13 +78,7 @@ export default function ActivarNotificaciones() {
       }
 
       const vapidKey =
-        process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
-
-      if (!vapidKey) {
-        throw new Error(
-          "Falta NEXT_PUBLIC_FIREBASE_VAPID_KEY.",
-        );
-      }
+  "BG6uW4ozkPILCQkhudmrC79rMn1VYLswqctukglNi05rTcN6sKy0bvmP8cScrQsHsR2PiZqJbrEPWCa7-mHRbXI";
 
       const token = await getToken(messaging, {
         vapidKey,
