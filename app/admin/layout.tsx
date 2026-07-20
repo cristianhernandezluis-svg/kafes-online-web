@@ -1,4 +1,5 @@
 import Link from "next/link";
+import NavegacionMovil from "./NavegacionMovil";
 import { requerirAdmin } from "@/lib/auth";
 import type { ReactNode } from "react";
 import { cerrarSesion } from "@/app/login/actions";
@@ -126,9 +127,11 @@ export default async function AdminLayout({
           </div>
         </header>
 
-        <main className="p-5 lg:p-8">
-          {children}
-        </main>
+        <main className="p-5 pb-28 lg:p-8">
+  {children}
+</main>
+
+<NavegacionMovil />
       </div>
     </div>
   );
