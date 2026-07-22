@@ -3,23 +3,54 @@ import { getCloudinary } from "@/lib/cloudinary";
 
 export const runtime = "nodejs";
 
+type Body = {
+  tipo?: "producto" | "banner";
+  productoId?: number;
+  bannerId?: number;
+};
+
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as {
-      productoId?: number;
-    };
+    const body = (await request.json()) as Body;
 
-    const productoId = Number(body.productoId);
+    const tipo = body.tipo ?? "producto";
 
-    if (!Number.isInteger(productoId) || productoId <= 0) {
-      return NextResponse.json(
-        { error: "Producto inválido." },
-        { status: 400 },
-      );
+    let folder = "";
+
+    switch (tipo) {
+      case "producto": {
+        const productoId = Number(body.productoId);
+
+        if (!Number.isInteger(productoId) || productoId <= 0) {
+          return NextResponse.json(
+            { error: "Producto inválido." },
+            { status: 400 },
+          );
+        }
+
+        folder = `kafes-online/productos/${productoId}`;
+        break;
+      }
+
+      case "banner": {
+  const bannerId = Number(body.bannerId);
+
+  folder =
+    Number.isInteger(bannerId) && bannerId > 0
+      ? `kafes-online/banners/${bannerId}`
+      : "kafes-online/banners/nuevos";
+
+  break;
+}
+
+      default:
+        return NextResponse.json(
+          { error: "Tipo no soportado." },
+          { status: 400 },
+        );
     }
 
     const timestamp = Math.round(Date.now() / 1000);
-    const folder = `kafes-online/productos/${productoId}`;
 
     const cloudinary = getCloudinary();
 
@@ -36,14 +67,22 @@ export async function POST(request: Request) {
       signature,
       folder,
       apiKey: process.env.CLOUDINARY_API_KEY,
-      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+      cloudName:
+        process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
     });
   } catch (error) {
-    console.error("Error generando firma de Cloudinary:", error);
+    console.error(
+      "Error generando firma de Cloudinary:",
+      error,
+    );
 
     return NextResponse.json(
-      { error: "No se pudo preparar la carga." },
-      { status: 500 },
+      {
+        error: "No se pudo preparar la carga.",
+      },
+      {
+        status: 500,
+      },
     );
   }
 }

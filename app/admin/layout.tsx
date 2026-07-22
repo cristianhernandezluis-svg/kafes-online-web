@@ -38,10 +38,10 @@ const menu = [
     icono: Tags,
   },
   {
-    nombre: "Banners",
-    href: "/admin/banners",
-    icono: ImageIcon,
-  },
+  nombre: "Página de inicio",
+  href: "/admin/home",
+  icono: ImageIcon,
+},
   {
     nombre: "Pedidos",
     href: "/admin/pedidos",

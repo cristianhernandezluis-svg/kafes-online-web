@@ -356,3 +356,21 @@ model DispositivoPush {
 
   @@index([activo])
 }
+
+model Banner {
+  id          Int      @id @default(autoincrement())
+  titulo      String?
+  subtitulo   String?
+  botonTexto  String?
+  botonLink   String?
+  imagenUrl   String
+  publicId    String?
+  orden       Int      @default(0)
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([activo])
+  @@index([orden])
+  @@map("banners")
+}
