@@ -145,15 +145,28 @@ export default async function Home() {
             </h1>
           </a>
 
-          <div className="hidden max-w-xl flex-1 items-center gap-3 rounded-full bg-white px-5 py-3 shadow-sm md:flex">
-            <Search size={20} className="text-zinc-500" />
+          <form
+  action="/buscar"
+  method="GET"
+  className="hidden max-w-xl flex-1 items-center gap-3 rounded-full bg-white px-5 py-3 shadow-sm md:flex"
+>
+  <Search size={20} className="text-zinc-500" />
 
-            <input
-              type="search"
-              placeholder="¿Qué herramienta estás buscando?"
-              className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-400"
-            />
-          </div>
+  <input
+    type="search"
+    name="q"
+    required
+    placeholder="¿Qué herramienta estás buscando?"
+    className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-400"
+  />
+
+  <button
+    type="submit"
+    className="rounded-full bg-black px-4 py-2 text-xs font-black text-yellow-400"
+  >
+    BUSCAR
+  </button>
+</form>
 
           <div className="flex items-center gap-2">
             <a
@@ -176,16 +189,30 @@ export default async function Home() {
 
         {/* Buscador móvil */}
         <div className="px-4 pb-4 md:hidden">
-          <div className="flex items-center gap-2 rounded-full bg-white px-4 py-3 shadow-sm">
-            <Search size={18} className="text-zinc-500" />
+  <form
+    action="/buscar"
+    method="GET"
+    className="flex items-center gap-2 rounded-full bg-white px-4 py-3 shadow-sm"
+  >
+    <Search size={18} className="text-zinc-500" />
 
-            <input
-              type="search"
-              placeholder="Buscar productos..."
-              className="w-full bg-transparent text-sm outline-none"
-            />
-          </div>
-        </div>
+    <input
+      type="search"
+      name="q"
+      required
+      placeholder="Buscar productos..."
+      className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+    />
+
+    <button
+      type="submit"
+      aria-label="Buscar producto"
+      className="rounded-full bg-black p-2 text-yellow-400"
+    >
+      <Search size={17} />
+    </button>
+  </form>
+</div>
       </header>
 
       {/* Franja industrial */}
