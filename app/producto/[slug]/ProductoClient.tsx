@@ -3,6 +3,7 @@
 import LandingProducto from "@/components/LandingProducto";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import ProductGallery from "@/components/producto/ProductGallery";
+import ProductPurchasePanel from "@/components/producto/ProductPurchasePanel";
 import ProductTechnicalSpecs from "@/components/producto/ProductTechnicalSpecs";
 import ProductDocuments from "@/components/producto/ProductDocuments";
 import type { ProductoPublico } from "@/components/producto/product-types";
@@ -20,7 +21,6 @@ import {
   MapPin,
   Home,
   Truck,
-  ShieldCheck,
 } from "lucide-react";
 
 declare global {
@@ -81,7 +81,6 @@ const [region, setRegion] = useState("");
 const [direccion, setDireccion] = useState("");
 const [referencia, setReferencia] = useState("");
 
-const [timeLeft, setTimeLeft] = useState(3 * 60 * 60);
 
 const viewContentTrackedSlug = useRef<string | null>(null);
 
@@ -109,14 +108,6 @@ useEffect(() => {
 
   return () => window.removeEventListener("scroll", onScroll);
 }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     if (!producto || !slug) return;
@@ -212,17 +203,7 @@ useEffect(() => {
     setOpenCheckout(true);
   };
 
-  const formatTime = (seconds: number) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-
-    return `${String(h).padStart(2, "0")}:${String(m).padStart(
-      2,
-      "0"
-    )}:${String(s).padStart(2, "0")}`;
-  };
-
+  
   const finalizarPedido = async () => {
   if (!nombre || !celular || !ciudad || !region || !direccion) {
     alert("Completa todos los campos obligatorios");
@@ -437,111 +418,13 @@ useEffect(() => {
   caracteristicas={producto.mini}
 />
 
-            <div>
-              <span className="bg-yellow-400 text-black px-4 py-2 rounded-full font-bold">
-                {producto.etiqueta}
-              </span>
-
-              <h1 className="text-4xl md:text-5xl font-black mt-6">
-                {producto.nombre}
-              </h1>
-
-              <div className="flex items-center gap-2 mt-3 text-yellow-400 font-bold">
-                ★★★★★
-                <span className="text-zinc-600 text-sm">
-                  4.9/5 +100 reseñas
-                </span>
-              </div>
-
-              <div className="mt-6 flex items-center gap-4">
-                <p className="text-5xl font-black text-yellow-500">
-                  S/{precio}
-                </p>
-                {producto.precioAntes && (
-  <span className="text-2xl text-zinc-400 line-through">
-    S/{producto.precioAntes}
-  </span>
-)}
-              </div>
-
-              <div className="mt-4 bg-red-100 text-red-600 px-4 py-3 rounded-2xl font-bold inline-block">
-                🔥 Últimas unidades disponibles
-              </div>
-
-              <div className="mt-4 bg-black text-yellow-400 px-5 py-4 rounded-2xl font-black inline-block shadow-xl animate-pulse">
-                ⏰ Oferta termina en: {formatTime(timeLeft)}
-              </div>
-
-              <p className="text-zinc-600 mt-6 text-lg leading-8">
-                {producto.descripcion}
-              </p>
-
-              <div className="grid grid-cols-2 gap-4 mt-8">
-                <InfoBox
-                  icon={<Truck />}
-                  title="Envío rápido"
-                  text="A todo el Perú"
-                />
-                <InfoBox
-                  icon={<ShieldCheck />}
-                  title="Compra segura"
-                  text="Confirmación por WhatsApp"
-                />
-              </div>
-
-              <div className="mt-8 space-y-3">
-                {producto.beneficios?.map((item: string) => (
-                  <Benefit key={item} text={item} />
-                ))}
-              </div>
-
-              <div className="mt-8">
-                <label className="font-black">Cantidad</label>
-
-                <div className="flex mt-3 w-[180px]">
-                  <button
-                    onClick={() => setCantidad(Math.max(1, cantidad - 1))}
-                    className="bg-zinc-200 px-5 py-3 font-black rounded-l-xl"
-                  >
-                    -
-                  </button>
-
-                  <div className="flex-1 border-y flex items-center justify-center font-black">
-                    {cantidad}
-                  </div>
-
-                  <button
-                    onClick={() => setCantidad(cantidad + 1)}
-                    className="bg-zinc-200 px-5 py-3 font-black rounded-r-xl"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-8 space-y-4">
-                <button
-                  onClick={abrirCheckout}
-                  className="bg-green-500 hover:bg-green-600 text-white w-full py-5 rounded-2xl text-2xl font-black transition shadow-xl"
-                >
-                  Agregar al carrito
-                </button>
-
-                <button
-  ref={comprarAhoraRef}
-  onClick={abrirCheckout}
-  className="bg-pink-600 hover:bg-pink-700 text-white w-full py-5 rounded-2xl text-2xl font-black shadow-xl animate-[pulse_1.2s_ease-in-out_infinite]"
->
-  Comprar ahora
-</button>
-              </div>
-
-              <div className="mt-6 bg-zinc-100 rounded-2xl p-5 space-y-3 text-sm">
-                <p>🚚 Envío gratis a todo el Perú</p>
-                <p>📦 Pago contra entrega</p>
-                <p>🛡️ Garantía de satisfacción</p>
-              </div>
-            </div>
+            <ProductPurchasePanel
+  producto={producto}
+  cantidad={cantidad}
+  onCantidadChange={setCantidad}
+  onComprar={abrirCheckout}
+  comprarAhoraRef={comprarAhoraRef}
+/>
           </div>
 
           {producto.contenidoHtml && (
@@ -912,25 +795,6 @@ function Input({
         placeholder={placeholder}
         className="w-full px-5 py-4 outline-none text-lg"
       />
-    </div>
-  );
-}
-
-function InfoBox({ icon, title, text }: any) {
-  return (
-    <div className="border rounded-2xl p-4">
-      <div className="text-yellow-500">{icon}</div>
-      <h3 className="font-black mt-2">{title}</h3>
-      <p className="text-sm text-zinc-500">{text}</p>
-    </div>
-  );
-}
-
-function Benefit({ text }: any) {
-  return (
-    <div className="flex items-center gap-3">
-      <CheckCircle className="text-green-500" />
-      <span className="font-medium">{text}</span>
     </div>
   );
 }
