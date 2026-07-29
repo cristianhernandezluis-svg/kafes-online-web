@@ -3,6 +3,7 @@
 import LandingProducto from "@/components/LandingProducto";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import StickyBuyButton from "@/components/producto/StickyBuyButton";
+import RelatedProducts from "@/components/producto/RelatedProducts";
 import ProductSocialProof from "@/components/producto/ProductSocialProof";
 import CheckoutModal from "@/components/producto/CheckoutModal";
 import ProductGallery from "@/components/producto/ProductGallery";
@@ -408,32 +409,7 @@ useEffect(() => {
         </>
       )}
 
-        <section className="max-w-7xl mx-auto px-6 py-20">
-          <h2 className="text-3xl font-black mb-8">
-            También te pueden interesar:
-          </h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <ProductCard
-              name='Sierra BOMVINK 8"'
-              price="S/249"
-              image="/sierra-bomvink-8.jpg"
-              href="/producto/sierra-bomvink-8"
-            />
-            <ProductCard
-              name='Sierra BOMVINK Premium'
-              price="S/249"
-              image="/sierra-bomvink-gempages.jpg"
-              href="/producto/sierra-bomvink-gempages"
-            />
-            <ProductCard
-              name="Soporte Telescópico XTD"
-              price="S/209"
-              image="/soporte-telescopico-xtd.jpg"
-              href="/producto/soporte-telescopico-xtd"
-            />
-          </div>
-        </section>
+        <RelatedProducts />
       {!producto.modoGempages && (
         <footer className="bg-black text-white px-6 py-16 pb-32">
           <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
@@ -496,22 +472,5 @@ useEffect(() => {
 )}
       <WhatsAppButton />
     </main>
-  );
-}
-
-function ProductCard({ name, price, image, href }: any) {
-  return (
-    <Link href={href} className="bg-white border rounded-3xl p-4 shadow-sm block">
-      <Image
-        src={image}
-        alt={name}
-        width={300}
-        height={300}
-        className="w-full h-40 object-contain bg-zinc-100 rounded-2xl"
-      />
-
-      <h3 className="font-black mt-4">{name}</h3>
-      <p className="text-yellow-500 font-black text-xl mt-2">{price}</p>
-    </Link>
   );
 }
