@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ProductSpecificationManager from "@/components/admin/especificaciones/ProductSpecificationManager";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
@@ -29,10 +30,26 @@ type EditarProductoPageProps = {
 export const dynamic = "force-dynamic";
 
 const tabs = [
-  { nombre: "Información", valor: "informacion" },
-  { nombre: "Imágenes", valor: "imagenes" },
-  { nombre: "Contenido", valor: "contenido" },
-  { nombre: "Documentos", valor: "documentos" },
+  {
+    nombre: "Información",
+    valor: "informacion",
+  },
+  {
+    nombre: "Imágenes",
+    valor: "imagenes",
+  },
+  {
+    nombre: "Contenido",
+    valor: "contenido",
+  },
+  {
+    nombre: "Especificaciones",
+    valor: "especificaciones",
+  },
+  {
+    nombre: "Documentos",
+    valor: "documentos",
+  },
 ];
 
 export default async function EditarProductoPage({
@@ -400,6 +417,15 @@ export default async function EditarProductoPage({
       </button>
     </Card>
   </form>
+)}
+
+{tabActiva === "especificaciones" && (
+  <Card
+    title="Especificaciones técnicas"
+    description="Agrega las características técnicas que aparecerán en la página pública del producto."
+  >
+    <ProductSpecificationManager productoId={producto.id} />
+  </Card>
 )}
 
 {tabActiva === "documentos" && (
