@@ -51,6 +51,45 @@ export default async function ProductoPage({
     notFound();
   }
 
+  const relacionadosDb = productoDb.categoriaId
+    ? await prisma.producto.findMany({
+        where: {
+          categoriaId: productoDb.categoriaId,
+          estado: "PUBLICADO",
+          id: {
+            not: productoDb.id,
+          },
+        },
+        include: {
+          imagenes: {
+            orderBy: {
+              orden: "asc",
+            },
+          },
+        },
+        orderBy: {
+          destacado: "desc",
+        },
+        take: 4,
+      })
+    : [];
+
+  const relacionados = relacionadosDb.map((item) => {
+    const imagenPrincipal =
+      item.imagenes.find(
+        (imagen) => imagen.esPrincipal,
+      )?.url ??
+      item.imagenes[0]?.url ??
+      "/placeholder-producto.jpg";
+
+    return {
+      nombre: item.nombre,
+      precio: Number(item.precio),
+      imagen: imagenPrincipal,
+      href: `/producto/${item.slug}`,
+    };
+  });
+
   const imagenes = productoDb.imagenes.map(
     (imagen) => imagen.url,
   );
@@ -117,12 +156,15 @@ export default async function ProductoPage({
       (documento) => ({
         id: documento.id,
         titulo: documento.titulo,
-        tipo: documento.tipo as ProductoPublico["documentos"][number]["tipo"],
+        tipo:
+          documento.tipo as ProductoPublico["documentos"][number]["tipo"],
         archivoUrl: documento.archivoUrl,
         orden: documento.orden,
         visible: documento.visible,
       }),
     ),
+
+    relacionados,
   };
 
   return <ProductoClient producto={producto} />;

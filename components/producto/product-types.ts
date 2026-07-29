@@ -22,6 +22,13 @@ export type ProductoDocumentoPublico = {
   visible: boolean;
 };
 
+export type ProductoRelacionadoPublico = {
+  nombre: string;
+  precio: number;
+  imagen: string;
+  href: string;
+};
+
 export type ProductoPublico = {
   id: number;
   slug: string;
@@ -40,4 +47,5 @@ export type ProductoPublico = {
   beneficios: string[];
   especificaciones: ProductoEspecificacion[];
   documentos: ProductoDocumentoPublico[];
+  relacionados: ProductoRelacionadoPublico[];
 };

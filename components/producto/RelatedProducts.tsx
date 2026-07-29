@@ -9,32 +9,11 @@ export type ProductoRelacionado = {
 };
 
 type RelatedProductsProps = {
-  productos?: ProductoRelacionado[];
+  productos: ProductoRelacionado[];
 };
 
-const productosPorDefecto: ProductoRelacionado[] = [
-  {
-    nombre: 'Sierra BOMVINK 8"',
-    precio: 249,
-    imagen: "/sierra-bomvink-8.jpg",
-    href: "/producto/sierra-bomvink-8",
-  },
-  {
-    nombre: "Sierra BOMVINK Premium",
-    precio: 249,
-    imagen: "/sierra-bomvink-gempages.jpg",
-    href: "/producto/sierra-bomvink-gempages",
-  },
-  {
-    nombre: "Soporte Telescópico XTD",
-    precio: 209,
-    imagen: "/soporte-telescopico-xtd.jpg",
-    href: "/producto/soporte-telescopico-xtd",
-  },
-];
-
 export default function RelatedProducts({
-  productos = productosPorDefecto,
+  productos,
 }: RelatedProductsProps) {
   if (productos.length === 0) {
     return null;

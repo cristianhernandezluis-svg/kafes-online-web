@@ -409,7 +409,9 @@ useEffect(() => {
         </>
       )}
 
-        <RelatedProducts />
+        <RelatedProducts
+  productos={producto.relacionados}
+/>
       {!producto.modoGempages && (
         <footer className="bg-black text-white px-6 py-16 pb-32">
           <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
