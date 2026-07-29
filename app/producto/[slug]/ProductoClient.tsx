@@ -2,6 +2,7 @@
 
 import LandingProducto from "@/components/LandingProducto";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import ProductGallery from "@/components/producto/ProductGallery";
 import ProductTechnicalSpecs from "@/components/producto/ProductTechnicalSpecs";
 import ProductDocuments from "@/components/producto/ProductDocuments";
 import type { ProductoPublico } from "@/components/producto/product-types";
@@ -68,7 +69,6 @@ export default function ProductoClient({
   const comprarAhoraRef = useRef<HTMLButtonElement | null>(null);
   const [mostrarCompraFija, setMostrarCompraFija] = useState(false);
 
-const [imagenActiva, setImagenActiva] = useState(0);
 const [openCheckout, setOpenCheckout] = useState(false);
 const [pedidoFinalizado, setPedidoFinalizado] = useState(false);
 const [loading, setLoading] = useState(false);
@@ -87,15 +87,6 @@ const viewContentTrackedSlug = useRef<string | null>(null);
 
 const precio = producto?.precio || 0;
 const total = precio * cantidad;
-
-const galeria =
-  producto?.imagenes && producto.imagenes.length > 0
-    ? producto.imagenes
-    : producto
-      ? [producto.imagen]
-      : [];
-
-const imagenPrincipal = galeria[imagenActiva] || producto?.imagen;
 
 useEffect(() => {
   const onScroll = () => {
@@ -439,53 +430,12 @@ useEffect(() => {
 ) : (
         <>
           <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 px-3 py-6 sm:px-4 md:grid-cols-2 md:gap-12 md:px-6 md:py-10">
-            <div>
-  {/* Imagen principal */}
-  <div className="w-full overflow-hidden rounded-3xl bg-zinc-100 p-3 sm:p-5 md:p-8">
-  <Image
-    src={imagenPrincipal}
-    alt={producto.nombre}
-    width={700}
-    height={700}
-    className="block h-auto w-full rounded-2xl object-contain"
-    priority
-  />
-</div>
-
-  {/* Miniaturas */}
-  {galeria.length > 1 && (
-    <div className="mt-4 flex w-full gap-2 overflow-x-auto pb-2">
-      {galeria.map((src: string, index: number) => (
-        <button
-          key={`${src}-${index}`}
-          type="button"
-          onClick={() => setImagenActiva(index)}
-          aria-label={`Ver imagen ${index + 1} de ${producto.nombre}`}
-          className={`shrink-0 rounded-xl border-2 bg-white p-1.5 transition sm:rounded-2xl sm:p-2 ${
-  imagenActiva === index
-    ? "border-yellow-400 shadow-lg"
-    : "border-zinc-200"
-}`}
-        >
-          <Image
-            src={src}
-            alt={`${producto.nombre} - imagen ${index + 1}`}
-            width={110}
-            height={110}
-            className="h-16 w-16 object-contain sm:h-24 sm:w-24"
-          />
-        </button>
-      ))}
-    </div>
-  )}
-
-  {/* Características rápidas */}
-  <div className="mt-5 grid w-full grid-cols-3 gap-2 sm:gap-4">
-    {producto.mini?.map((item: string) => (
-      <MiniBox key={item} text={item} />
-    ))}
-  </div>
-</div>
+            <ProductGallery
+  nombre={producto.nombre}
+  imagenPrincipal={producto.imagen}
+  imagenes={producto.imagenes}
+  caracteristicas={producto.mini}
+/>
 
             <div>
               <span className="bg-yellow-400 text-black px-4 py-2 rounded-full font-bold">
@@ -976,13 +926,6 @@ function InfoBox({ icon, title, text }: any) {
   );
 }
 
-function MiniBox({ text }: any) {
-  return (
-    <div className="min-w-0 rounded-xl bg-zinc-100 px-2 py-3 text-center text-xs font-black break-words sm:rounded-2xl sm:p-4 sm:text-base">
-      {text}
-    </div>
-  );
-}
 function Benefit({ text }: any) {
   return (
     <div className="flex items-center gap-3">
