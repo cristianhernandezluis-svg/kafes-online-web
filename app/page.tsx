@@ -1,4 +1,5 @@
 import WhatsAppButton from "@/components/WhatsAppButton";
+import prisma from "@/lib/prisma";
 import Benefit from "@/components/home/Benefit";
 import HeroSlider from "@/components/home/HeroSlider";
 import ProductCard from "@/components/home/ProductCard";
@@ -56,54 +57,66 @@ const categories = [
   },
 ];
 
-const products = [
-  {
-    href: "/producto/sierra-bomvink-8",
-    image: "/sierra-bomvink-8.jpg",
-    alt: "Sierra inalámbrica BOMVINK",
-    badge: "MÁS VENDIDO",
-    title: 'Sierra Inalámbrica BOMVINK 8"',
-    description:
-      "Incluye 2 baterías de 21V. Ideal para poda, corte de madera y trabajos de campo.",
-    price: "S/249",
-    beforePrice: "S/299",
-  },
-{
-  href: "/producto/rotomartillo-demoledor-powfull",
-  image: "/rotomartillo-demoledor-powfull.jpg",
-  alt: "Rotomartillo Demoledor POWFULL",
-  badge: "TECNOLOGÍA BRASILEÑA",
-  title: "Rotomartillo Demoledor POWFULL",
-  description:
-    "Equipo profesional de 1600W y 45J para trabajos exigentes de demolición.",
-  price: "S/659",
-  beforePrice: "S/849",
-},
-  {
-    href: "/producto/soporte-telescopico-xtd",
-    image: "/soporte-telescopico-xtd.jpg",
-    alt: "Soporte telescópico XTD",
-    badge: "NUEVO",
-    title: "Soporte Telescópico XTD",
-    description:
-      "Mayor estabilidad, precisión y seguridad para realizar cortes profesionales.",
-    price: "S/209",
-    beforePrice: "S/249",
-  },
-  {
-    href: "/producto/hidrolavadora-bomder",
-    image: "/hidrolavadora-bomder.jpg",
-    alt: "Hidrolavadora BOMDER",
-    badge: "OFERTA PATRIA",
-    title: "Hidrolavadora BOMDER 2500W",
-    description:
-      "Potente equipo para lavar autos, motos, fachadas, patios y maquinaria.",
-    price: "S/299",
-    beforePrice: "S/349",
-  },
-];
+function formatearPrecio(valor: { toString(): string } | null) {
+  if (!valor) return null;
 
-export default function Home() {
+  const numero = Number(valor.toString());
+
+  return new Intl.NumberFormat("es-PE", {
+    style: "currency",
+    currency: "PEN",
+    minimumFractionDigits: numero % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(numero);
+}
+
+async function obtenerProductosDestacados() {
+  return prisma.producto.findMany({
+    where: {
+      estado: "PUBLICADO",
+      destacado: true,
+    },
+    select: {
+      id: true,
+      nombre: true,
+      slug: true,
+      descripcionCorta: true,
+      precio: true,
+      precioAntes: true,
+      stock: true,
+      categoria: {
+        select: {
+          nombre: true,
+        },
+      },
+      marca: {
+        select: {
+          nombre: true,
+        },
+      },
+      imagenes: {
+        select: {
+          url: true,
+          alt: true,
+        },
+        orderBy: [
+          { esPrincipal: "desc" },
+          { orden: "asc" },
+        ],
+        take: 1,
+      },
+    },
+    orderBy: [
+      { publishedAt: "desc" },
+      { createdAt: "desc" },
+    ],
+    take: 8,
+  });
+}
+
+export default async function Home() {
+  const productos = await obtenerProductosDestacados();
+
   return (
     <main className="min-h-screen bg-[#f7f7f7] text-black">
       {/* Barra informativa superior */}
@@ -312,9 +325,27 @@ export default function Home() {
           </div>
 
           <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard key={product.title} {...product} />
-            ))}
+            {productos.map((producto) => {
+              const imagen = producto.imagenes[0];
+
+              return (
+                <ProductCard
+                  key={producto.id}
+                  href={`/producto/${producto.slug}`}
+                  image={imagen?.url ?? "/categorias/herramientas.png"}
+                  alt={imagen?.alt ?? producto.nombre}
+                  badge={producto.categoria?.nombre ?? producto.marca?.nombre ?? "DESTACADO"}
+                  title={producto.nombre}
+                  description={
+                    producto.descripcionCorta ??
+                    "Producto seleccionado por KAFES ONLINE."
+                  }
+                  price={formatearPrecio(producto.precio) ?? "Consultar"}
+                  beforePrice={formatearPrecio(producto.precioAntes)}
+                  available={producto.stock > 0}
+                />
+              );
+            })}
           </div>
         </div>
       </section>

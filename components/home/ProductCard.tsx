@@ -6,7 +6,8 @@ export type ProductCardProps = {
   title: string;
   description: string;
   price: string;
-  beforePrice: string;
+  beforePrice?: string | null;
+  available?: boolean;
 };
 
 export default function ProductCard({
@@ -18,6 +19,7 @@ export default function ProductCard({
   description,
   price,
   beforePrice,
+  available = true,
 }: ProductCardProps) {
   return (
     <a
@@ -38,7 +40,14 @@ export default function ProductCard({
 
       <div className="p-6">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-green-600">● Disponible</span>
+          <span
+            className={`text-xs font-bold ${
+              available ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            ● {available ? "Disponible" : "Agotado"}
+          </span>
+
           <span className="text-xs font-bold text-zinc-500">
             Envíos nacionales
           </span>
@@ -52,9 +61,12 @@ export default function ProductCard({
 
         <div className="mt-5 flex items-end gap-3">
           <p className="text-3xl font-black text-red-600">{price}</p>
-          <span className="pb-1 text-base text-zinc-400 line-through">
-            {beforePrice}
-          </span>
+
+          {beforePrice ? (
+            <span className="pb-1 text-base text-zinc-400 line-through">
+              {beforePrice}
+            </span>
+          ) : null}
         </div>
 
         <div className="mt-6 flex w-full items-center justify-center rounded-2xl bg-yellow-400 py-4 font-black text-black transition group-hover:bg-black group-hover:text-yellow-400">
