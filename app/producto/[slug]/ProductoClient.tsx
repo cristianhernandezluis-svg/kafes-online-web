@@ -3,6 +3,7 @@
 import LandingProducto from "@/components/LandingProducto";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import StickyBuyButton from "@/components/producto/StickyBuyButton";
+import ProductSocialProof from "@/components/producto/ProductSocialProof";
 import CheckoutModal from "@/components/producto/CheckoutModal";
 import ProductGallery from "@/components/producto/ProductGallery";
 import ProductPurchasePanel from "@/components/producto/ProductPurchasePanel";
@@ -403,49 +404,7 @@ useEffect(() => {
 
 <ProductDocuments documentos={producto.documentos} />
 
-<section className="max-w-7xl mx-auto px-6 py-20">
-  <h2 className="text-4xl font-black text-center mb-10">
-    Clientes Felices
-  </h2>
-
-  <div className="grid md:grid-cols-3 gap-6">
-    <Testimonial
-      name="Carlos M."
-      text="Me llegó rápido y funciona muy bien."
-    />
-
-    <Testimonial
-      name="Luis R."
-      text="Buena potencia y excelente atención."
-    />
-
-    <Testimonial
-      name="Miguel A."
-      text="Producto recomendado, buena calidad."
-    />
-  </div>
-</section>
-
-          <section className="max-w-5xl mx-auto px-6 py-16">
-            <h2 className="text-4xl font-black text-center mb-10">
-              Preguntas Frecuentes
-            </h2>
-
-            <div className="space-y-5">
-              <Faq
-                question="¿Hacen envíos a provincia?"
-                answer="Sí, enviamos a todo el Perú."
-              />
-              <Faq
-                question="¿El pago es contra entrega?"
-                answer="Sí, un asesor confirmará tu pedido por WhatsApp."
-              />
-              <Faq
-                question="¿Tiene garantía?"
-                answer="Sí, todos nuestros productos cuentan con garantía."
-              />
-            </div>
-          </section>
+<ProductSocialProof />
         </>
       )}
 
@@ -537,25 +496,6 @@ useEffect(() => {
 )}
       <WhatsAppButton />
     </main>
-  );
-}
-
-function Testimonial({ name, text }: any) {
-  return (
-    <div className="bg-white border rounded-3xl p-6 shadow-sm text-center">
-      <div className="text-yellow-400 text-xl mb-3">★★★★★</div>
-      <p className="text-zinc-700">"{text}"</p>
-      <h3 className="font-black mt-4">{name}</h3>
-    </div>
-  );
-}
-
-function Faq({ question, answer }: any) {
-  return (
-    <div className="border rounded-3xl p-6">
-      <h3 className="font-black text-xl">{question}</h3>
-      <p className="text-zinc-600 mt-3">{answer}</p>
-    </div>
   );
 }
 
