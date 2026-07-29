@@ -2,117 +2,133 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-
-import prisma from "@/lib/prisma";
 import { requerirAdmin } from "@/lib/auth";
+import { getCloudinary } from "@/lib/cloudinary";
+import prisma from "@/lib/prisma";
 
-function obtenerTexto(formData: FormData, nombre: string) {
-  return String(formData.get(nombre) ?? "").trim();
+function texto(formData: FormData, campo: string) {
+  return String(formData.get(campo) ?? "").trim();
 }
 
-function obtenerNumero(formData: FormData, nombre: string) {
-  const valor = Number(formData.get(nombre) ?? 0);
+function entero(formData: FormData, campo: string, defecto = 0) {
+  const valor = Number(formData.get(campo));
+  return Number.isFinite(valor) ? Math.trunc(valor) : defecto;
+}
 
-  return Number.isFinite(valor) ? valor : 0;
+function datosBanner(formData: FormData) {
+  const imagenDesktopUrl = texto(formData, "imagenDesktopUrl");
+  const imagenDesktopPublicId = texto(formData, "imagenDesktopPublicId");
+  const alt = texto(formData, "alt");
+
+  if (!imagenDesktopUrl || !imagenDesktopPublicId) {
+    throw new Error("La imagen para computadora es obligatoria.");
+  }
+
+  if (!alt) {
+    throw new Error("El texto alternativo es obligatorio.");
+  }
+
+  return {
+    titulo: texto(formData, "titulo") || null,
+    subtitulo: texto(formData, "subtitulo") || null,
+    textoBoton: texto(formData, "textoBoton") || null,
+    href: texto(formData, "href") || "/",
+    alt,
+    imagenDesktopUrl,
+    imagenDesktopPublicId,
+    imagenMobileUrl: texto(formData, "imagenMobileUrl") || null,
+    imagenMobilePublicId: texto(formData, "imagenMobilePublicId") || null,
+    activo: formData.get("activo") === "on",
+    orden: entero(formData, "orden"),
+  };
 }
 
 export async function crearBanner(formData: FormData) {
   await requerirAdmin();
-
-  const titulo = obtenerTexto(formData, "titulo");
-  const subtitulo = obtenerTexto(formData, "subtitulo");
-  const botonTexto = obtenerTexto(formData, "botonTexto");
-  const botonLink = obtenerTexto(formData, "botonLink");
-  const imagenUrl = obtenerTexto(formData, "imagenUrl");
-  const publicId = obtenerTexto(formData, "publicId");
-  const orden = obtenerNumero(formData, "orden");
-  const activo = formData.get("activo") === "on";
-
-  if (!imagenUrl) {
-    throw new Error("Debes subir una imagen para el banner.");
-  }
-
-  const banner = await prisma.banner.create({
-    data: {
-      titulo: titulo || null,
-      subtitulo: subtitulo || null,
-      botonTexto: botonTexto || null,
-      botonLink: botonLink || null,
-      imagenUrl,
-      publicId: publicId || null,
-      orden,
-      activo,
-    },
-  });
-
-  revalidatePath("/admin/home");
+  await prisma.banner.create({ data: datosBanner(formData) });
   revalidatePath("/");
-
-  redirect(`/admin/home/banners/${banner.id}/editar?creado=1`);
+  revalidatePath("/admin/home");
+  redirect("/admin/home");
 }
 
 export async function actualizarBanner(formData: FormData) {
   await requerirAdmin();
-
   const bannerId = Number(formData.get("bannerId"));
 
   if (!Number.isInteger(bannerId) || bannerId <= 0) {
     throw new Error("Banner inválido.");
   }
 
-  const titulo = obtenerTexto(formData, "titulo");
-  const subtitulo = obtenerTexto(formData, "subtitulo");
-  const botonTexto = obtenerTexto(formData, "botonTexto");
-  const botonLink = obtenerTexto(formData, "botonLink");
-  const imagenUrl = obtenerTexto(formData, "imagenUrl");
-  const publicId = obtenerTexto(formData, "publicId");
-  const orden = obtenerNumero(formData, "orden");
-  const activo = formData.get("activo") === "on";
+  const anterior = await prisma.banner.findUnique({ where: { id: bannerId } });
+  if (!anterior) throw new Error("El banner no existe.");
 
-  if (!imagenUrl) {
-    throw new Error("Debes subir una imagen para el banner.");
+  const data = datosBanner(formData);
+  await prisma.banner.update({ where: { id: bannerId }, data });
+
+  const publicIdsAnteriores = [
+    anterior.imagenDesktopPublicId,
+    anterior.imagenMobilePublicId,
+  ].filter(Boolean) as string[];
+  const publicIdsNuevos = [
+    data.imagenDesktopPublicId,
+    data.imagenMobilePublicId,
+  ].filter(Boolean) as string[];
+  const reemplazados = publicIdsAnteriores.filter((id) => !publicIdsNuevos.includes(id));
+
+  if (reemplazados.length > 0) {
+    try {
+      await getCloudinary().api.delete_resources(reemplazados, {
+        resource_type: "image",
+      });
+    } catch (error) {
+      console.error("No se pudieron eliminar imágenes antiguas del banner:", error);
+    }
   }
 
-  await prisma.banner.update({
-    where: {
-      id: bannerId,
-    },
-    data: {
-      titulo: titulo || null,
-      subtitulo: subtitulo || null,
-      botonTexto: botonTexto || null,
-      botonLink: botonLink || null,
-      imagenUrl,
-      publicId: publicId || null,
-      orden,
-      activo,
-    },
-  });
-
-  revalidatePath("/admin/home");
   revalidatePath("/");
-  revalidatePath(`/admin/home/banners/${bannerId}/editar`);
-
-  redirect(`/admin/home/banners/${bannerId}/editar?guardado=1`);
+  revalidatePath("/admin/home");
+  revalidatePath(`/admin/home/${bannerId}/editar`);
+  redirect("/admin/home");
 }
 
 export async function eliminarBanner(formData: FormData) {
   await requerirAdmin();
-
   const bannerId = Number(formData.get("bannerId"));
 
   if (!Number.isInteger(bannerId) || bannerId <= 0) {
     throw new Error("Banner inválido.");
   }
 
-  await prisma.banner.delete({
-    where: {
-      id: bannerId,
-    },
+  const banner = await prisma.banner.delete({ where: { id: bannerId } });
+  const publicIds = [
+    banner.imagenDesktopPublicId,
+    banner.imagenMobilePublicId,
+  ].filter(Boolean) as string[];
+
+  if (publicIds.length > 0) {
+    try {
+      await getCloudinary().api.delete_resources(publicIds, {
+        resource_type: "image",
+      });
+    } catch (error) {
+      console.error("No se pudieron eliminar las imágenes del banner:", error);
+    }
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin/home");
+}
+
+export async function cambiarEstadoBanner(formData: FormData) {
+  await requerirAdmin();
+  const bannerId = Number(formData.get("bannerId"));
+  const activo = formData.get("activo") === "true";
+
+  await prisma.banner.update({
+    where: { id: bannerId },
+    data: { activo },
   });
 
-  revalidatePath("/admin/home");
   revalidatePath("/");
-
-  redirect("/admin/home");
+  revalidatePath("/admin/home");
 }

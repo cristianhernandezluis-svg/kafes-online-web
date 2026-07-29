@@ -73,6 +73,23 @@ function formatearPrecio(valor: { toString(): string } | null) {
   }).format(numero);
 }
 
+async function obtenerBanners() {
+  return prisma.banner.findMany({
+    where: { activo: true },
+    orderBy: [{ orden: "asc" }, { createdAt: "desc" }],
+    select: {
+      id: true,
+      titulo: true,
+      subtitulo: true,
+      textoBoton: true,
+      href: true,
+      alt: true,
+      imagenDesktopUrl: true,
+      imagenMobileUrl: true,
+    },
+  });
+}
+
 async function obtenerProductosDestacados() {
   return prisma.producto.findMany({
     where: {
@@ -118,7 +135,21 @@ async function obtenerProductosDestacados() {
 }
 
 export default async function Home() {
-  const productos = await obtenerProductosDestacados();
+  const [productos, bannersDb] = await Promise.all([
+    obtenerProductosDestacados(),
+    obtenerBanners(),
+  ]);
+
+  const banners = bannersDb.map((banner) => ({
+    id: banner.id,
+    imageDesktop: banner.imagenDesktopUrl,
+    imageMobile: banner.imagenMobileUrl,
+    alt: banner.alt,
+    href: banner.href,
+    titulo: banner.titulo,
+    subtitulo: banner.subtitulo,
+    textoBoton: banner.textoBoton,
+  }));
 
   return (
     <main className="min-h-screen bg-[#f7f7f7] text-black">
@@ -208,7 +239,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <HeroSlider />
+      <HeroSlider banners={banners} />
 
       {/* Beneficios */}
       <section className="mx-auto max-w-7xl px-4 pb-10 md:px-6">
