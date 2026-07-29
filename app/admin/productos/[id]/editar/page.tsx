@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ProductSpecificationManager from "@/components/admin/especificaciones/ProductSpecificationManager";
+import ProductDocumentManager from "@/components/admin/documentos/ProductDocumentManager";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
@@ -431,18 +432,12 @@ export default async function EditarProductoPage({
 {tabActiva === "documentos" && (
   <Card
     title="Documentación técnica"
-    description="Administra fichas técnicas, manuales, curvas de rendimiento y otros documentos."
+    description="Sube fichas técnicas, manuales, curvas de rendimiento, catálogos y certificados."
   >
-    <div className="rounded-xl border border-dashed border-slate-300 p-12 text-center">
-      <div className="text-lg font-bold text-slate-800">
-        📄 Documentación técnica
-      </div>
-
-      <p className="mt-3 text-sm text-slate-500">
-        Aquí podrás subir fichas técnicas, manuales, curvas de rendimiento,
-        certificados y otros documentos del producto.
-      </p>
-    </div>
+    <ProductDocumentManager
+      productoId={producto.id}
+      productoNombre={producto.nombre}
+    />
   </Card>
 )}
 
