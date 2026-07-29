@@ -101,6 +101,7 @@ model Producto {
   imagenes         ProductoImagen[]
   beneficios       ProductoBeneficio[]
   fichaTecnica     ProductoFichaTecnica[]
+  documentos       ProductoDocumento[]
   accesorios       ProductoAccesorio[]
   secciones        ProductoSeccion[]
   itemsPedido      PedidoItem[]
@@ -158,6 +159,24 @@ model ProductoFichaTecnica {
 
   @@index([productoId, orden])
   @@map("producto_ficha_tecnica")
+}
+
+model ProductoDocumento {
+  id         Int      @id @default(autoincrement())
+  productoId Int
+  titulo     String
+  tipo       String
+  archivoUrl String
+  publicId   String?
+  orden      Int      @default(0)
+  visible    Boolean  @default(true)
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([productoId, orden])
+  @@index([productoId, tipo])
+  @@map("producto_documentos")
 }
 
 model ProductoAccesorio {
