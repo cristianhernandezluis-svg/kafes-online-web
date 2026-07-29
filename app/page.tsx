@@ -1,11 +1,11 @@
 import WhatsAppButton from "@/components/WhatsAppButton";
 import prisma from "@/lib/prisma";
+import BuscadorProductos from "@/components/BuscadorProductos";
 import Benefit from "@/components/home/Benefit";
 import HeroSlider from "@/components/home/HeroSlider";
 import ProductCard from "@/components/home/ProductCard";
 import PromoCard from "@/components/home/PromoCard";
 import {
-  Search,
   ShoppingCart,
   Truck,
   ShieldCheck,
@@ -145,28 +145,7 @@ export default async function Home() {
             </h1>
           </a>
 
-          <form
-  action="/buscar"
-  method="GET"
-  className="hidden max-w-xl flex-1 items-center gap-3 rounded-full bg-white px-5 py-3 shadow-sm md:flex"
->
-  <Search size={20} className="text-zinc-500" />
-
-  <input
-    type="search"
-    name="q"
-    required
-    placeholder="¿Qué herramienta estás buscando?"
-    className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-400"
-  />
-
-  <button
-    type="submit"
-    className="rounded-full bg-black px-4 py-2 text-xs font-black text-yellow-400"
-  >
-    BUSCAR
-  </button>
-</form>
+          <BuscadorProductos variante="desktop" />
 
           <div className="flex items-center gap-2">
             <a
@@ -188,30 +167,8 @@ export default async function Home() {
         </div>
 
         {/* Buscador móvil */}
-        <div className="px-4 pb-4 md:hidden">
-  <form
-    action="/buscar"
-    method="GET"
-    className="flex items-center gap-2 rounded-full bg-white px-4 py-3 shadow-sm"
-  >
-    <Search size={18} className="text-zinc-500" />
-
-    <input
-      type="search"
-      name="q"
-      required
-      placeholder="Buscar productos..."
-      className="min-w-0 flex-1 bg-transparent text-sm outline-none"
-    />
-
-    <button
-      type="submit"
-      aria-label="Buscar producto"
-      className="rounded-full bg-black p-2 text-yellow-400"
-    >
-      <Search size={17} />
-    </button>
-  </form>
+<div className="px-4 pb-4 md:hidden">
+  <BuscadorProductos variante="mobile" />
 </div>
       </header>
 
