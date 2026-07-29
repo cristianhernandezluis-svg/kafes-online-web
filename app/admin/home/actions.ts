@@ -132,3 +132,25 @@ export async function cambiarEstadoBanner(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin/home");
 }
+export async function cambiarEstadoSeccion(formData: FormData) {
+  await requerirAdmin();
+
+  const seccionId = Number(formData.get("seccionId"));
+  const activo = formData.get("activo") === "true";
+
+  if (!Number.isInteger(seccionId) || seccionId <= 0) {
+    throw new Error("Sección inválida.");
+  }
+
+  await prisma.homeSection.update({
+    where: {
+      id: seccionId,
+    },
+    data: {
+      activo,
+    },
+  });
+
+  revalidatePath("/");
+  revalidatePath("/admin/home");
+}
