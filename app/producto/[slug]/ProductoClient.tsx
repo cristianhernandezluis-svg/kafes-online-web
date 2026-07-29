@@ -2,6 +2,7 @@
 
 import LandingProducto from "@/components/LandingProducto";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import BuscadorProductos from "@/components/BuscadorProductos";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -16,7 +17,6 @@ import {
   Home,
   Truck,
   ShieldCheck,
-  Search,
 } from "lucide-react";
 
 declare global {
@@ -380,14 +380,7 @@ useEffect(() => {
       KAFES ONLINE
     </Link>
 
-    <div className="hidden w-full max-w-[420px] items-center gap-2 rounded-full bg-zinc-100 px-4 py-2 md:flex">
-      <Search size={20} className="shrink-0 text-zinc-500" />
-
-      <input
-        placeholder="Busca productos..."
-        className="min-w-0 flex-1 bg-transparent outline-none"
-      />
-    </div>
+    <BuscadorProductos variante="desktop" />
 
     <div className="flex shrink-0 items-center gap-2 md:gap-3">
       <Link
@@ -414,6 +407,10 @@ useEffect(() => {
     </div>
   </div>
 </header>
+
+<div className="border-b bg-white px-3 pb-3 md:hidden">
+  <BuscadorProductos variante="mobile" />
+</div>
         </>
       )}
 
