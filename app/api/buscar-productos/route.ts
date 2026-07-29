@@ -36,41 +36,47 @@ export async function GET(request: NextRequest) {
         where: {
           estado: "PUBLICADO",
           OR: [
-            {
-              nombre: {
-                contains: consulta,
-                mode: "insensitive",
-              },
-            },
-            {
-              descripcionCorta: {
-                contains: consulta,
-                mode: "insensitive",
-              },
-            },
-            {
-              slug: {
-                contains: consulta,
-                mode: "insensitive",
-              },
-            },
-            {
-              categoria: {
-                nombre: {
-                  contains: consulta,
-                  mode: "insensitive",
-                },
-              },
-            },
-            {
-              marca: {
-                nombre: {
-                  contains: consulta,
-                  mode: "insensitive",
-                },
-              },
-            },
-          ],
+  {
+    nombre: {
+      contains: consulta,
+      mode: "insensitive",
+    },
+  },
+  {
+    descripcionCorta: {
+      contains: consulta,
+      mode: "insensitive",
+    },
+  },
+  {
+    slug: {
+      contains: consulta,
+      mode: "insensitive",
+    },
+  },
+  {
+    sku: {
+      contains: consulta,
+      mode: "insensitive",
+    },
+  },
+  {
+    categoria: {
+      nombre: {
+        contains: consulta,
+        mode: "insensitive",
+      },
+    },
+  },
+  {
+    marca: {
+      nombre: {
+        contains: consulta,
+        mode: "insensitive",
+      },
+    },
+  },
+],
         },
         select: {
           id: true,
