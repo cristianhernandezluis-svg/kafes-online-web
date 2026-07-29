@@ -29,18 +29,10 @@ type EditarProductoPageProps = {
 export const dynamic = "force-dynamic";
 
 const tabs = [
-  {
-    nombre: "Información",
-    valor: "informacion",
-  },
-  {
-    nombre: "Imágenes",
-    valor: "imagenes",
-  },
-  {
-    nombre: "Contenido",
-    valor: "contenido",
-  },
+  { nombre: "Información", valor: "informacion" },
+  { nombre: "Imágenes", valor: "imagenes" },
+  { nombre: "Contenido", valor: "contenido" },
+  { nombre: "Documentos", valor: "documentos" },
 ];
 
 export default async function EditarProductoPage({
@@ -409,6 +401,25 @@ export default async function EditarProductoPage({
     </Card>
   </form>
 )}
-    </section>
-  );
+
+{tabActiva === "documentos" && (
+  <Card
+    title="Documentación técnica"
+    description="Administra fichas técnicas, manuales, curvas de rendimiento y otros documentos."
+  >
+    <div className="rounded-xl border border-dashed border-slate-300 p-12 text-center">
+      <div className="text-lg font-bold text-slate-800">
+        📄 Documentación técnica
+      </div>
+
+      <p className="mt-3 text-sm text-slate-500">
+        Aquí podrás subir fichas técnicas, manuales, curvas de rendimiento,
+        certificados y otros documentos del producto.
+      </p>
+    </div>
+  </Card>
+)}
+
+</section>
+);
 }
