@@ -1,7 +1,8 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import Benefit from "@/components/home/Benefit";
+import HeroSlider from "@/components/home/HeroSlider";
+import ProductCard from "@/components/home/ProductCard";
+import PromoCard from "@/components/home/PromoCard";
 import {
   Search,
   ShoppingCart,
@@ -9,7 +10,6 @@ import {
   ShieldCheck,
   Headphones,
   CreditCard,
-  ChevronLeft,
   ChevronRight,
   Droplets,
   Trees,
@@ -100,24 +100,6 @@ const products = [
       "Potente equipo para lavar autos, motos, fachadas, patios y maquinaria.",
     price: "S/299",
     beforePrice: "S/349",
-  },
-];
-
-const banners = [
-  {
-    image: "/banners/banner-fiestas-patrias.jpg",
-    alt: "Ofertas por Fiestas Patrias en Kafes Online",
-    href: "#ofertas",
-  },
-  {
-    image: "/banners/banner-hidrolavadoras.jpg",
-    alt: "Ofertas en hidrolavadoras Kafes Online",
-    href: "/categoria/hidrolavadoras",
-  },
-  {
-    image: "/banners/banner-jardineria.jpg",
-    alt: "Herramientas de jardinería Kafes Online",
-    href: "/categoria/jardineria",
   },
 ];
 
@@ -226,7 +208,7 @@ export default function Home() {
         </div>
       </section>
 
-<HeroSlider />
+      <HeroSlider />
 
       {/* Beneficios */}
       <section className="mx-auto max-w-7xl px-4 pb-10 md:px-6">
@@ -425,203 +407,5 @@ export default function Home() {
 
       <WhatsAppButton />
     </main>
-  );
-}
-
-function HeroSlider() {
-  const [activeBanner, setActiveBanner] = useState(0);
-
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setActiveBanner((current) => (current + 1) % banners.length);
-    }, 5000);
-
-    return () => window.clearInterval(interval);
-  }, []);
-
-  const previousBanner = () => {
-    setActiveBanner((current) =>
-      current === 0 ? banners.length - 1 : current - 1
-    );
-  };
-
-  const nextBanner = () => {
-    setActiveBanner((current) => (current + 1) % banners.length);
-  };
-
-  return (
-    <section className="w-full px-2 py-5 md:px-10">
-      <div className="group relative overflow-hidden rounded-3xl bg-zinc-100 shadow-xl">
-        <a href={banners[activeBanner].href} className="block">
-          <img
-  src={banners[activeBanner].image}
-  alt={banners[activeBanner].alt}
-  className="block h-auto w-full"
-/>
-        </a>
-
-        <button
-          type="button"
-          aria-label="Banner anterior"
-          onClick={previousBanner}
-          className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white opacity-0 backdrop-blur-sm transition hover:bg-black/80 group-hover:opacity-100"
-        >
-          <ChevronLeft size={28} />
-        </button>
-
-        <button
-          type="button"
-          aria-label="Banner siguiente"
-          onClick={nextBanner}
-          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white opacity-0 backdrop-blur-sm transition hover:bg-black/80 group-hover:opacity-100"
-        >
-          <ChevronRight size={28} />
-        </button>
-
-        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
-          {banners.map((banner, index) => (
-            <button
-              key={banner.image}
-              type="button"
-              aria-label={`Mostrar banner ${index + 1}`}
-              onClick={() => setActiveBanner(index)}
-              className={`h-2.5 rounded-full transition-all ${
-                activeBanner === index
-                  ? "w-9 bg-white"
-                  : "w-2.5 bg-white/60 hover:bg-white"
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Benefit({
-  icon,
-  title,
-  text,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="flex items-center gap-4 border-b border-zinc-200 p-6 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
-      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-yellow-400 text-black">
-        {icon}
-      </div>
-
-      <div>
-        <h3 className="font-black">{title}</h3>
-        <p className="mt-1 text-sm text-zinc-500">{text}</p>
-      </div>
-    </div>
-  );
-}
-
-function PromoCard({
-  icon,
-  title,
-  text,
-  href,
-  background,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  text: string;
-  href: string;
-  background: string;
-}) {
-  return (
-    <a
-      href={href}
-      className={`${background} group relative min-h-[210px] overflow-hidden rounded-3xl p-7 text-white shadow-lg transition duration-300 hover:-translate-y-1`}
-    >
-      <div className="absolute -bottom-16 -right-16 h-44 w-44 rounded-full bg-white/10 transition duration-300 group-hover:scale-125" />
-
-      <div className="relative z-10">
-        {icon}
-
-        <h3 className="mt-6 text-3xl font-black">{title}</h3>
-
-        <p className="mt-2 max-w-xs text-sm text-white/80">{text}</p>
-
-        <span className="mt-5 inline-flex items-center gap-1 font-black">
-          Ver productos
-          <ChevronRight size={18} />
-        </span>
-      </div>
-    </a>
-  );
-}
-
-function ProductCard({
-  href,
-  image,
-  alt,
-  badge,
-  title,
-  description,
-  price,
-  beforePrice,
-}: {
-  href: string;
-  image: string;
-  alt: string;
-  badge: string;
-  title: string;
-  description: string;
-  price: string;
-  beforePrice: string;
-}) {
-  return (
-    <a
-      href={href}
-      className="group block overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-sm transition duration-300 hover:-translate-y-2 hover:border-yellow-400 hover:shadow-xl"
-    >
-      <div className="relative overflow-hidden bg-zinc-50 p-6">
-        <span className="absolute left-5 top-5 z-10 rounded-full bg-red-600 px-3 py-1.5 text-xs font-black text-white">
-          {badge}
-        </span>
-
-        <img
-          src={image}
-          alt={alt}
-          className="h-72 w-full object-contain transition duration-500 group-hover:scale-105"
-        />
-      </div>
-
-      <div className="p-6">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-green-600">
-            ● Disponible
-          </span>
-
-          <span className="text-xs font-bold text-zinc-500">
-            Envíos nacionales
-          </span>
-        </div>
-
-        <h3 className="mt-4 text-xl font-black leading-tight">{title}</h3>
-
-        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-zinc-500">
-          {description}
-        </p>
-
-        <div className="mt-5 flex items-end gap-3">
-          <p className="text-3xl font-black text-red-600">{price}</p>
-
-          <span className="pb-1 text-base text-zinc-400 line-through">
-            {beforePrice}
-          </span>
-        </div>
-
-        <div className="mt-6 flex w-full items-center justify-center rounded-2xl bg-yellow-400 py-4 font-black text-black transition group-hover:bg-black group-hover:text-yellow-400">
-          Ver producto
-        </div>
-      </div>
-    </a>
   );
 }
