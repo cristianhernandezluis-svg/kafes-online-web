@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
+import type { ProductoPublico } from "@/components/producto/product-types";
 import ProductoClient from "./ProductoClient";
 
 type ProductoPageProps = {
@@ -25,8 +26,24 @@ export default async function ProductoPage({
           orden: "asc",
         },
       },
+
       categoria: true,
       marca: true,
+
+      fichaTecnica: {
+        orderBy: {
+          orden: "asc",
+        },
+      },
+
+      documentos: {
+        where: {
+          visible: true,
+        },
+        orderBy: {
+          orden: "asc",
+        },
+      },
     },
   });
 
@@ -38,7 +55,7 @@ export default async function ProductoPage({
     (imagen) => imagen.url,
   );
 
-  const producto = {
+  const producto: ProductoPublico = {
     id: productoDb.id,
     slug: productoDb.slug,
     nombre: productoDb.nombre,
@@ -78,10 +95,34 @@ export default async function ProductoPage({
     mini: [
       productoDb.marca?.nombre,
       productoDb.categoria?.nombre,
-      productoDb.stock > 0 ? "Disponible" : "Agotado",
-    ].filter((item): item is string => Boolean(item)),
+      productoDb.stock > 0
+        ? "Disponible"
+        : "Agotado",
+    ].filter(
+      (item): item is string => Boolean(item),
+    ),
 
     beneficios: [],
+
+    especificaciones: productoDb.fichaTecnica.map(
+      (especificacion) => ({
+        id: especificacion.id,
+        nombre: especificacion.nombre,
+        valor: especificacion.valor,
+        orden: especificacion.orden,
+      }),
+    ),
+
+    documentos: productoDb.documentos.map(
+      (documento) => ({
+        id: documento.id,
+        titulo: documento.titulo,
+        tipo: documento.tipo as ProductoPublico["documentos"][number]["tipo"],
+        archivoUrl: documento.archivoUrl,
+        orden: documento.orden,
+        visible: documento.visible,
+      }),
+    ),
   };
 
   return <ProductoClient producto={producto} />;

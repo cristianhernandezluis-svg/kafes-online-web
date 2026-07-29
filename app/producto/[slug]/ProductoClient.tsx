@@ -2,6 +2,9 @@
 
 import LandingProducto from "@/components/LandingProducto";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import ProductTechnicalSpecs from "@/components/producto/ProductTechnicalSpecs";
+import ProductDocuments from "@/components/producto/ProductDocuments";
+import type { ProductoPublico } from "@/components/producto/product-types";
 import BuscadorProductos from "@/components/BuscadorProductos";
 import Image from "next/image";
 import Link from "next/link";
@@ -55,23 +58,7 @@ const regionesPeru = [
 ];
 
 type ProductoClientProps = {
-  producto: {
-    id: number;
-    slug: string;
-    nombre: string;
-    nombreCorto: string;
-    precio: number;
-    precioAntes: number | null;
-    imagen: string;
-    imagenes: string[];
-    etiqueta: string;
-    modoGempages: boolean;
-    descripcion: string;
-    contenidoHtml: string | null;
-    stock: number;
-    mini: string[];
-    beneficios: string[];
-  };
+  producto: ProductoPublico;
 };
 
 export default function ProductoClient({
@@ -610,6 +597,12 @@ useEffect(() => {
           {producto.contenidoHtml && (
   <LandingProducto producto={producto} />
 )}
+
+<ProductTechnicalSpecs
+  especificaciones={producto.especificaciones}
+/>
+
+<ProductDocuments documentos={producto.documentos} />
 
 <section className="max-w-7xl mx-auto px-6 py-20">
   <h2 className="text-4xl font-black text-center mb-10">
