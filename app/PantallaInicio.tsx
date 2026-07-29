@@ -23,7 +23,7 @@ export default function PantallaInicio() {
       <div className="flex flex-col items-center px-6 text-center">
         <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-3xl bg-white p-3 shadow-2xl">
           <Image
-            src="/logo.png"
+            src="/logo-kafes.jpg"
             alt="KAFES ONLINE"
             width={112}
             height={112}
