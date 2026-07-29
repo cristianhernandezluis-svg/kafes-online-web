@@ -378,22 +378,24 @@ useEffect(() => {
   </>
 ) : (
         <>
-          <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 px-3 py-6 sm:px-4 md:grid-cols-2 md:gap-12 md:px-6 md:py-10">
-            <ProductGallery
-  nombre={producto.nombre}
-  imagenPrincipal={producto.imagen}
-  imagenes={producto.imagenes}
-  caracteristicas={producto.mini}
-/>
+          <section className="border-b border-zinc-200 bg-gradient-to-b from-zinc-50 to-white">
+            <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-7 px-3 py-6 sm:px-4 sm:py-8 md:px-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(410px,0.92fr)] lg:gap-10 lg:py-12">
+              <ProductGallery
+                nombre={producto.nombre}
+                imagenPrincipal={producto.imagen}
+                imagenes={producto.imagenes}
+                caracteristicas={producto.mini}
+              />
 
-            <ProductPurchasePanel
-  producto={producto}
-  cantidad={cantidad}
-  onCantidadChange={setCantidad}
-  onComprar={abrirCheckout}
-  comprarAhoraRef={comprarAhoraRef}
-/>
-          </div>
+              <ProductPurchasePanel
+                producto={producto}
+                cantidad={cantidad}
+                onCantidadChange={setCantidad}
+                onComprar={abrirCheckout}
+                comprarAhoraRef={comprarAhoraRef}
+              />
+            </div>
+          </section>
 
           {producto.contenidoHtml && (
   <LandingProducto producto={producto} />
