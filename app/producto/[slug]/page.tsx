@@ -51,7 +51,8 @@ export default async function ProductoPage({
     notFound();
   }
 
-  const relacionadosDb = productoDb.categoriaId
+  const relacionadosMismaCategoria =
+  productoDb.categoriaId
     ? await prisma.producto.findMany({
         where: {
           categoriaId: productoDb.categoriaId,
@@ -62,17 +63,77 @@ export default async function ProductoPage({
         },
         include: {
           imagenes: {
-            orderBy: {
-              orden: "asc",
-            },
+            orderBy: [
+              {
+                esPrincipal: "desc",
+              },
+              {
+                orden: "asc",
+              },
+            ],
           },
         },
-        orderBy: {
-          destacado: "desc",
-        },
+        orderBy: [
+          {
+            destacado: "desc",
+          },
+          {
+            createdAt: "desc",
+          },
+        ],
         take: 4,
       })
     : [];
+
+const cantidadFaltante = Math.max(
+  0,
+  4 - relacionadosMismaCategoria.length,
+);
+
+const idsExcluidos = [
+  productoDb.id,
+  ...relacionadosMismaCategoria.map(
+    (producto) => producto.id,
+  ),
+];
+
+const relacionadosComplementarios =
+  cantidadFaltante > 0
+    ? await prisma.producto.findMany({
+        where: {
+          estado: "PUBLICADO",
+          id: {
+            notIn: idsExcluidos,
+          },
+        },
+        include: {
+          imagenes: {
+            orderBy: [
+              {
+                esPrincipal: "desc",
+              },
+              {
+                orden: "asc",
+              },
+            ],
+          },
+        },
+        orderBy: [
+          {
+            destacado: "desc",
+          },
+          {
+            createdAt: "desc",
+          },
+        ],
+        take: cantidadFaltante,
+      })
+    : [];
+
+const relacionadosDb = [
+  ...relacionadosMismaCategoria,
+  ...relacionadosComplementarios,
+];
 
   const relacionados = relacionadosDb.map((item) => {
     const imagenPrincipal =
