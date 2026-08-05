@@ -112,6 +112,8 @@ function obtenerRutaEdicion(tipo: string) {
 
     case "PRODUCTOS_DESTACADOS":
       return "/admin/home/productos-destacados";
+    case "PROMOCIONES":
+      return "/admin/home/promociones";
 
     default:
       return null;

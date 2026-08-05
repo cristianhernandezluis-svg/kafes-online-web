@@ -130,6 +130,225 @@ function leerConfiguracionCategorias(
   };
 }
 
+type IconoPromocion =
+  | "gotas"
+  | "arbol"
+  | "rayo";
+
+type FondoPromocion =
+  | "azul"
+  | "verde"
+  | "oscuro"
+  | "rojo"
+  | "amarillo";
+
+type TarjetaPromocionHome = {
+  titulo: string;
+  texto: string;
+  href: string;
+  icono: IconoPromocion;
+  fondo: FondoPromocion;
+};
+
+type ConfiguracionPromocionesHome = {
+  enlaceTodos: string;
+  tarjetas: TarjetaPromocionHome[];
+};
+
+const PROMOCIONES_PREDETERMINADAS: TarjetaPromocionHome[] = [
+  {
+    titulo: "Hidrolavadoras",
+    texto: "Potencia para autos, motos y maquinaria.",
+    href: "/categoria/hidrolavadoras",
+    icono: "gotas",
+    fondo: "azul",
+  },
+  {
+    titulo: "Jardinería",
+    texto: "Sierras, podadoras y cortasetos.",
+    href: "/categoria/jardineria",
+    icono: "arbol",
+    fondo: "verde",
+  },
+  {
+    titulo: "Generadores",
+    texto: "Energía segura donde la necesites.",
+    href: "/categoria/generadores",
+    icono: "rayo",
+    fondo: "oscuro",
+  },
+];
+
+function esIconoPromocion(
+  valor: unknown
+): valor is IconoPromocion {
+  return (
+    valor === "gotas" ||
+    valor === "arbol" ||
+    valor === "rayo"
+  );
+}
+
+function esFondoPromocion(
+  valor: unknown
+): valor is FondoPromocion {
+  return (
+    valor === "azul" ||
+    valor === "verde" ||
+    valor === "oscuro" ||
+    valor === "rojo" ||
+    valor === "amarillo"
+  );
+}
+
+function obtenerTextoPromocion(
+  valor: unknown,
+  predeterminado: string
+) {
+  return typeof valor === "string" &&
+    valor.trim()
+    ? valor.trim()
+    : predeterminado;
+}
+
+function leerConfiguracionPromociones(
+  valor: unknown
+): ConfiguracionPromocionesHome {
+  if (
+    !valor ||
+    typeof valor !== "object" ||
+    Array.isArray(valor)
+  ) {
+    return {
+      enlaceTodos: "#productos",
+      tarjetas: PROMOCIONES_PREDETERMINADAS,
+    };
+  }
+
+  const configuracion =
+    valor as Record<string, unknown>;
+
+  const tarjetasRecibidas =
+    Array.isArray(configuracion.tarjetas)
+      ? configuracion.tarjetas
+      : [];
+
+  const tarjetas =
+    PROMOCIONES_PREDETERMINADAS.map(
+      (predeterminada, indice) => {
+        const valorTarjeta =
+          tarjetasRecibidas[indice];
+
+        if (
+          !valorTarjeta ||
+          typeof valorTarjeta !== "object" ||
+          Array.isArray(valorTarjeta)
+        ) {
+          return predeterminada;
+        }
+
+        const tarjeta =
+          valorTarjeta as Record<
+            string,
+            unknown
+          >;
+
+        return {
+          titulo: obtenerTextoPromocion(
+            tarjeta.titulo,
+            predeterminada.titulo
+          ),
+
+          texto: obtenerTextoPromocion(
+            tarjeta.texto,
+            predeterminada.texto
+          ),
+
+          href: obtenerTextoPromocion(
+            tarjeta.href,
+            predeterminada.href
+          ),
+
+          icono: esIconoPromocion(
+            tarjeta.icono
+          )
+            ? tarjeta.icono
+            : predeterminada.icono,
+
+          fondo: esFondoPromocion(
+            tarjeta.fondo
+          )
+            ? tarjeta.fondo
+            : predeterminada.fondo,
+        };
+      }
+    );
+
+  return {
+    enlaceTodos: obtenerTextoPromocion(
+      configuracion.enlaceTodos,
+      "#productos"
+    ),
+    tarjetas,
+  };
+}
+
+async function obtenerPromocionesHome() {
+  const seccion =
+    await prisma.homeSection.findFirst({
+      where: {
+        tipo: "PROMOCIONES",
+      },
+      orderBy: {
+        id: "asc",
+      },
+    });
+
+  return {
+    seccion,
+    configuracion:
+      leerConfiguracionPromociones(
+        seccion?.configuracion
+      ),
+  };
+}
+
+function obtenerIconoPromocion(
+  icono: IconoPromocion
+) {
+  switch (icono) {
+    case "arbol":
+      return <Trees size={38} />;
+
+    case "rayo":
+      return <Zap size={38} />;
+
+    default:
+      return <Droplets size={38} />;
+  }
+}
+
+function obtenerFondoPromocion(
+  fondo: FondoPromocion
+) {
+  switch (fondo) {
+    case "verde":
+      return "bg-green-600";
+
+    case "oscuro":
+      return "bg-zinc-900";
+
+    case "rojo":
+      return "bg-red-600";
+
+    case "amarillo":
+      return "bg-yellow-500 text-black";
+
+    default:
+      return "bg-blue-600";
+  }
+}
+
 async function obtenerCategoriasHome() {
   const seccion = await prisma.homeSection.findFirst({
     where: {
@@ -342,10 +561,12 @@ export default async function Home() {
   productosDestacados,
   bannersDb,
   categoriasHome,
+  promocionesHome,
 ] = await Promise.all([
   obtenerProductosDestacados(),
   obtenerBanners(),
   obtenerCategoriasHome(),
+  obtenerPromocionesHome(),
 ]);
 
 const {
@@ -358,6 +579,11 @@ const {
   seccion: seccionCategorias,
   categorias,
 } = categoriasHome;
+
+const {
+  seccion: seccionPromociones,
+  configuracion: configuracionPromociones,
+} = promocionesHome;
 
   const banners = bannersDb.map((banner) => ({
     id: banner.id,
@@ -525,53 +751,53 @@ const {
       </section>
 
       {/* Ofertas rápidas */}
-      <section id="ofertas" className="mx-auto max-w-7xl px-4 pb-12 md:px-6">
-        <div className="mb-6 flex items-end justify-between">
-          <div>
-            <span className="text-sm font-black uppercase tracking-widest text-red-600">
-              Solo por tiempo limitado
-            </span>
+{(seccionPromociones?.activo ?? true) && (
+  <section
+    id="ofertas"
+    className="mx-auto max-w-7xl px-4 pb-12 md:px-6"
+  >
+    <div className="mb-6 flex items-end justify-between">
+      <div>
+        <span className="text-sm font-black uppercase tracking-widest text-red-600">
+          {seccionPromociones?.subtitulo ||
+            "Solo por tiempo limitado"}
+        </span>
 
-            <h2 className="mt-1 text-3xl font-black md:text-4xl">
-              Ofertas de Fiestas Patrias
-            </h2>
-          </div>
+        <h2 className="mt-1 text-3xl font-black md:text-4xl">
+          {seccionPromociones?.titulo ||
+            "Ofertas especiales"}
+        </h2>
+      </div>
 
-          <a
-            href="#productos"
-            className="hidden items-center gap-1 font-bold text-zinc-700 transition hover:text-red-600 md:flex"
-          >
-            Ver todos
-            <ChevronRight size={18} />
-          </a>
-        </div>
+      <a
+        href={configuracionPromociones.enlaceTodos}
+        className="hidden items-center gap-1 font-bold text-zinc-700 transition hover:text-red-600 md:flex"
+      >
+        Ver todos
+        <ChevronRight size={18} />
+      </a>
+    </div>
 
-        <div className="grid gap-5 md:grid-cols-3">
+    <div className="grid gap-5 md:grid-cols-3">
+      {configuracionPromociones.tarjetas.map(
+        (tarjeta, indice) => (
           <PromoCard
-            icon={<Droplets size={38} />}
-            title="Hidrolavadoras"
-            text="Potencia para autos, motos y maquinaria."
-            href="/categoria/hidrolavadoras"
-            background="bg-blue-600"
+            key={`${tarjeta.href}-${indice}`}
+            icon={obtenerIconoPromocion(
+              tarjeta.icono
+            )}
+            title={tarjeta.titulo}
+            text={tarjeta.texto}
+            href={tarjeta.href}
+            background={obtenerFondoPromocion(
+              tarjeta.fondo
+            )}
           />
-
-          <PromoCard
-            icon={<Trees size={38} />}
-            title="Jardinería"
-            text="Sierras, podadoras y cortasetos."
-            href="/categoria/jardineria"
-            background="bg-green-600"
-          />
-
-          <PromoCard
-            icon={<Zap size={38} />}
-            title="Generadores"
-            text="Energía segura donde la necesites."
-            href="/categoria/generadores"
-            background="bg-zinc-900"
-          />
-        </div>
-      </section>
+        )
+      )}
+    </div>
+  </section>
+)}
 
       {/* Productos destacados */}
 {(seccionProductos?.activo ?? true) && (
