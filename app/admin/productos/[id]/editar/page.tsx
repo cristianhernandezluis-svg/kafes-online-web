@@ -66,11 +66,40 @@ export default async function EditarProductoPage({
     notFound();
   }
 
-  const producto = await prisma.producto.findUnique({
+  const [producto, categorias, marcas] = await Promise.all([
+  prisma.producto.findUnique({
     where: {
       id: productoId,
     },
-  });
+  }),
+
+  prisma.categoria.findMany({
+    select: {
+      id: true,
+      nombre: true,
+      activa: true,
+    },
+    orderBy: [
+      {
+        orden: "asc",
+      },
+      {
+        nombre: "asc",
+      },
+    ],
+  }),
+
+  prisma.marca.findMany({
+    select: {
+      id: true,
+      nombre: true,
+      activa: true,
+    },
+    orderBy: {
+      nombre: "asc",
+    },
+  }),
+]);
 
   if (!producto) {
     notFound();
@@ -180,6 +209,63 @@ export default async function EditarProductoPage({
                     defaultValue={producto.descripcion ?? ""}
                     className="min-h-52"
                   />
+<div className="grid gap-5 md:grid-cols-2">
+  <label className="block">
+    <span className="mb-2 block text-sm font-bold text-slate-800">
+      Categoría
+    </span>
+
+    <select
+      name="categoriaId"
+      defaultValue={producto.categoriaId ?? ""}
+      className="h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-800 outline-none transition focus:border-slate-500 focus:ring-4 focus:ring-slate-100"
+    >
+      <option value="">Sin categoría</option>
+
+      {categorias.map((categoria) => (
+        <option
+          key={categoria.id}
+          value={categoria.id}
+        >
+          {categoria.nombre}
+          {!categoria.activa ? " (oculta)" : ""}
+        </option>
+      ))}
+    </select>
+
+    <span className="mt-2 block text-xs leading-5 text-slate-500">
+      Selecciona dónde aparecerá este producto.
+    </span>
+  </label>
+
+  <label className="block">
+    <span className="mb-2 block text-sm font-bold text-slate-800">
+      Marca
+    </span>
+
+    <select
+      name="marcaId"
+      defaultValue={producto.marcaId ?? ""}
+      className="h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-800 outline-none transition focus:border-slate-500 focus:ring-4 focus:ring-slate-100"
+    >
+      <option value="">Sin marca</option>
+
+      {marcas.map((marca) => (
+        <option
+          key={marca.id}
+          value={marca.id}
+        >
+          {marca.nombre}
+          {!marca.activa ? " (oculta)" : ""}
+        </option>
+      ))}
+    </select>
+
+    <span className="mt-2 block text-xs leading-5 text-slate-500">
+      Selecciona la marca del producto.
+    </span>
+  </label>
+</div>
                 </div>
               </Card>
 
@@ -398,6 +484,48 @@ export default async function EditarProductoPage({
       name="estado"
       value={producto.estado}
     />
+
+<input
+  type="hidden"
+  name="categoriaId"
+  value={producto.categoriaId ?? ""}
+/>
+
+<input
+  type="hidden"
+  name="marcaId"
+  value={producto.marcaId ?? ""}
+/>
+
+<input
+  type="hidden"
+  name="descripcionCorta"
+  value={producto.descripcionCorta ?? ""}
+/>
+
+<input
+  type="hidden"
+  name="descripcion"
+  value={producto.descripcion ?? ""}
+/>
+
+<input
+  type="hidden"
+  name="seoTitulo"
+  value={producto.seoTitulo ?? ""}
+/>
+
+<input
+  type="hidden"
+  name="seoDescripcion"
+  value={producto.seoDescripcion ?? ""}
+/>
+
+<input
+  type="hidden"
+  name="destacado"
+  value={producto.destacado ? "on" : ""}
+/>
 
     <Card
       title="Contenido promocional"

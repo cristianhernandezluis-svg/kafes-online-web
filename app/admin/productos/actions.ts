@@ -42,6 +42,26 @@ export async function crearProducto(formData: FormData) {
   const estadoIngresado = obtenerTexto(formData, "estado");
   const destacado = formData.get("destacado") === "on";
 
+const categoriaIdIngresado = Number(
+  formData.get("categoriaId")
+);
+
+const marcaIdIngresado = Number(
+  formData.get("marcaId")
+);
+
+const categoriaId =
+  Number.isInteger(categoriaIdIngresado) &&
+  categoriaIdIngresado > 0
+    ? categoriaIdIngresado
+    : null;
+
+const marcaId =
+  Number.isInteger(marcaIdIngresado) &&
+  marcaIdIngresado > 0
+    ? marcaIdIngresado
+    : null;
+
   if (!nombre) {
     throw new Error("El nombre del producto es obligatorio.");
   }
@@ -49,6 +69,43 @@ export async function crearProducto(formData: FormData) {
   if (precio <= 0) {
     throw new Error("El precio debe ser mayor que cero.");
   }
+
+const [categoriaSeleccionada, marcaSeleccionada] =
+  await Promise.all([
+    categoriaId
+      ? prisma.categoria.findUnique({
+          where: {
+            id: categoriaId,
+          },
+          select: {
+            id: true,
+          },
+        })
+      : Promise.resolve(null),
+
+    marcaId
+      ? prisma.marca.findUnique({
+          where: {
+            id: marcaId,
+          },
+          select: {
+            id: true,
+          },
+        })
+      : Promise.resolve(null),
+  ]);
+
+if (categoriaId && !categoriaSeleccionada) {
+  throw new Error(
+    "La categoría seleccionada no existe."
+  );
+}
+
+if (marcaId && !marcaSeleccionada) {
+  throw new Error(
+    "La marca seleccionada no existe."
+  );
+}
 
   const slugBase = crearSlug(slugIngresado || nombre);
 
@@ -144,6 +201,26 @@ export async function actualizarProducto(formData: FormData) {
   const estadoIngresado = obtenerTexto(formData, "estado");
   const destacado = formData.get("destacado") === "on";
 
+const categoriaIdIngresado = Number(
+  formData.get("categoriaId")
+);
+
+const marcaIdIngresado = Number(
+  formData.get("marcaId")
+);
+
+const categoriaId =
+  Number.isInteger(categoriaIdIngresado) &&
+  categoriaIdIngresado > 0
+    ? categoriaIdIngresado
+    : null;
+
+const marcaId =
+  Number.isInteger(marcaIdIngresado) &&
+  marcaIdIngresado > 0
+    ? marcaIdIngresado
+    : null;
+
   if (!nombre) {
     throw new Error("El nombre es obligatorio.");
   }
@@ -151,6 +228,43 @@ export async function actualizarProducto(formData: FormData) {
   if (precio <= 0) {
     throw new Error("El precio debe ser mayor que cero.");
   }
+
+const [categoriaSeleccionada, marcaSeleccionada] =
+  await Promise.all([
+    categoriaId
+      ? prisma.categoria.findUnique({
+          where: {
+            id: categoriaId,
+          },
+          select: {
+            id: true,
+          },
+        })
+      : Promise.resolve(null),
+
+    marcaId
+      ? prisma.marca.findUnique({
+          where: {
+            id: marcaId,
+          },
+          select: {
+            id: true,
+          },
+        })
+      : Promise.resolve(null),
+  ]);
+
+if (categoriaId && !categoriaSeleccionada) {
+  throw new Error(
+    "La categoría seleccionada no existe."
+  );
+}
+
+if (marcaId && !marcaSeleccionada) {
+  throw new Error(
+    "La marca seleccionada no existe."
+  );
+}
 
   const slugBase = crearSlug(slugIngresado || nombre);
 
@@ -230,6 +344,8 @@ export async function actualizarProducto(formData: FormData) {
   data: {
     nombre,
     slug: slugFinal,
+    categoriaId,
+    marcaId,
     sku: sku || null,
     descripcionCorta: descripcionCorta || null,
     descripcion: descripcion || null,
