@@ -22,44 +22,6 @@ import {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const categories = [
-  {
-    name: "Sierras",
-    image: "/categorias/sierras.png",
-    href: "/categoria/sierras",
-  },
-  {
-    name: "Hidrolavadoras",
-    image: "/categorias/hidrolavadoras.png",
-    href: "/categoria/hidrolavadoras",
-  },
-  {
-    name: "Bombas de agua",
-    image: "/categorias/bombas.png",
-    href: "/categoria/bombas-de-agua",
-  },
-  {
-    name: "Generadores",
-    image: "/categorias/generadores.png",
-    href: "/categoria/generadores",
-  },
-  {
-    name: "Jardinería",
-    image: "/categorias/jardineria.png",
-    href: "/categoria/jardineria",
-  },
-  {
-    name: "Herramientas",
-    image: "/categorias/herramientas.png",
-    href: "/categoria/herramientas",
-  },
-  {
-    name: "Ofertas",
-    image: "/categorias/ofertas.png",
-    href: "#ofertas",
-  },
-];
-
 function formatearPrecio(valor: { toString(): string } | null) {
   if (!valor) return null;
 
@@ -128,6 +90,126 @@ function leerConfiguracionProductosDestacados(
     textoBoton,
     hrefBoton,
     productoIds,
+  };
+}
+
+type ConfiguracionCategoriasHome = {
+  categoriaIds: number[] | null;
+};
+
+function leerConfiguracionCategorias(
+  valor: unknown
+): ConfiguracionCategoriasHome {
+  if (
+    !valor ||
+    typeof valor !== "object" ||
+    Array.isArray(valor)
+  ) {
+    return {
+      categoriaIds: null,
+    };
+  }
+
+  const configuracion = valor as Record<string, unknown>;
+
+  if (!Array.isArray(configuracion.categoriaIds)) {
+    return {
+      categoriaIds: null,
+    };
+  }
+
+  const categoriaIds = configuracion.categoriaIds.filter(
+    (id): id is number =>
+      typeof id === "number" &&
+      Number.isInteger(id) &&
+      id > 0
+  );
+
+  return {
+    categoriaIds,
+  };
+}
+
+async function obtenerCategoriasHome() {
+  const seccion = await prisma.homeSection.findFirst({
+    where: {
+      tipo: "CATEGORIAS",
+    },
+    orderBy: {
+      id: "asc",
+    },
+  });
+
+  const configuracion = leerConfiguracionCategorias(
+    seccion?.configuracion
+  );
+
+  if (
+    configuracion.categoriaIds !== null &&
+    configuracion.categoriaIds.length === 0
+  ) {
+    return {
+      seccion,
+      categorias: [],
+    };
+  }
+
+  const categoriasEncontradas =
+    await prisma.categoria.findMany({
+      where: {
+        activa: true,
+        ...(configuracion.categoriaIds !== null
+          ? {
+              id: {
+                in: configuracion.categoriaIds,
+              },
+            }
+          : {}),
+      },
+      select: {
+        id: true,
+        nombre: true,
+        slug: true,
+        imagenUrl: true,
+        orden: true,
+      },
+      orderBy: [
+        {
+          orden: "asc",
+        },
+        {
+          nombre: "asc",
+        },
+      ],
+    });
+
+  if (configuracion.categoriaIds === null) {
+    return {
+      seccion,
+      categorias: categoriasEncontradas,
+    };
+  }
+
+  const categoriasPorId = new Map(
+    categoriasEncontradas.map((categoria) => [
+      categoria.id,
+      categoria,
+    ])
+  );
+
+  const categoriasOrdenadas =
+    configuracion.categoriaIds
+      .map((id) => categoriasPorId.get(id))
+      .filter(
+        (
+          categoria
+        ): categoria is (typeof categoriasEncontradas)[number] =>
+          Boolean(categoria)
+      );
+
+  return {
+    seccion,
+    categorias: categoriasOrdenadas,
   };
 }
 
@@ -256,9 +338,14 @@ async function obtenerProductosDestacados() {
   };
 }
 export default async function Home() {
-  const [productosDestacados, bannersDb] = await Promise.all([
+  const [
+  productosDestacados,
+  bannersDb,
+  categoriasHome,
+] = await Promise.all([
   obtenerProductosDestacados(),
   obtenerBanners(),
+  obtenerCategoriasHome(),
 ]);
 
 const {
@@ -266,6 +353,11 @@ const {
   seccion: seccionProductos,
   configuracion: configuracionProductos,
 } = productosDestacados;
+
+const {
+  seccion: seccionCategorias,
+  categorias,
+} = categoriasHome;
 
   const banners = bannersDb.map((banner) => ({
     id: banner.id,
@@ -340,31 +432,66 @@ const {
       />
 
       {/* Categorías rápidas */}
-      <section className="border-b border-zinc-200 bg-white">
-        <div className="mx-auto max-w-7xl overflow-x-auto px-4 py-6 md:px-6">
-          <div className="flex min-w-max justify-start gap-4 md:justify-center md:gap-6">
-            {categories.map((category) => (
+{(seccionCategorias?.activo ?? true) && (
+  <section className="border-b border-zinc-200 bg-white">
+    <div className="mx-auto max-w-7xl px-4 py-8 md:px-6">
+      {(seccionCategorias?.titulo ||
+        seccionCategorias?.subtitulo) && (
+        <div className="mb-6">
+          <h2 className="text-2xl font-black text-zinc-950 md:text-3xl">
+            {seccionCategorias?.titulo ||
+              "Categorías principales"}
+          </h2>
+
+          {seccionCategorias?.subtitulo && (
+            <p className="mt-2 text-sm text-zinc-600 md:text-base">
+              {seccionCategorias.subtitulo}
+            </p>
+          )}
+        </div>
+      )}
+
+      {categorias.length > 0 ? (
+        <div className="overflow-x-auto pb-2">
+          <div className="flex min-w-max justify-start gap-4 md:gap-6">
+            {categorias.map((categoria) => (
               <a
-                key={category.name}
-                href={category.href}
+                key={categoria.id}
+                href={`/categoria/${categoria.slug}`}
                 className="group w-24 text-center md:w-28"
               >
                 <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 p-2 transition duration-300 group-hover:-translate-y-1 group-hover:border-yellow-400 group-hover:shadow-lg md:h-28 md:w-28">
-                  <img
-                    src={category.image}
-                    alt={category.name}
-                    className="h-full w-full object-contain transition duration-300 group-hover:scale-105"
-                  />
+                  {categoria.imagenUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={categoria.imagenUrl}
+                      alt={categoria.nombre}
+                      className="h-full w-full object-contain transition duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <span className="flex h-14 w-14 items-center justify-center rounded-full bg-yellow-400 text-2xl font-black text-black">
+                      {categoria.nombre
+                        .charAt(0)
+                        .toUpperCase()}
+                    </span>
+                  )}
                 </div>
 
-                <p className="mt-2 text-xs font-bold md:text-sm">
-                  {category.name}
+                <p className="mt-2 line-clamp-2 text-xs font-bold md:text-sm">
+                  {categoria.nombre}
                 </p>
               </a>
             ))}
           </div>
         </div>
-      </section>
+      ) : (
+        <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500">
+          No hay categorías seleccionadas para mostrar.
+        </div>
+      )}
+    </div>
+  </section>
+)}
 
       <HeroSlider banners={banners} />
 
