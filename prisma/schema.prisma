@@ -214,6 +214,7 @@ model ProductoSeccion {
   @@index([productoId, orden])
   @@map("producto_secciones")
 }
+
 model Administrador {
   id           Int      @id @default(autoincrement())
   nombre       String?
@@ -245,7 +246,7 @@ model TokenRecuperacion {
 }
 
 model Cliente {
-  id         Int      @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   nombre     String
   telefono   String
   email      String?
@@ -254,8 +255,8 @@ model Cliente {
   region     String?
   direccion  String?
   referencia String?
-  notas      String?  @db.Text
-  activo     Boolean  @default(true)
+  notas      String? @db.Text
+  activo     Boolean @default(true)
 
   pedidos Pedido[]
 
@@ -381,23 +382,24 @@ model Banner {
   titulo                String?
   subtitulo             String?
   textoBoton            String?
-  href                   String   @default("/")
-  alt                    String
+  href                  String   @default("/")
+  alt                   String
   imagenDesktopUrl      String
   imagenDesktopPublicId String
   imagenMobileUrl       String?
   imagenMobilePublicId  String?
-  activo                 Boolean  @default(true)
-  orden                  Int      @default(0)
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  activo                Boolean  @default(true)
+  orden                 Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   @@index([activo, orden])
   @@map("banners")
 }
+
 model HomeSection {
   id            Int      @id @default(autoincrement())
-  tipo 		String   
+  tipo          String
   nombre        String
   titulo        String?
   subtitulo     String?
