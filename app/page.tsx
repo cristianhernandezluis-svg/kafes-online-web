@@ -73,6 +73,64 @@ function formatearPrecio(valor: { toString(): string } | null) {
   }).format(numero);
 }
 
+type ConfiguracionProductosDestacados = {
+  cantidad: number;
+  textoBoton: string;
+  hrefBoton: string;
+  productoIds: number[];
+};
+
+function leerConfiguracionProductosDestacados(
+  valor: unknown
+): ConfiguracionProductosDestacados {
+  const predeterminado: ConfiguracionProductosDestacados = {
+    cantidad: 8,
+    textoBoton: "Ver todos los productos",
+    hrefBoton: "/productos",
+    productoIds: [],
+  };
+
+  if (!valor || typeof valor !== "object" || Array.isArray(valor)) {
+    return predeterminado;
+  }
+
+  const configuracion = valor as Record<string, unknown>;
+
+  const cantidad =
+    typeof configuracion.cantidad === "number" &&
+    Number.isFinite(configuracion.cantidad)
+      ? Math.min(Math.max(Math.trunc(configuracion.cantidad), 1), 12)
+      : predeterminado.cantidad;
+
+  const textoBoton =
+    typeof configuracion.textoBoton === "string" &&
+    configuracion.textoBoton.trim()
+      ? configuracion.textoBoton.trim()
+      : predeterminado.textoBoton;
+
+  const hrefBoton =
+    typeof configuracion.hrefBoton === "string" &&
+    configuracion.hrefBoton.trim()
+      ? configuracion.hrefBoton.trim()
+      : predeterminado.hrefBoton;
+
+  const productoIds = Array.isArray(configuracion.productoIds)
+    ? configuracion.productoIds.filter(
+        (id): id is number =>
+          typeof id === "number" &&
+          Number.isInteger(id) &&
+          id > 0
+      )
+    : [];
+
+  return {
+    cantidad,
+    textoBoton,
+    hrefBoton,
+    productoIds,
+  };
+}
+
 async function obtenerBanners() {
   return prisma.banner.findMany({
     where: { activo: true },
@@ -91,54 +149,123 @@ async function obtenerBanners() {
 }
 
 async function obtenerProductosDestacados() {
-  return prisma.producto.findMany({
+  const seccion = await prisma.homeSection.findFirst({
+    where: {
+      tipo: "PRODUCTOS_DESTACADOS",
+    },
+    orderBy: {
+      id: "asc",
+    },
+  });
+
+  const configuracion = leerConfiguracionProductosDestacados(
+    seccion?.configuracion
+  );
+
+  const camposProducto = {
+    id: true,
+    nombre: true,
+    slug: true,
+    descripcionCorta: true,
+    precio: true,
+    precioAntes: true,
+    stock: true,
+    categoria: {
+      select: {
+        nombre: true,
+      },
+    },
+    marca: {
+      select: {
+        nombre: true,
+      },
+    },
+    imagenes: {
+      select: {
+        url: true,
+        alt: true,
+      },
+      orderBy: [
+        {
+          esPrincipal: "desc" as const,
+        },
+        {
+          orden: "asc" as const,
+        },
+      ],
+      take: 1,
+    },
+  };
+
+  if (configuracion.productoIds.length > 0) {
+    const productosEncontrados = await prisma.producto.findMany({
+      where: {
+        estado: "PUBLICADO",
+        id: {
+          in: configuracion.productoIds,
+        },
+      },
+      select: camposProducto,
+    });
+
+    const productosPorId = new Map(
+      productosEncontrados.map((producto) => [
+        producto.id,
+        producto,
+      ])
+    );
+
+    const productosOrdenados = configuracion.productoIds
+      .map((id) => productosPorId.get(id))
+      .filter(
+        (
+          producto
+        ): producto is (typeof productosEncontrados)[number] =>
+          Boolean(producto)
+      )
+      .slice(0, configuracion.cantidad);
+
+    return {
+      seccion,
+      configuracion,
+      productos: productosOrdenados,
+    };
+  }
+
+  const productos = await prisma.producto.findMany({
     where: {
       estado: "PUBLICADO",
       destacado: true,
     },
-    select: {
-      id: true,
-      nombre: true,
-      slug: true,
-      descripcionCorta: true,
-      precio: true,
-      precioAntes: true,
-      stock: true,
-      categoria: {
-        select: {
-          nombre: true,
-        },
-      },
-      marca: {
-        select: {
-          nombre: true,
-        },
-      },
-      imagenes: {
-        select: {
-          url: true,
-          alt: true,
-        },
-        orderBy: [
-          { esPrincipal: "desc" },
-          { orden: "asc" },
-        ],
-        take: 1,
-      },
-    },
+    select: camposProducto,
     orderBy: [
-      { publishedAt: "desc" },
-      { createdAt: "desc" },
+      {
+        publishedAt: "desc",
+      },
+      {
+        createdAt: "desc",
+      },
     ],
-    take: 8,
+    take: configuracion.cantidad,
   });
-}
 
+  return {
+    seccion,
+    configuracion,
+    productos,
+  };
+}
 export default async function Home() {
-  const [productos, bannersDb] = await Promise.all([
-    obtenerProductosDestacados(),
-    obtenerBanners(),
-  ]);
+  const [productosDestacados, bannersDb] = await Promise.all([
+  obtenerProductosDestacados(),
+  obtenerBanners(),
+]);
+
+const {
+  productos,
+  seccion: seccionProductos,
+  configuracion: configuracionProductos,
+} = productosDestacados;
 
   const banners = bannersDb.map((banner) => ({
     id: banner.id,
@@ -319,54 +446,84 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Productos */}
-      <section
-        id="productos"
-        className="border-y border-zinc-200 bg-white py-14"
-      >
-        <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <div className="mb-9 flex items-end justify-between">
-            <div>
-              <span className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-yellow-600">
-                <Sparkles size={18} />
-                Selección KAFES
-              </span>
+      {/* Productos destacados */}
+{(seccionProductos?.activo ?? true) && (
+  <section
+    id="productos"
+    className="border-y border-zinc-200 bg-white py-14"
+  >
+    <div className="mx-auto max-w-7xl px-4 md:px-6">
+      <div className="mb-9 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <span className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-yellow-600">
+            <Sparkles size={18} />
+            Selección KAFES
+          </span>
 
-              <h2 className="mt-2 text-3xl font-black md:text-4xl">
-                Productos destacados
-              </h2>
-            </div>
+          <h2 className="mt-2 text-3xl font-black md:text-4xl">
+            {seccionProductos?.titulo || "Productos destacados"}
+          </h2>
 
-            <span className="hidden rounded-full bg-red-100 px-4 py-2 text-sm font-black text-red-600 md:block">
-              Stock limitado
-            </span>
-          </div>
-
-          <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-            {productos.map((producto) => {
-              const imagen = producto.imagenes[0];
-
-              return (
-                <ProductCard
-                  key={producto.id}
-                  href={`/producto/${producto.slug}`}
-                  image={imagen?.url ?? "/categorias/herramientas.png"}
-                  alt={imagen?.alt ?? producto.nombre}
-                  badge={producto.categoria?.nombre ?? producto.marca?.nombre ?? "DESTACADO"}
-                  title={producto.nombre}
-                  description={
-                    producto.descripcionCorta ??
-                    "Producto seleccionado por KAFES ONLINE."
-                  }
-                  price={formatearPrecio(producto.precio) ?? "Consultar"}
-                  beforePrice={formatearPrecio(producto.precioAntes)}
-                  available={producto.stock > 0}
-                />
-              );
-            })}
-          </div>
+          {seccionProductos?.subtitulo && (
+            <p className="mt-3 max-w-2xl text-zinc-600">
+              {seccionProductos.subtitulo}
+            </p>
+          )}
         </div>
-      </section>
+
+        <a
+          href={configuracionProductos.hrefBoton}
+          className="inline-flex w-fit items-center gap-2 rounded-xl bg-black px-5 py-3 text-sm font-black text-white transition hover:bg-zinc-800"
+        >
+          {configuracionProductos.textoBoton}
+          <ChevronRight size={18} />
+        </a>
+      </div>
+
+      {productos.length > 0 ? (
+        <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+          {productos.map((producto) => {
+            const imagen = producto.imagenes[0];
+
+            return (
+              <ProductCard
+                key={producto.id}
+                href={`/producto/${producto.slug}`}
+                image={
+                  imagen?.url ??
+                  "/categorias/herramientas.png"
+                }
+                alt={imagen?.alt ?? producto.nombre}
+                badge={
+                  producto.categoria?.nombre ??
+                  producto.marca?.nombre ??
+                  "DESTACADO"
+                }
+                title={producto.nombre}
+                description={
+                  producto.descripcionCorta ??
+                  "Producto seleccionado por KAFES ONLINE."
+                }
+                price={
+                  formatearPrecio(producto.precio) ??
+                  "Consultar"
+                }
+                beforePrice={formatearPrecio(
+                  producto.precioAntes
+                )}
+                available={producto.stock > 0}
+              />
+            );
+          })}
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-dashed border-zinc-300 p-10 text-center text-zinc-500">
+          No hay productos seleccionados para mostrar.
+        </div>
+      )}
+    </div>
+  </section>
+)}
 
       {/* Banner secundario */}
       <section className="mx-auto max-w-7xl px-4 py-12 md:px-6">
