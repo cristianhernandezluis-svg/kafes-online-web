@@ -311,7 +311,7 @@ export default async function AdminHomePage() {
           </div>
 
           <Link
-            href="/admin/home/nuevo"
+            href="/admin/home/banners/nuevo"
             className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 text-sm font-bold text-white transition hover:bg-slate-800"
           >
             <Plus size={18} />
@@ -335,7 +335,7 @@ export default async function AdminHomePage() {
             </p>
 
             <Link
-              href="/admin/home/nuevo"
+              href="/admin/home/banners/nuevo"
               className="mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-slate-950 px-5 text-sm font-bold text-white"
             >
               <Plus size={18} />
@@ -385,7 +385,7 @@ export default async function AdminHomePage() {
 
                   <div className="mt-5 flex flex-wrap gap-2">
                     <Link
-                      href={`/admin/home/${banner.id}/editar`}
+                      href={`/admin/home/banners/${banner.id}/editar`}
                       className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"
                     >
                       <Pencil size={16} />

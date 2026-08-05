@@ -87,7 +87,9 @@ export async function actualizarBanner(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin/home");
-  revalidatePath(`/admin/home/${bannerId}/editar`);
+  revalidatePath(
+  `/admin/home/banners/${bannerId}/editar`
+);
   redirect("/admin/home");
 }
 
