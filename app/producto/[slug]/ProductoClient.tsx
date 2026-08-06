@@ -10,6 +10,7 @@ import ProductGallery from "@/components/producto/ProductGallery";
 import ProductPurchasePanel from "@/components/producto/ProductPurchasePanel";
 import ProductTechnicalSpecs from "@/components/producto/ProductTechnicalSpecs";
 import ProductDocuments from "@/components/producto/ProductDocuments";
+import ProductAccessories from "@/components/producto/ProductAccessories";
 import type { ProductoPublico } from "@/components/producto/product-types";
 import BuscadorProductos from "@/components/BuscadorProductos";
 import Image from "next/image";
@@ -401,11 +402,17 @@ useEffect(() => {
   <LandingProducto producto={producto} />
 )}
 
+<ProductAccessories
+  accesorios={producto.accesorios}
+/>
+
 <ProductTechnicalSpecs
   especificaciones={producto.especificaciones}
 />
 
-<ProductDocuments documentos={producto.documentos} />
+<ProductDocuments
+  documentos={producto.documentos}
+/>
 
 <ProductSocialProof
   opiniones={producto.opiniones}

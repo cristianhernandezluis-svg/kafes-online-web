@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ProductSpecificationManager from "@/components/admin/especificaciones/ProductSpecificationManager";
 import ProductBenefitManager from "@/components/admin/beneficios/ProductBenefitManager";
+import ProductAccessoryManager from "@/components/admin/accesorios/ProductAccessoryManager";
 import ProductDocumentManager from "@/components/admin/documentos/ProductDocumentManager";
 import { notFound } from "next/navigation";
 import {
@@ -47,6 +48,10 @@ const tabs = [
   {
   nombre: "Beneficios",
   valor: "beneficios",
+},
+{
+  nombre: "Accesorios",
+  valor: "accesorios",
 },
   {
     nombre: "Especificaciones",
@@ -559,6 +564,17 @@ export default async function EditarProductoPage({
     description="Agrega los principales argumentos de compra que aparecerán cerca del precio."
   >
     <ProductBenefitManager
+      productoId={producto.id}
+    />
+  </Card>
+)}
+
+{tabActiva === "accesorios" && (
+  <Card
+    title="Accesorios del producto"
+    description="Registra todo lo que recibe el cliente con su compra y los accesorios opcionales."
+  >
+    <ProductAccessoryManager
       productoId={producto.id}
     />
   </Card>

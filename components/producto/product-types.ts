@@ -40,6 +40,15 @@ export type ProductoOpinionPublica = {
   fecha: string;
 };
 
+export type ProductoAccesorioPublico = {
+  id: number;
+  nombre: string;
+  descripcion: string | null;
+  imagenUrl: string | null;
+  incluido: boolean;
+  orden: number;
+};
+
 export type ProductoPublico = {
   id: number;
   slug: string;
@@ -56,6 +65,7 @@ export type ProductoPublico = {
   stock: number;
   mini: string[];
   beneficios: string[];
+  accesorios: ProductoAccesorioPublico[];
   especificaciones: ProductoEspecificacion[];
   documentos: ProductoDocumentoPublico[];
   opiniones: ProductoOpinionPublica[];

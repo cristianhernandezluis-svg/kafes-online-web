@@ -41,6 +41,17 @@ export default async function ProductoPage({
   ],
 },
 
+accesorios: {
+  orderBy: [
+    {
+      orden: "asc",
+    },
+    {
+      id: "asc",
+    },
+  ],
+},
+
       fichaTecnica: {
         orderBy: {
           orden: "asc",
@@ -231,6 +242,17 @@ const relacionadosDb = [
     beneficio.descripcion
       ? `${beneficio.titulo}: ${beneficio.descripcion}`
       : beneficio.titulo
+),
+
+accesorios: productoDb.accesorios.map(
+  (accesorio) => ({
+    id: accesorio.id,
+    nombre: accesorio.nombre,
+    descripcion: accesorio.descripcion,
+    imagenUrl: accesorio.imagenUrl,
+    incluido: accesorio.incluido,
+    orden: accesorio.orden,
+  }),
 ),
 
     especificaciones: productoDb.fichaTecnica.map(
