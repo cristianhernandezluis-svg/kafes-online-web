@@ -107,16 +107,20 @@ function obtenerRutaEdicion(tipo: string) {
     case "HERO":
       return "#banners";
 
-case "BENEFICIOS":
-  return "/admin/home/beneficios";
+    case "BENEFICIOS":
+      return "/admin/home/beneficios";
 
     case "CATEGORIAS":
       return "/admin/home/categorias";
 
     case "PRODUCTOS_DESTACADOS":
       return "/admin/home/productos-destacados";
+
     case "PROMOCIONES":
       return "/admin/home/promociones";
+
+    case "BANNER_INFERIOR":
+      return "/admin/home/banner-inferior";
 
     default:
       return null;

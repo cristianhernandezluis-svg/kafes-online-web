@@ -313,6 +313,102 @@ async function obtenerPromocionesHome() {
   };
 }
 
+type ConfiguracionBannerInferior = {
+  etiqueta: string;
+  textoBoton: string;
+  urlBoton: string;
+  imagen: string;
+  imagenPublicId: string;
+  alt: string;
+};
+
+function obtenerTextoBannerInferior(
+  valor: unknown,
+  predeterminado: string
+) {
+  return typeof valor === "string" &&
+    valor.trim()
+    ? valor.trim()
+    : predeterminado;
+}
+
+function leerConfiguracionBannerInferior(
+  valor: unknown
+): ConfiguracionBannerInferior {
+  const predeterminado: ConfiguracionBannerInferior = {
+    etiqueta: "PRECIOS ESPECIALES",
+    textoBoton: "COMPRAR AHORA",
+    urlBoton: "#productos",
+    imagen: "/banner-taller-profesional.jpg",
+    imagenPublicId: "",
+    alt: "Herramientas profesionales Kafes Online",
+  };
+
+  if (
+    !valor ||
+    typeof valor !== "object" ||
+    Array.isArray(valor)
+  ) {
+    return predeterminado;
+  }
+
+  const configuracion =
+    valor as Record<string, unknown>;
+
+  return {
+    etiqueta: obtenerTextoBannerInferior(
+      configuracion.etiqueta,
+      predeterminado.etiqueta
+    ),
+
+    textoBoton: obtenerTextoBannerInferior(
+      configuracion.textoBoton,
+      predeterminado.textoBoton
+    ),
+
+    urlBoton: obtenerTextoBannerInferior(
+      configuracion.urlBoton,
+      predeterminado.urlBoton
+    ),
+
+    imagen: obtenerTextoBannerInferior(
+      configuracion.imagen,
+      predeterminado.imagen
+    ),
+
+    imagenPublicId:
+      typeof configuracion.imagenPublicId ===
+      "string"
+        ? configuracion.imagenPublicId
+        : "",
+
+    alt: obtenerTextoBannerInferior(
+      configuracion.alt,
+      predeterminado.alt
+    ),
+  };
+}
+
+async function obtenerBannerInferiorHome() {
+  const seccion =
+    await prisma.homeSection.findFirst({
+      where: {
+        tipo: "BANNER_INFERIOR",
+      },
+      orderBy: {
+        id: "asc",
+      },
+    });
+
+  return {
+    seccion,
+    configuracion:
+      leerConfiguracionBannerInferior(
+        seccion?.configuracion
+      ),
+  };
+}
+
 function obtenerIconoPromocion(
   icono: IconoPromocion
 ) {
@@ -725,12 +821,14 @@ export default async function Home() {
   categoriasHome,
   promocionesHome,
   beneficiosHome,
+  bannerInferiorHome,
 ] = await Promise.all([
   obtenerProductosDestacados(),
   obtenerBanners(),
   obtenerCategoriasHome(),
   obtenerPromocionesHome(),
   obtenerBeneficiosHome(),
+  obtenerBannerInferiorHome(),
 ]);
 
 const {
@@ -753,6 +851,11 @@ const {
   seccion: seccionBeneficios,
   beneficios,
 } = beneficiosHome;
+
+const {
+  seccion: seccionBannerInferior,
+  configuracion: configuracionBannerInferior,
+} = bannerInferiorHome;
 
   const banners = bannersDb.map((banner) => ({
     id: banner.id,
@@ -1037,41 +1140,47 @@ const {
 )}
 
       {/* Banner secundario */}
-      <section className="mx-auto max-w-7xl px-4 py-12 md:px-6">
-        <div className="grid overflow-hidden rounded-[32px] bg-black text-white shadow-xl md:grid-cols-2">
-          <div className="flex flex-col justify-center px-8 py-12 md:px-14">
-            <span className="flex w-fit items-center gap-2 rounded-full bg-yellow-400 px-4 py-2 text-sm font-black text-black">
-              <BadgePercent size={18} />
-              PRECIOS ESPECIALES
-            </span>
+{(seccionBannerInferior?.activo ?? true) && (
+  <section className="mx-auto max-w-7xl px-4 py-12 md:px-6">
+    <div className="grid overflow-hidden rounded-[32px] bg-black text-white shadow-xl md:grid-cols-2">
+      <div className="flex flex-col justify-center px-8 py-12 md:px-14">
+        <span className="flex w-fit items-center gap-2 rounded-full bg-yellow-400 px-4 py-2 text-sm font-black text-black">
+          <BadgePercent size={18} />
 
-            <h2 className="mt-6 text-4xl font-black md:text-5xl">
-              Equipa tu taller con herramientas profesionales
-            </h2>
+          {configuracionBannerInferior.etiqueta}
+        </span>
 
-            <p className="mt-5 max-w-xl text-lg text-zinc-300">
-              Encuentra equipos para construcción, agricultura, mantenimiento y
-              trabajos especializados.
-            </p>
+        <h2 className="mt-6 text-4xl font-black md:text-5xl">
+          {seccionBannerInferior?.titulo ||
+            "Equipa tu taller con herramientas profesionales"}
+        </h2>
 
-            <a
-              href="#productos"
-              className="mt-8 inline-flex w-fit items-center gap-2 rounded-2xl bg-yellow-400 px-7 py-4 text-lg font-black text-black transition hover:scale-105 hover:bg-yellow-300"
-            >
-              COMPRAR AHORA
-              <ChevronRight size={22} />
-            </a>
-          </div>
+        <p className="mt-5 max-w-xl text-lg text-zinc-300">
+          {seccionBannerInferior?.subtitulo ||
+            "Encuentra equipos para construcción, agricultura, mantenimiento y trabajos especializados."}
+        </p>
 
-          <div className="min-h-[330px] bg-zinc-900">
-            <img
-              src="/banner-taller-profesional.jpg"
-              alt="Herramientas profesionales Kafes Online"
-              className="h-full w-full object-cover"
-            />
-          </div>
-        </div>
-      </section>
+        <a
+          href={configuracionBannerInferior.urlBoton}
+          className="mt-8 inline-flex w-fit items-center gap-2 rounded-2xl bg-yellow-400 px-7 py-4 text-lg font-black text-black transition hover:scale-105 hover:bg-yellow-300"
+        >
+          {configuracionBannerInferior.textoBoton}
+
+          <ChevronRight size={22} />
+        </a>
+      </div>
+
+      <div className="min-h-[330px] bg-zinc-900">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={configuracionBannerInferior.imagen}
+          alt={configuracionBannerInferior.alt}
+          className="h-full w-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+)}
 
       {/* Pie básico */}
       <footer className="bg-black text-white">
