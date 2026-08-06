@@ -29,6 +29,17 @@ export type ProductoRelacionadoPublico = {
   href: string;
 };
 
+export type ProductoOpinionPublica = {
+  id: number;
+  clienteNombre: string;
+  ciudad: string | null;
+  comentario: string;
+  calificacion: number;
+  imagenUrl: string | null;
+  compraVerificada: boolean;
+  fecha: string;
+};
+
 export type ProductoPublico = {
   id: number;
   slug: string;
@@ -47,5 +58,6 @@ export type ProductoPublico = {
   beneficios: string[];
   especificaciones: ProductoEspecificacion[];
   documentos: ProductoDocumentoPublico[];
+  opiniones: ProductoOpinionPublica[];
   relacionados: ProductoRelacionadoPublico[];
 };

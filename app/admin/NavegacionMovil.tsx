@@ -9,6 +9,7 @@ import {
   ImageIcon,
   LayoutDashboard,
   Menu,
+  MessageSquareText,
   Package,
   Settings,
   ShoppingCart,
@@ -53,6 +54,12 @@ const opcionesAdicionales = [
     href: "/admin/marcas",
     icono: Tags,
   },
+{
+  nombre: "Opiniones",
+  descripcion: "Testimonios de clientes",
+  href: "/admin/opiniones",
+  icono: MessageSquareText,
+},
   {
     nombre: "Banners",
     descripcion: "Imágenes de la tienda",

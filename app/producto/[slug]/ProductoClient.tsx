@@ -407,7 +407,9 @@ useEffect(() => {
 
 <ProductDocuments documentos={producto.documentos} />
 
-<ProductSocialProof />
+<ProductSocialProof
+  opiniones={producto.opiniones}
+/>
         </>
       )}
 

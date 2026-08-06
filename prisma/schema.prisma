@@ -103,6 +103,7 @@ model Producto {
   fichaTecnica     ProductoFichaTecnica[]
   documentos       ProductoDocumento[]
   accesorios       ProductoAccesorio[]
+  opiniones        Opinion[]
   secciones        ProductoSeccion[]
   itemsPedido      PedidoItem[]
   createdAt        DateTime               @default(now())
@@ -412,4 +413,28 @@ model HomeSection {
   @@index([activo, orden])
   @@index([tipo])
   @@map("home_sections")
+}
+
+model Opinion {
+  id               Int      @id @default(autoincrement())
+  productoId       Int
+  clienteNombre    String
+  ciudad           String?
+  comentario       String   @db.Text
+  calificacion     Int      @default(5)
+  imagenUrl        String?
+  imagenPublicId   String?
+  compraVerificada Boolean  @default(true)
+  visible          Boolean  @default(true)
+  orden            Int      @default(0)
+  fecha            DateTime @default(now())
+  producto         Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([productoId])
+  @@index([productoId, visible, orden])
+  @@index([visible])
+  @@index([fecha])
+  @@map("opiniones")
 }

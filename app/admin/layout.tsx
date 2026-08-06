@@ -9,6 +9,7 @@ import {
   Boxes,
   ImageIcon,
   LayoutDashboard,
+  MessageSquareText,
   Package,
   Settings,
   ShoppingCart,
@@ -37,6 +38,11 @@ const menu = [
     href: "/admin/marcas",
     icono: Tags,
   },
+{
+  nombre: "Opiniones",
+  href: "/admin/opiniones",
+  icono: MessageSquareText,
+},
   {
   nombre: "Página de inicio",
   href: "/admin/home",

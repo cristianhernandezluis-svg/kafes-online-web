@@ -44,6 +44,19 @@ export default async function ProductoPage({
           orden: "asc",
         },
       },
+opiniones: {
+  where: {
+    visible: true,
+  },
+  orderBy: [
+    {
+      orden: "asc",
+    },
+    {
+      fecha: "desc",
+    },
+  ],
+},
     },
   });
 
@@ -224,6 +237,20 @@ const relacionadosDb = [
         visible: documento.visible,
       }),
     ),
+
+opiniones: productoDb.opiniones.map(
+  (opinion) => ({
+    id: opinion.id,
+    clienteNombre: opinion.clienteNombre,
+    ciudad: opinion.ciudad,
+    comentario: opinion.comentario,
+    calificacion: opinion.calificacion,
+    imagenUrl: opinion.imagenUrl,
+    compraVerificada:
+      opinion.compraVerificada,
+    fecha: opinion.fecha.toISOString(),
+  })
+),
 
     relacionados,
   };

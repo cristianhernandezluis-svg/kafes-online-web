@@ -8,10 +8,12 @@ type Body = {
   tipo?:
     | "producto"
     | "banner"
-    | "bannerInferior";
+    | "bannerInferior"
+    | "opinion";
 
   productoId?: number;
   bannerId?: number;
+  opinionId?: number;
 };
 
 export async function POST(request: Request) {
@@ -63,6 +65,20 @@ export async function POST(request: Request) {
       case "bannerInferior": {
         folder =
           "kafes-online/home/banner-inferior";
+
+        break;
+      }
+
+      case "opinion": {
+        const opinionId = Number(
+          body.opinionId
+        );
+
+        folder =
+          Number.isInteger(opinionId) &&
+          opinionId > 0
+            ? `kafes-online/opiniones/${opinionId}`
+            : "kafes-online/opiniones/nuevas";
 
         break;
       }
