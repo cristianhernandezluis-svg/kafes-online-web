@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ProductSpecificationManager from "@/components/admin/especificaciones/ProductSpecificationManager";
+import ProductBenefitManager from "@/components/admin/beneficios/ProductBenefitManager";
 import ProductDocumentManager from "@/components/admin/documentos/ProductDocumentManager";
 import { notFound } from "next/navigation";
 import {
@@ -43,6 +44,10 @@ const tabs = [
     nombre: "Contenido",
     valor: "contenido",
   },
+  {
+  nombre: "Beneficios",
+  valor: "beneficios",
+},
   {
     nombre: "Especificaciones",
     valor: "especificaciones",
@@ -546,6 +551,17 @@ export default async function EditarProductoPage({
       </button>
     </Card>
   </form>
+)}
+
+{tabActiva === "beneficios" && (
+  <Card
+    title="Beneficios del producto"
+    description="Agrega los principales argumentos de compra que aparecerán cerca del precio."
+  >
+    <ProductBenefitManager
+      productoId={producto.id}
+    />
+  </Card>
 )}
 
 {tabActiva === "especificaciones" && (

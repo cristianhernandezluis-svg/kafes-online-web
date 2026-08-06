@@ -29,6 +29,17 @@ export default async function ProductoPage({
 
       categoria: true,
       marca: true,
+      
+      beneficios: {
+  orderBy: [
+    {
+      orden: "asc",
+    },
+    {
+      id: "asc",
+    },
+  ],
+},
 
       fichaTecnica: {
         orderBy: {
@@ -215,7 +226,12 @@ const relacionadosDb = [
       (item): item is string => Boolean(item),
     ),
 
-    beneficios: [],
+    beneficios: productoDb.beneficios.map(
+  (beneficio) =>
+    beneficio.descripcion
+      ? `${beneficio.titulo}: ${beneficio.descripcion}`
+      : beneficio.titulo
+),
 
     especificaciones: productoDb.fichaTecnica.map(
       (especificacion) => ({
