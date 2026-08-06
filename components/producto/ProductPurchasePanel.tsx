@@ -10,6 +10,7 @@ import {
   Plus,
   ShieldCheck,
   ShoppingCart,
+  Star,
   Truck,
 } from "lucide-react";
 import type { RefObject } from "react";
@@ -54,6 +55,20 @@ export default function ProductPurchasePanel({
   const disponible = producto.stock > 0;
   const pocasUnidades = disponible && producto.stock <= 5;
 
+const cantidadOpiniones = producto.opiniones.length;
+
+const promedioOpiniones =
+  cantidadOpiniones > 0
+    ? producto.opiniones.reduce(
+        (total, opinion) =>
+          total + opinion.calificacion,
+        0
+      ) / cantidadOpiniones
+    : 0;
+
+const promedioFormateado =
+  promedioOpiniones.toFixed(1);
+
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `Hola, deseo información sobre ${producto.nombre}`,
   )}`;
@@ -82,17 +97,48 @@ export default function ProductPurchasePanel({
         {producto.nombre}
       </h1>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-        <div className="flex items-center gap-1 text-yellow-500" aria-label="Valoración destacada">
-          <span className="tracking-wider">★★★★★</span>
-        </div>
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-3 text-sm">
+  {cantidadOpiniones > 0 ? (
+    <a
+      href="#opiniones"
+      className="inline-flex flex-wrap items-center gap-2 font-bold transition hover:text-yellow-600"
+      aria-label={`${promedioFormateado} de 5 estrellas, ${cantidadOpiniones} opiniones`}
+    >
+      <span className="flex items-center gap-0.5">
+        {Array.from({
+          length: 5,
+        }).map((_, indice) => (
+          <Star
+            key={indice}
+            size={18}
+            className={
+              indice < Math.round(promedioOpiniones)
+                ? "fill-yellow-400 text-yellow-400"
+                : "text-zinc-300"
+            }
+          />
+        ))}
+      </span>
 
-        <span className="font-bold text-zinc-600">Atención especializada</span>
-        <span className="hidden h-4 w-px bg-zinc-300 sm:block" />
-        <span className="inline-flex items-center gap-1.5 font-bold text-green-700">
-          <BadgeCheck size={17} /> Compra segura
-        </span>
-      </div>
+      <span className="text-zinc-700">
+        {promedioFormateado} ·{" "}
+        {cantidadOpiniones} opinión
+        {cantidadOpiniones === 1 ? "" : "es"}
+      </span>
+    </a>
+  ) : (
+    <span className="font-bold text-zinc-500">
+      Aún sin opiniones
+    </span>
+  )}
+
+  <span className="hidden h-4 w-px bg-zinc-300 sm:block" />
+
+  <span className="inline-flex items-center gap-1.5 font-bold text-green-700">
+    <BadgeCheck size={17} />
+    Compra segura
+  </span>
+</div>
 
       <div className="mt-6 rounded-3xl bg-zinc-950 p-5 text-white sm:p-6">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-yellow-400">

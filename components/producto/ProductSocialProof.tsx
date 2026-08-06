@@ -57,7 +57,10 @@ export default function ProductSocialProof({
   return (
     <>
       {opiniones.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20">
+  <section
+    id="opiniones"
+    className="mx-auto max-w-7xl scroll-mt-24 px-4 py-16 md:px-6 md:py-20"
+  >
           <div className="mx-auto mb-10 max-w-2xl text-center">
             <span className="text-sm font-black uppercase tracking-widest text-yellow-600">
               Opiniones verificadas
