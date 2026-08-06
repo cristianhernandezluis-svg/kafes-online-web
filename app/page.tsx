@@ -349,6 +349,168 @@ function obtenerFondoPromocion(
   }
 }
 
+type IconoBeneficio =
+  | "camion"
+  | "escudo"
+  | "tarjeta"
+  | "audifonos";
+
+type BeneficioHome = {
+  titulo: string;
+  texto: string;
+  icono: IconoBeneficio;
+  orden: number;
+};
+
+const BENEFICIOS_PREDETERMINADOS: BeneficioHome[] = [
+  {
+    titulo: "Envíos nacionales",
+    texto: "Llegamos a todo el Perú.",
+    icono: "camion",
+    orden: 1,
+  },
+  {
+    titulo: "Compra confiable",
+    texto: "Productos con garantía.",
+    icono: "escudo",
+    orden: 2,
+  },
+  {
+    titulo: "Pago seguro",
+    texto: "Compra mediante Izipay.",
+    icono: "tarjeta",
+    orden: 3,
+  },
+  {
+    titulo: "Atención personalizada",
+    texto: "Asesoría rápida por WhatsApp.",
+    icono: "audifonos",
+    orden: 4,
+  },
+];
+
+function esIconoBeneficio(
+  valor: unknown
+): valor is IconoBeneficio {
+  return (
+    valor === "camion" ||
+    valor === "escudo" ||
+    valor === "tarjeta" ||
+    valor === "audifonos"
+  );
+}
+
+function leerConfiguracionBeneficios(
+  valor: unknown
+): BeneficioHome[] {
+  if (
+    !valor ||
+    typeof valor !== "object" ||
+    Array.isArray(valor)
+  ) {
+    return BENEFICIOS_PREDETERMINADOS;
+  }
+
+  const configuracion =
+    valor as Record<string, unknown>;
+
+  const beneficiosRecibidos =
+    Array.isArray(configuracion.beneficios)
+      ? configuracion.beneficios
+      : [];
+
+  return BENEFICIOS_PREDETERMINADOS.map(
+    (predeterminado, indice) => {
+      const valorBeneficio =
+        beneficiosRecibidos[indice];
+
+      if (
+        !valorBeneficio ||
+        typeof valorBeneficio !== "object" ||
+        Array.isArray(valorBeneficio)
+      ) {
+        return predeterminado;
+      }
+
+      const beneficio =
+        valorBeneficio as Record<
+          string,
+          unknown
+        >;
+
+      const titulo =
+        typeof beneficio.titulo === "string" &&
+        beneficio.titulo.trim()
+          ? beneficio.titulo.trim()
+          : predeterminado.titulo;
+
+      const texto =
+        typeof beneficio.texto === "string" &&
+        beneficio.texto.trim()
+          ? beneficio.texto.trim()
+          : predeterminado.texto;
+
+      const icono = esIconoBeneficio(
+        beneficio.icono
+      )
+        ? beneficio.icono
+        : predeterminado.icono;
+
+      const orden =
+        typeof beneficio.orden === "number" &&
+        Number.isInteger(beneficio.orden) &&
+        beneficio.orden >= 1 &&
+        beneficio.orden <= 4
+          ? beneficio.orden
+          : predeterminado.orden;
+
+      return {
+        titulo,
+        texto,
+        icono,
+        orden,
+      };
+    }
+  ).sort((a, b) => a.orden - b.orden);
+}
+
+async function obtenerBeneficiosHome() {
+  const seccion =
+    await prisma.homeSection.findFirst({
+      where: {
+        tipo: "BENEFICIOS",
+      },
+      orderBy: {
+        id: "asc",
+      },
+    });
+
+  return {
+    seccion,
+    beneficios: leerConfiguracionBeneficios(
+      seccion?.configuracion
+    ),
+  };
+}
+
+function obtenerIconoBeneficio(
+  icono: IconoBeneficio
+) {
+  switch (icono) {
+    case "escudo":
+      return <ShieldCheck size={28} />;
+
+    case "tarjeta":
+      return <CreditCard size={28} />;
+
+    case "audifonos":
+      return <Headphones size={28} />;
+
+    default:
+      return <Truck size={28} />;
+  }
+}
+
 async function obtenerCategoriasHome() {
   const seccion = await prisma.homeSection.findFirst({
     where: {
@@ -562,11 +724,13 @@ export default async function Home() {
   bannersDb,
   categoriasHome,
   promocionesHome,
+  beneficiosHome,
 ] = await Promise.all([
   obtenerProductosDestacados(),
   obtenerBanners(),
   obtenerCategoriasHome(),
   obtenerPromocionesHome(),
+  obtenerBeneficiosHome(),
 ]);
 
 const {
@@ -584,6 +748,11 @@ const {
   seccion: seccionPromociones,
   configuracion: configuracionPromociones,
 } = promocionesHome;
+
+const {
+  seccion: seccionBeneficios,
+  beneficios,
+} = beneficiosHome;
 
   const banners = bannersDb.map((banner) => ({
     id: banner.id,
@@ -722,33 +891,22 @@ const {
       <HeroSlider banners={banners} />
 
       {/* Beneficios */}
-      <section className="mx-auto max-w-7xl px-4 pb-10 md:px-6">
-        <div className="grid overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-sm sm:grid-cols-2 lg:grid-cols-4">
-          <Benefit
-            icon={<Truck size={28} />}
-            title="Envíos nacionales"
-            text="Llegamos a todo el Perú."
-          />
-
-          <Benefit
-            icon={<ShieldCheck size={28} />}
-            title="Compra confiable"
-            text="Productos con garantía."
-          />
-
-          <Benefit
-            icon={<CreditCard size={28} />}
-            title="Pago seguro"
-            text="Compra mediante Izipay."
-          />
-
-          <Benefit
-            icon={<Headphones size={28} />}
-            title="Atención personalizada"
-            text="Asesoría rápida por WhatsApp."
-          />
-        </div>
-      </section>
+{(seccionBeneficios?.activo ?? true) && (
+  <section className="mx-auto max-w-7xl px-4 pb-10 md:px-6">
+    <div className="grid overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-sm sm:grid-cols-2 lg:grid-cols-4">
+      {beneficios.map((beneficio) => (
+        <Benefit
+          key={`${beneficio.orden}-${beneficio.titulo}`}
+          icon={obtenerIconoBeneficio(
+            beneficio.icono
+          )}
+          title={beneficio.titulo}
+          text={beneficio.texto}
+        />
+      ))}
+    </div>
+  </section>
+)}
 
       {/* Ofertas rápidas */}
 {(seccionPromociones?.activo ?? true) && (

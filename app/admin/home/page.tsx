@@ -107,6 +107,9 @@ function obtenerRutaEdicion(tipo: string) {
     case "HERO":
       return "#banners";
 
+case "BENEFICIOS":
+  return "/admin/home/beneficios";
+
     case "CATEGORIAS":
       return "/admin/home/categorias";
 
