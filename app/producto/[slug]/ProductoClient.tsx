@@ -1,6 +1,7 @@
 "use client";
 
 import LandingProducto from "@/components/LandingProducto";
+import type { ConfiguracionTiendaPublica } from "@/lib/configuracion-tienda";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import StickyBuyButton from "@/components/producto/StickyBuyButton";
 import RelatedProducts from "@/components/producto/RelatedProducts";
@@ -29,10 +30,12 @@ declare global {
 
 type ProductoClientProps = {
   producto: ProductoPublico;
+  configuracionTienda: ConfiguracionTiendaPublica;
 };
 
 export default function ProductoClient({
   producto,
+  configuracionTienda,
 }: ProductoClientProps) {
   const slug = producto.slug;
   const comprarAhoraRef = useRef<HTMLButtonElement | null>(null);
@@ -389,12 +392,13 @@ useEffect(() => {
               />
 
               <ProductPurchasePanel
-                producto={producto}
-                cantidad={cantidad}
-                onCantidadChange={setCantidad}
-                onComprar={abrirCheckout}
-                comprarAhoraRef={comprarAhoraRef}
-              />
+  producto={producto}
+  cantidad={cantidad}
+  whatsapp={configuracionTienda.whatsapp}
+  onCantidadChange={setCantidad}
+  onComprar={abrirCheckout}
+  comprarAhoraRef={comprarAhoraRef}
+/>
             </div>
           </section>
 
@@ -427,16 +431,27 @@ useEffect(() => {
         <footer className="bg-black text-white px-6 py-16 pb-32">
           <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
             <div>
-              <h2 className="text-3xl font-black">KAFES ONLINE</h2>
+              <h2 className="text-3xl font-black">
+  {configuracionTienda.nombreTienda}
+</h2>
               <p className="text-zinc-400 mt-4">
-                Herramientas profesionales con envío a todo el Perú.
+                {configuracionTienda.textoFooter}
               </p>
             </div>
 
             <div>
               <h3 className="font-black mb-4">Atención al cliente</h3>
-              <p className="text-zinc-400">📞 +51 980 296 583</p>
-              <p className="text-zinc-400">📍 Lima, Perú</p>
+              {configuracionTienda.telefono && (
+  <p className="text-zinc-400">
+    📞 {configuracionTienda.telefono}
+  </p>
+)}
+
+{configuracionTienda.direccion && (
+  <p className="text-zinc-400">
+    📍 {configuracionTienda.direccion}
+  </p>
+)}
             </div>
 
             <div>
@@ -449,7 +464,7 @@ useEffect(() => {
           </div>
 
           <div className="text-center text-zinc-500 text-sm mt-12 border-t border-zinc-800 pt-6">
-            © 2026 KAFES ONLINE - Todos los derechos reservados.
+            © 2026 {configuracionTienda.nombreTienda} - Todos los derechos reservados.
           </div>
         </footer>
       )}
@@ -483,7 +498,11 @@ useEffect(() => {
     onComprar={abrirCheckout}
   />
 )}
-      <WhatsAppButton />
+      <WhatsAppButton
+  whatsapp={configuracionTienda.whatsapp}
+  mensaje={`Hola, quiero información sobre ${producto.nombre}.`}
+  nombreTienda={configuracionTienda.nombreTienda}
+/>
     </main>
   );
 }

@@ -3,11 +3,19 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-export default function WhatsAppButton() {
+type WhatsAppButtonProps = {
+  whatsapp: string;
+  mensaje: string;
+  nombreTienda?: string;
+};
+
+export default function WhatsAppButton({
+  whatsapp,
+  mensaje,
+  nombreTienda = "KAFES ONLINE",
+}: WhatsAppButtonProps) {
   const [visible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
-
-  const producto = "Sierra Inalámbrica BOMVINK 8";
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -17,13 +25,14 @@ export default function WhatsAppButton() {
     return () => clearTimeout(timer);
   }, []);
 
-  const abrirWhatsApp = (nombre: string, numero: string) => {
-    const mensaje = `Hola ${nombre}, quiero hacer mi pedido de la ${producto}. Vengo de la página web.`;
-    const url = `https://wa.me/51${numero}?text=${encodeURIComponent(mensaje)}`;
+  const abrirWhatsApp = () => {
+  const url = `https://wa.me/${whatsapp}?text=${encodeURIComponent(
+    mensaje
+  )}`;
 
-    setOpen(false);
-    window.open(url, "_blank");
-  };
+  setOpen(false);
+  window.open(url, "_blank");
+};
 
   if (!visible) return null;
 
@@ -52,8 +61,8 @@ export default function WhatsAppButton() {
                 ¿En qué podemos ayudarte?
               </h3>
               <p className="text-xs font-semibold">
-                Elige un asesor disponible
-              </p>
+  Estamos listos para ayudarte
+</p>
             </div>
 
             <button
@@ -64,57 +73,36 @@ export default function WhatsAppButton() {
             </button>
           </div>
 
-          <div className="p-4 space-y-4">
-            <button
-              onClick={() => abrirWhatsApp("Kathi", "945360973")}
-              className="w-full text-left bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl p-4 transition-all"
-            >
-              <div className="flex items-center gap-4">
-                <Image
-                  src="/kathi.png"
-                  alt="Kathi"
-                  width={70}
-                  height={70}
-                  className="w-[70px] h-[70px] rounded-full object-cover"
-                />
+          <div className="p-4">
+  <button
+    onClick={abrirWhatsApp}
+    className="w-full text-left bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl p-4 transition-all"
+  >
+    <div className="flex items-center gap-4">
+      <Image
+        src="/whatsapp-logo.png"
+        alt="WhatsApp"
+        width={70}
+        height={70}
+        className="w-[70px] h-[70px] rounded-full object-cover"
+      />
 
-                <div className="flex-1">
-                  <p className="font-black text-xl text-gray-900">Kathi</p>
-                  <p className="text-sm text-gray-600">
-                    Representante de ventas
-                  </p>
+      <div className="flex-1">
+        <p className="font-black text-xl text-gray-900">
+          {nombreTienda}
+        </p>
 
-                  <div className="mt-3 bg-[#25D366] text-white text-center py-3 rounded-full font-bold">
-                    Hablar por WhatsApp
-                  </div>
-                </div>
-              </div>
-            </button>
+        <p className="text-sm text-gray-600">
+          Atención de ventas
+        </p>
 
-            <button
-              onClick={() => abrirWhatsApp("Cristian", "980296583")}
-              className="w-full text-left bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl p-4 transition-all"
-            >
-              <div className="flex items-center gap-4">
-                <Image
-                  src="/cristian.png"
-                  alt="Cristian"
-                  width={70}
-                  height={70}
-                  className="w-[70px] h-[70px] rounded-full object-cover"
-                />
-
-                <div className="flex-1">
-                  <p className="font-black text-xl text-gray-900">Cristian</p>
-                  <p className="text-sm text-gray-600">Asesor comercial</p>
-
-                  <div className="mt-3 bg-[#25D366] text-white text-center py-3 rounded-full font-bold">
-                    Hablar por WhatsApp
-                  </div>
-                </div>
-              </div>
-            </button>
-          </div>
+        <div className="mt-3 bg-[#25D366] text-white text-center py-3 rounded-full font-bold">
+          Hablar por WhatsApp
+        </div>
+      </div>
+    </div>
+  </button>
+</div>
         </div>
       )}
     </>

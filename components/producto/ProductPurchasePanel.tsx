@@ -20,16 +20,17 @@ import type { ProductoPublico } from "./product-types";
 type ProductPurchasePanelProps = {
   producto: ProductoPublico;
   cantidad: number;
+  whatsapp: string;
   onCantidadChange: (cantidad: number) => void;
   onComprar: () => void;
   comprarAhoraRef: RefObject<HTMLButtonElement | null>;
 };
 
-const WHATSAPP_NUMBER = "51980296583";
 
 export default function ProductPurchasePanel({
   producto,
   cantidad,
+  whatsapp,
   onCantidadChange,
   onComprar,
   comprarAhoraRef,
@@ -69,9 +70,9 @@ const promedioOpiniones =
 const promedioFormateado =
   promedioOpiniones.toFixed(1);
 
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hola, deseo información sobre ${producto.nombre}`,
-  )}`;
+  const whatsappUrl = `https://wa.me/${whatsapp}?text=${encodeURIComponent(
+  `Hola, deseo información sobre ${producto.nombre}`,
+)}`;
 
   return (
     <aside className="rounded-[28px] border border-zinc-200 bg-white p-5 shadow-[0_20px_70px_rgba(0,0,0,0.08)] sm:p-7 lg:sticky lg:top-28 lg:self-start">

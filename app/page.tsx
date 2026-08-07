@@ -1,4 +1,5 @@
 import WhatsAppButton from "@/components/WhatsAppButton";
+import { obtenerConfiguracionTienda } from "@/lib/configuracion-tienda";
 import prisma from "@/lib/prisma";
 import BuscadorProductos from "@/components/BuscadorProductos";
 import Benefit from "@/components/home/Benefit";
@@ -815,6 +816,8 @@ async function obtenerProductosDestacados() {
   };
 }
 export default async function Home() {
+const configuracionTienda =
+  await obtenerConfiguracionTienda();
   const [
   productosDestacados,
   bannersDb,
@@ -888,16 +891,18 @@ const {
       <header className="sticky top-0 z-50 border-b border-zinc-200 bg-yellow-400 shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-6">
           <a href="/" className="shrink-0">
-            <h1 className="text-xl font-black tracking-tight md:text-2xl">
-              KAFES ONLINE
-            </h1>
-          </a>
+  <h1 className="text-xl font-black tracking-tight md:text-2xl">
+    {configuracionTienda.nombreTienda}
+  </h1>
+</a>
 
           <BuscadorProductos variante="desktop" />
 
           <div className="flex items-center gap-2">
             <a
-              href="https://wa.me/51980296583?text=Hola,%20quiero%20información%20de%20sus%20productos"
+              href={`https://wa.me/${configuracionTienda.whatsapp}?text=${encodeURIComponent(
+  configuracionTienda.whatsappMensaje
+)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden rounded-full bg-white px-5 py-3 text-sm font-black transition hover:scale-105 lg:block"
@@ -1187,12 +1192,11 @@ const {
         <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 md:grid-cols-3">
           <div>
             <h2 className="text-2xl font-black text-yellow-400">
-              KAFES ONLINE
+              {configuracionTienda.nombreTienda}
             </h2>
 
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-zinc-400">
-              Herramientas profesionales con envíos a todo el Perú y atención
-              personalizada.
+              {configuracionTienda.textoFooter}
             </p>
           </div>
 
@@ -1216,7 +1220,9 @@ const {
             </p>
 
             <a
-              href="https://wa.me/51980296583"
+              href={`https://wa.me/${configuracionTienda.whatsapp}?text=${encodeURIComponent(
+  configuracionTienda.whatsappMensaje
+)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 inline-block rounded-xl bg-yellow-400 px-5 py-3 font-black text-black"
@@ -1227,11 +1233,15 @@ const {
         </div>
 
         <div className="border-t border-zinc-800 py-5 text-center text-xs text-zinc-500">
-          © 2026 KAFES ONLINE. Todos los derechos reservados.
+          © 2026 {configuracionTienda.nombreTienda}. Todos los derechos reservados.
         </div>
       </footer>
 
-      <WhatsAppButton />
+      <WhatsAppButton
+  whatsapp={configuracionTienda.whatsapp}
+  mensaje={configuracionTienda.whatsappMensaje}
+  nombreTienda={configuracionTienda.nombreTienda}
+/>
     </main>
   );
 }

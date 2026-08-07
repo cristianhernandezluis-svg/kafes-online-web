@@ -9,6 +9,7 @@ type Body = {
     | "producto"
     | "banner"
     | "bannerInferior"
+    | "logoTienda"
     | "opinion";
 
   productoId?: number;
@@ -68,6 +69,13 @@ export async function POST(request: Request) {
 
         break;
       }
+
+case "logoTienda": {
+  folder =
+    "kafes-online/configuracion/logo";
+
+  break;
+}
 
       case "opinion": {
         const opinionId = Number(

@@ -42,3 +42,4 @@ next-env.d.ts
 kafes-crm/
 
 /app/generated/prisma
+*.bak

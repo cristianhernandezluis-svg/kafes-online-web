@@ -438,3 +438,36 @@ model Opinion {
   @@index([fecha])
   @@map("opiniones")
 }
+
+model ConfiguracionTienda {
+  id Int @id @default(1)
+
+  nombreTienda String  @default("KAFES ONLINE")
+  razonSocial  String?
+  ruc          String?
+
+  telefono        String?
+  whatsapp        String?
+  whatsappMensaje String?
+  email           String?
+  direccion       String?
+  horarioAtencion String?
+
+  logoUrl      String?
+  logoPublicId String?
+
+  moneda        String @default("PEN")
+  simboloMoneda String @default("S/")
+
+  facebookUrl  String?
+  instagramUrl String?
+  tiktokUrl    String?
+  youtubeUrl   String?
+
+  textoFooter String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("configuracion_tienda")
+}
