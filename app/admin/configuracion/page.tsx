@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import prisma from "@/lib/prisma";
+import WhatsAppAdvisorManager from "@/components/admin/asesores/WhatsAppAdvisorManager";
 import Card from "@/components/admin/ui/Card";
 import Input from "@/components/admin/ui/Input";
 import Textarea from "@/components/admin/ui/Textarea";
@@ -215,6 +216,13 @@ export default async function ConfiguracionPage({
               </div>
             </div>
           </Card>
+
+<Card
+  title="Asesores de WhatsApp"
+  description="Administra los asesores que aparecerán en el botón flotante de WhatsApp."
+>
+  <WhatsAppAdvisorManager />
+</Card>
 
           <Card
             title="Identidad visual"

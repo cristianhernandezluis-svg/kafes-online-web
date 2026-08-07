@@ -1,7 +1,10 @@
 "use client";
 
 import LandingProducto from "@/components/LandingProducto";
-import type { ConfiguracionTiendaPublica } from "@/lib/configuracion-tienda";
+import type {
+  AsesorWhatsAppPublico,
+  ConfiguracionTiendaPublica,
+} from "@/lib/configuracion-tienda";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import StickyBuyButton from "@/components/producto/StickyBuyButton";
 import RelatedProducts from "@/components/producto/RelatedProducts";
@@ -31,11 +34,13 @@ declare global {
 type ProductoClientProps = {
   producto: ProductoPublico;
   configuracionTienda: ConfiguracionTiendaPublica;
+  asesoresWhatsApp: AsesorWhatsAppPublico[];
 };
 
 export default function ProductoClient({
   producto,
   configuracionTienda,
+  asesoresWhatsApp,
 }: ProductoClientProps) {
   const slug = producto.slug;
   const comprarAhoraRef = useRef<HTMLButtonElement | null>(null);
@@ -502,6 +507,7 @@ useEffect(() => {
   whatsapp={configuracionTienda.whatsapp}
   mensaje={`Hola, quiero información sobre ${producto.nombre}.`}
   nombreTienda={configuracionTienda.nombreTienda}
+  asesores={asesoresWhatsApp}
 />
     </main>
   );

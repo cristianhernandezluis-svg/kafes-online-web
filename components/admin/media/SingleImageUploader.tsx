@@ -15,6 +15,11 @@ type SingleImageUploaderProps = {
   initialPublicId?: string;
   altText: string;
   signaturePayload: Record<string, unknown>;
+
+  onChange?: (imagen: {
+    url: string;
+    publicId: string;
+  }) => void;
 };
 
 export default function SingleImageUploader({
@@ -24,6 +29,7 @@ export default function SingleImageUploader({
   initialPublicId = "",
   altText,
   signaturePayload,
+  onChange,
 }: SingleImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -109,6 +115,12 @@ export default function SingleImageUploader({
 
       setImagenUrl(result.secure_url);
       setPublicId(result.public_id);
+
+onChange?.({
+  url: result.secure_url,
+  publicId: result.public_id,
+});
+
     } catch (error) {
       setError(
         error instanceof Error
@@ -135,13 +147,18 @@ export default function SingleImageUploader({
   }
 
   function quitarImagen() {
-    setImagenUrl("");
-    setPublicId("");
+  setImagenUrl("");
+  setPublicId("");
 
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
+  onChange?.({
+    url: "",
+    publicId: "",
+  });
+
+  if (inputRef.current) {
+    inputRef.current.value = "";
   }
+}
 
   return (
     <div className="space-y-4">

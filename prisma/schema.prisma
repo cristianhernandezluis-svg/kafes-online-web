@@ -471,3 +471,20 @@ model ConfiguracionTienda {
 
   @@map("configuracion_tienda")
 }
+
+model AsesorWhatsApp {
+  id             Int     @id @default(autoincrement())
+  nombre         String
+  cargo          String?
+  telefono       String
+  imagenUrl      String?
+  imagenPublicId String?
+  activo         Boolean @default(true)
+  orden          Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([activo, orden])
+  @@map("asesores_whatsapp")
+}

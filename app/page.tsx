@@ -1,5 +1,8 @@
 import WhatsAppButton from "@/components/WhatsAppButton";
-import { obtenerConfiguracionTienda } from "@/lib/configuracion-tienda";
+import {
+  obtenerAsesoresWhatsApp,
+  obtenerConfiguracionTienda,
+} from "@/lib/configuracion-tienda";
 import prisma from "@/lib/prisma";
 import BuscadorProductos from "@/components/BuscadorProductos";
 import Benefit from "@/components/home/Benefit";
@@ -818,6 +821,8 @@ async function obtenerProductosDestacados() {
 export default async function Home() {
 const configuracionTienda =
   await obtenerConfiguracionTienda();
+const asesoresWhatsApp =
+  await obtenerAsesoresWhatsApp();
   const [
   productosDestacados,
   bannersDb,
@@ -1241,6 +1246,7 @@ const {
   whatsapp={configuracionTienda.whatsapp}
   mensaje={configuracionTienda.whatsappMensaje}
   nombreTienda={configuracionTienda.nombreTienda}
+  asesores={asesoresWhatsApp}
 />
     </main>
   );

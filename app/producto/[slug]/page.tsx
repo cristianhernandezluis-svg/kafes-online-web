@@ -1,5 +1,8 @@
 import { notFound } from "next/navigation";
-import { obtenerConfiguracionTienda } from "@/lib/configuracion-tienda";
+import {
+  obtenerAsesoresWhatsApp,
+  obtenerConfiguracionTienda,
+} from "@/lib/configuracion-tienda";
 import prisma from "@/lib/prisma";
 import type { ProductoPublico } from "@/components/producto/product-types";
 import ProductoClient from "./ProductoClient";
@@ -19,7 +22,8 @@ export default async function ProductoPage({
 
 const configuracionTienda =
   await obtenerConfiguracionTienda();
-
+const asesoresWhatsApp =
+  await obtenerAsesoresWhatsApp();
   const productoDb = await prisma.producto.findUnique({
     where: {
       slug,
@@ -299,8 +303,9 @@ opiniones: productoDb.opiniones.map(
 
   return (
   <ProductoClient
-    producto={producto}
-    configuracionTienda={configuracionTienda}
-  />
+  producto={producto}
+  configuracionTienda={configuracionTienda}
+  asesoresWhatsApp={asesoresWhatsApp}
+/>
 );
 }

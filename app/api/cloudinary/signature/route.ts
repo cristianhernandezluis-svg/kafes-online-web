@@ -6,11 +6,12 @@ export const runtime = "nodejs";
 
 type Body = {
   tipo?:
-    | "producto"
-    | "banner"
-    | "bannerInferior"
-    | "logoTienda"
-    | "opinion";
+  | "producto"
+  | "banner"
+  | "bannerInferior"
+  | "logoTienda"
+  | "asesorWhatsApp"
+  | "opinion";
 
   productoId?: number;
   bannerId?: number;
@@ -73,6 +74,13 @@ export async function POST(request: Request) {
 case "logoTienda": {
   folder =
     "kafes-online/configuracion/logo";
+
+  break;
+}
+
+case "asesorWhatsApp": {
+  folder =
+    "kafes-online/configuracion/asesores";
 
   break;
 }

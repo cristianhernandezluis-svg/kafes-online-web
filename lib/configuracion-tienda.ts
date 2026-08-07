@@ -32,6 +32,14 @@ function texto(
   return valor?.trim() || predeterminado;
 }
 
+export type AsesorWhatsAppPublico = {
+  id: number;
+  nombre: string;
+  cargo: string;
+  telefono: string;
+  imagenUrl: string;
+};
+
 export async function obtenerConfiguracionTienda(): Promise<ConfiguracionTiendaPublica> {
   const configuracion =
     await prisma.configuracionTienda.findUnique({
@@ -117,4 +125,40 @@ export async function obtenerConfiguracionTienda(): Promise<ConfiguracionTiendaP
       "Herramientas profesionales con envío a todo el Perú."
     ),
   };
+}
+
+export async function obtenerAsesoresWhatsApp(): Promise<
+  AsesorWhatsAppPublico[]
+> {
+  const asesores =
+    await prisma.asesorWhatsApp.findMany({
+      where: {
+        activo: true,
+      },
+      orderBy: [
+        {
+          orden: "asc",
+        },
+        {
+          id: "asc",
+        },
+      ],
+      select: {
+        id: true,
+        nombre: true,
+        cargo: true,
+        telefono: true,
+        imagenUrl: true,
+      },
+    });
+
+  return asesores.map((asesor) => ({
+    id: asesor.id,
+    nombre: asesor.nombre,
+    cargo:
+      asesor.cargo?.trim() ||
+      "Asesor comercial",
+    telefono: asesor.telefono,
+    imagenUrl: asesor.imagenUrl ?? "",
+  }));
 }
