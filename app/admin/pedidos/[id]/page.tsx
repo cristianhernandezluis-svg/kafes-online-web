@@ -34,6 +34,31 @@ function textoEstado(estado: string) {
   return estado.replaceAll("_", " ");
 }
 
+function textoTipoPedido(tipo: string) {
+  if (tipo === "ADELANTO") {
+    return "Pedido con adelanto";
+  }
+
+  if (tipo === "PAGO_COMPLETO") {
+    return "Pago completo";
+  }
+
+  return "Pago contra entrega";
+}
+
+function textoMetodoPago(metodo: string) {
+  const nombres: Record<string, string> = {
+    CONTRA_ENTREGA: "Contra entrega",
+    YAPE: "Yape",
+    PLIN: "Plin",
+    TRANSFERENCIA: "Transferencia",
+    EFECTIVO: "Efectivo",
+    OTRO: "Por definir",
+  };
+
+  return nombres[metodo] ?? textoEstado(metodo);
+}
+
 function claseEstado(estado: string) {
   const estilos: Record<string, string> = {
     NUEVO: "bg-blue-100 text-blue-700",
@@ -307,6 +332,77 @@ export default async function PedidoDetallePage({
               <h2 className="flex items-center gap-2 text-lg font-black text-slate-950">
                 <User size={19} />
                 Cliente
+
+<section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+  <h2 className="text-lg font-black text-slate-950">
+    Pago y checkout
+  </h2>
+
+  <div className="mt-4 space-y-3">
+    <div className="flex items-center justify-between gap-4">
+      <span className="text-sm text-slate-600">
+        Tipo de pedido
+      </span>
+
+      <span className="text-right text-sm font-bold text-slate-900">
+        {textoTipoPedido(pedido.tipoPedido)}
+      </span>
+    </div>
+
+    <div className="flex items-center justify-between gap-4">
+      <span className="text-sm text-slate-600">
+        Método de pago
+      </span>
+
+      <span className="text-right text-sm font-bold text-slate-900">
+        {textoMetodoPago(pedido.metodoPago)}
+      </span>
+    </div>
+
+    <div className="flex items-center justify-between gap-4">
+      <span className="text-sm text-slate-600">
+        Estado del pago
+      </span>
+
+      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
+        {textoEstado(pedido.estadoPago)}
+      </span>
+    </div>
+
+    <div className="border-t border-slate-200 pt-3">
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-slate-600">
+          Total
+        </span>
+
+        <span className="font-black text-slate-950">
+          {formatoMoneda(Number(pedido.total))}
+        </span>
+      </div>
+
+      <div className="mt-3 flex items-center justify-between text-sm">
+        <span className="text-slate-600">
+          Adelanto
+        </span>
+
+        <span className="font-bold text-slate-900">
+          {formatoMoneda(Number(pedido.montoAdelanto))}
+        </span>
+      </div>
+
+      <div className="mt-3 flex items-center justify-between text-sm">
+        <span className="text-slate-600">
+          Saldo pendiente
+        </span>
+
+        <span className="font-black text-slate-950">
+          {formatoMoneda(Number(pedido.montoPendiente))}
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
               </h2>
 
               <div className="mt-4 space-y-4">
