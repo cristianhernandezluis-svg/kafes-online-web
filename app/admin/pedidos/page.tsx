@@ -147,6 +147,24 @@ export default async function PedidosPage({
                       mode: "insensitive",
                     },
                   },
+{
+  utmSource: {
+    contains: buscar,
+    mode: "insensitive",
+  },
+},
+{
+  utmCampaign: {
+    contains: buscar,
+    mode: "insensitive",
+  },
+},
+{
+  utmContent: {
+    contains: buscar,
+    mode: "insensitive",
+  },
+},
                 ],
               }
             : {},
@@ -325,7 +343,7 @@ export default async function PedidosPage({
                 type="search"
                 name="buscar"
                 defaultValue={buscar}
-                placeholder="Pedido, cliente, teléfono o ciudad"
+                placeholder="Pedido, cliente, teléfono, ciudad, campaña o anuncio"
                 className="h-11 w-full rounded-xl border border-slate-300 pl-10 pr-4 text-sm outline-none transition focus:border-slate-950"
               />
             </div>
@@ -498,7 +516,8 @@ export default async function PedidosPage({
                     <th className="px-5 py-4">Pedido</th>
                     <th className="px-5 py-4">Fecha</th>
                     <th className="px-5 py-4">Cliente</th>
-                    <th className="px-5 py-4">Ciudad</th>
+<th className="px-5 py-4">Origen</th>
+<th className="px-5 py-4">Ciudad</th>
                     <th className="px-5 py-4">Productos</th>
                     <th className="px-5 py-4">Total</th>
                     <th className="px-5 py-4">Pago</th>
@@ -537,6 +556,31 @@ export default async function PedidosPage({
                       </td>
 
                       <td className="px-5 py-4 text-sm font-semibold text-slate-600">
+
+<td className="px-5 py-4">
+  <p className="text-sm font-bold text-slate-900">
+    {pedido.utmSource
+      ? pedido.utmSource
+          .replaceAll("_", " ")
+          .replace(/^\w/, (letra) =>
+            letra.toUpperCase()
+          )
+      : "Directo"}
+  </p>
+
+  {pedido.utmCampaign && (
+    <p className="mt-1 max-w-[180px] truncate text-xs text-slate-500">
+      {pedido.utmCampaign}
+    </p>
+  )}
+
+  {pedido.utmContent && (
+    <p className="mt-1 max-w-[180px] truncate text-xs font-semibold text-slate-600">
+      {pedido.utmContent}
+    </p>
+  )}
+</td>
+
                         {pedido.ciudad}
                       </td>
 
