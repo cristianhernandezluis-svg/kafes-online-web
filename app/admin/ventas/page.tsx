@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import Link from "next/link";
 import {
   BadgeCheck,
   Ban,
@@ -10,6 +11,31 @@ import {
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
+
+type PeriodoVentas =
+  | "HOY"
+  | "AYER"
+  | "7D"
+  | "30D"
+  | "MES";
+
+type VentasPageProps = {
+  searchParams: Promise<{
+    periodo?: string;
+  }>;
+};
+
+function esPeriodoValido(
+  valor: string
+): valor is PeriodoVentas {
+  return [
+    "HOY",
+    "AYER",
+    "7D",
+    "30D",
+    "MES",
+  ].includes(valor);
+}
 
 const OFFSET_PERU_MS =
   5 * 60 * 60 * 1000;
@@ -40,7 +66,9 @@ function capitalizar(valor: string) {
     );
 }
 
-function obtenerRangosPeru() {
+function obtenerRangoPeriodo(
+  periodo: PeriodoVentas
+) {
   const ahoraPeru = new Date(
     Date.now() - OFFSET_PERU_MS
   );
@@ -76,51 +104,142 @@ function obtenerRangosPeru() {
     )
   );
 
-  const inicioMes = new Date(
-    Date.UTC(
-      anio,
-      mes,
-      1,
-      5,
-      0,
-      0
-    )
-  );
+  if (periodo === "HOY") {
+    return {
+      inicio: inicioHoy,
+      fin: inicioManana,
+      etiqueta: "Hoy",
+    };
+  }
 
-  const inicioSiguienteMes = new Date(
-    Date.UTC(
-      anio,
-      mes + 1,
-      1,
-      5,
-      0,
-      0
-    )
-  );
+  if (periodo === "AYER") {
+    return {
+      inicio: new Date(
+        Date.UTC(
+          anio,
+          mes,
+          dia - 1,
+          5,
+          0,
+          0
+        )
+      ),
+      fin: inicioHoy,
+      etiqueta: "Ayer",
+    };
+  }
+
+  if (periodo === "7D") {
+    return {
+      inicio: new Date(
+        Date.UTC(
+          anio,
+          mes,
+          dia - 6,
+          5,
+          0,
+          0
+        )
+      ),
+      fin: inicioManana,
+      etiqueta: "Últimos 7 días",
+    };
+  }
+
+  if (periodo === "30D") {
+    return {
+      inicio: new Date(
+        Date.UTC(
+          anio,
+          mes,
+          dia - 29,
+          5,
+          0,
+          0
+        )
+      ),
+      fin: inicioManana,
+      etiqueta: "Últimos 30 días",
+    };
+  }
 
   return {
-    inicioHoy,
-    inicioManana,
-    inicioMes,
-    inicioSiguienteMes,
+    inicio: new Date(
+      Date.UTC(
+        anio,
+        mes,
+        1,
+        5,
+        0,
+        0
+      )
+    ),
+    fin: new Date(
+      Date.UTC(
+        anio,
+        mes + 1,
+        1,
+        5,
+        0,
+        0
+      )
+    ),
+    etiqueta: "Este mes",
   };
 }
 
-export default async function VentasPage() {
+export default async function VentasPage({
+  searchParams,
+}: VentasPageProps) {
+  const params = await searchParams;
+
+const opcionesPeriodo: {
+  valor: PeriodoVentas;
+  texto: string;
+}[] = [
+  {
+    valor: "HOY",
+    texto: "Hoy",
+  },
+  {
+    valor: "AYER",
+    texto: "Ayer",
+  },
+  {
+    valor: "7D",
+    texto: "7 días",
+  },
+  {
+    valor: "30D",
+    texto: "30 días",
+  },
+  {
+    valor: "MES",
+    texto: "Este mes",
+  },
+];
+
+  const periodoRecibido =
+    params.periodo ?? "MES";
+
+  const periodo: PeriodoVentas =
+    esPeriodoValido(periodoRecibido)
+      ? periodoRecibido
+      : "MES";
+
   const {
-    inicioHoy,
-    inicioManana,
-    inicioMes,
-    inicioSiguienteMes,
-  } = obtenerRangosPeru();
+    inicio,
+    fin,
+    etiqueta,
+  } = obtenerRangoPeriodo(periodo);
 
   const pedidosMes =
     await prisma.pedido.findMany({
       where: {
         createdAt: {
-          gte: inicioMes,
-          lt: inicioSiguienteMes,
-        },
+  gte: inicio,
+  lt: fin,
+},
       },
 
       select: {
@@ -153,12 +272,229 @@ export default async function VentasPage() {
       },
     });
 
-  const pedidosHoy =
-    pedidosMes.filter(
-      (pedido) =>
-        pedido.createdAt >= inicioHoy &&
-        pedido.createdAt < inicioManana
+const graficoPorHora =
+  periodo === "HOY" ||
+  periodo === "AYER";
+
+const intervaloGrafico =
+  graficoPorHora
+    ? 60 * 60 * 1000
+    : 24 * 60 * 60 * 1000;
+
+type PuntoGrafico = {
+  clave: string;
+  etiqueta: string;
+  pedidos: number;
+  valorGenerado: number;
+  ventasReales: number;
+};
+
+const graficoMap = new Map<
+  string,
+  PuntoGrafico
+>();
+
+function obtenerClaveGrafico(
+  fecha: Date
+) {
+  const fechaPeru = new Date(
+    fecha.getTime() -
+      OFFSET_PERU_MS
+  );
+
+  const anio =
+    fechaPeru.getUTCFullYear();
+
+  const mes = String(
+    fechaPeru.getUTCMonth() + 1
+  ).padStart(2, "0");
+
+  const dia = String(
+    fechaPeru.getUTCDate()
+  ).padStart(2, "0");
+
+  if (graficoPorHora) {
+    const hora = String(
+      fechaPeru.getUTCHours()
+    ).padStart(2, "0");
+
+    return `${anio}-${mes}-${dia}-${hora}`;
+  }
+
+  return `${anio}-${mes}-${dia}`;
+}
+
+function obtenerEtiquetaGrafico(
+  fecha: Date
+) {
+  const fechaPeru = new Date(
+    fecha.getTime() -
+      OFFSET_PERU_MS
+  );
+
+  if (graficoPorHora) {
+    const hora = String(
+      fechaPeru.getUTCHours()
+    ).padStart(2, "0");
+
+    return `${hora}:00`;
+  }
+
+  return new Intl.DateTimeFormat(
+    "es-PE",
+    {
+      day: "2-digit",
+      month: "short",
+      timeZone: "UTC",
+    }
+  ).format(fechaPeru);
+}
+
+/*
+ * Creamos todos los puntos del período,
+ * incluso cuando no hubo pedidos.
+ */
+for (
+  let tiempo = inicio.getTime();
+  tiempo < fin.getTime();
+  tiempo += intervaloGrafico
+) {
+  const fecha = new Date(tiempo);
+
+  const clave =
+    obtenerClaveGrafico(fecha);
+
+  graficoMap.set(clave, {
+    clave,
+    etiqueta:
+      obtenerEtiquetaGrafico(fecha),
+    pedidos: 0,
+    valorGenerado: 0,
+    ventasReales: 0,
+  });
+}
+
+/*
+ * Colocamos cada pedido en su hora o día.
+ */
+for (const pedido of pedidosMes) {
+  const clave =
+    obtenerClaveGrafico(
+      pedido.createdAt
     );
+
+  const punto =
+    graficoMap.get(clave);
+
+  if (!punto) {
+    continue;
+  }
+
+  punto.pedidos += 1;
+
+  if (
+    pedido.estado !==
+    "CANCELADO"
+  ) {
+    punto.valorGenerado += Number(
+      pedido.total
+    );
+  }
+
+  if (
+    pedido.estado ===
+    "ENTREGADO"
+  ) {
+    punto.ventasReales += Number(
+      pedido.total
+    );
+  }
+}
+
+const datosGrafico = Array.from(
+  graficoMap.values()
+);
+
+const valorMaximoGrafico = Math.max(
+  1,
+  ...datosGrafico.map(
+    (punto) =>
+      Math.max(
+        punto.valorGenerado,
+        punto.ventasReales
+      )
+  )
+);
+
+const anchoGrafico = 1000;
+const altoGrafico = 300;
+const margenX = 45;
+const margenY = 30;
+
+const anchoUtil =
+  anchoGrafico - margenX * 2;
+
+const altoUtil =
+  altoGrafico - margenY * 2;
+
+function obtenerXGrafico(
+  indice: number
+) {
+  if (datosGrafico.length <= 1) {
+    return margenX;
+  }
+
+  return (
+    margenX +
+    (indice /
+      (datosGrafico.length - 1)) *
+      anchoUtil
+  );
+}
+
+function obtenerYGrafico(
+  valor: number
+) {
+  return (
+    margenY +
+    (1 -
+      valor / valorMaximoGrafico) *
+      altoUtil
+  );
+}
+
+const puntosValorGenerado =
+  datosGrafico
+    .map(
+      (punto, indice) =>
+        `${obtenerXGrafico(
+          indice
+        )},${obtenerYGrafico(
+          punto.valorGenerado
+        )}`
+    )
+    .join(" ");
+
+const puntosVentasReales =
+  datosGrafico
+    .map(
+      (punto, indice) =>
+        `${obtenerXGrafico(
+          indice
+        )},${obtenerYGrafico(
+          punto.ventasReales
+        )}`
+    )
+    .join(" ");
+
+const saltoEtiquetas = Math.max(
+  1,
+  Math.ceil(
+    datosGrafico.length / 8
+  )
+);
+
+  const pedidosHoy = pedidosMes;
 
   const pedidosNoCanceladosHoy =
     pedidosHoy.filter(
@@ -381,7 +717,7 @@ export default async function VentasPage() {
 
   const tarjetas = [
     {
-      titulo: "Pedidos hoy",
+      titulo: `Pedidos · ${etiqueta}`,
       valor: formatoNumero(
         pedidosHoy.length
       ),
@@ -390,7 +726,7 @@ export default async function VentasPage() {
       icono: ShoppingCart,
     },
     {
-      titulo: "Valor generado hoy",
+      titulo: `Valor generado · ${etiqueta}`,
       valor: formatoMoneda(
         valorGeneradoHoy
       ),
@@ -399,7 +735,7 @@ export default async function VentasPage() {
       icono: TrendingUp,
     },
     {
-      titulo: "Pedidos del mes",
+      titulo: "Valor de pedidos",
       valor: formatoNumero(
         pedidosMes.length
       ),
@@ -458,16 +794,39 @@ export default async function VentasPage() {
 
   return (
     <section className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-black text-slate-950 sm:text-3xl">
-          Ventas
-        </h1>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+  <div>
+    <h1 className="text-2xl font-black text-slate-950 sm:text-3xl">
+      Ventas
+    </h1>
 
-        <p className="mt-1 text-sm text-slate-600">
-          Controla pedidos, ventas reales,
-          productos y origen de tus clientes.
-        </p>
-      </div>
+    <p className="mt-1 text-sm text-slate-600">
+      Controla pedidos, ventas reales,
+      productos y origen de tus clientes.
+    </p>
+  </div>
+
+  <div className="flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
+    {opcionesPeriodo.map((opcion) => {
+      const activo =
+        periodo === opcion.valor;
+
+      return (
+        <Link
+          key={opcion.valor}
+          href={`/admin/ventas?periodo=${opcion.valor}`}
+          className={`rounded-xl px-4 py-2 text-sm font-bold transition ${
+            activo
+              ? "bg-slate-950 text-white shadow-sm"
+              : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+          }`}
+        >
+          {opcion.texto}
+        </Link>
+      );
+    })}
+  </div>
+</div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {tarjetas.map((tarjeta) => {
@@ -502,6 +861,176 @@ export default async function VentasPage() {
           );
         })}
       </div>
+
+<section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <div className="flex flex-col gap-4 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h2 className="text-lg font-black text-slate-950">
+        Rendimiento de ventas
+      </h2>
+
+      <p className="mt-1 text-xs text-slate-500">
+        {etiqueta} · Valor generado vs. ventas reales
+      </p>
+    </div>
+
+    <div className="flex flex-wrap gap-4 text-xs font-bold">
+      <div className="flex items-center gap-2">
+        <span className="h-3 w-3 rounded-full bg-slate-950" />
+        Valor generado
+      </div>
+
+      <div className="flex items-center gap-2">
+        <span className="h-3 w-3 rounded-full bg-emerald-500" />
+        Ventas reales
+      </div>
+    </div>
+  </div>
+
+  <div className="p-4 sm:p-6">
+    <div className="overflow-x-auto">
+      <svg
+        viewBox={`0 0 ${anchoGrafico} ${altoGrafico}`}
+        className="min-w-[700px] w-full"
+        role="img"
+        aria-label="Gráfico de rendimiento de ventas"
+      >
+        {[0, 0.25, 0.5, 0.75, 1].map(
+          (nivel) => {
+            const y =
+              margenY +
+              nivel * altoUtil;
+
+            const valor =
+              valorMaximoGrafico *
+              (1 - nivel);
+
+            return (
+              <g key={nivel}>
+                <line
+                  x1={margenX}
+                  y1={y}
+                  x2={
+                    anchoGrafico -
+                    margenX
+                  }
+                  y2={y}
+                  stroke="#e2e8f0"
+                  strokeWidth="1"
+                />
+
+                <text
+                  x={margenX - 10}
+                  y={y + 4}
+                  textAnchor="end"
+                  fontSize="11"
+                  fill="#64748b"
+                >
+                  {formatoMoneda(
+                    valor
+                  )}
+                </text>
+              </g>
+            );
+          }
+        )}
+
+        <polyline
+          points={puntosValorGenerado}
+          fill="none"
+          stroke="#0f172a"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+
+        <polyline
+          points={puntosVentasReales}
+          fill="none"
+          stroke="#10b981"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+
+        {datosGrafico.map(
+          (punto, indice) => {
+            const mostrarEtiqueta =
+              indice %
+                saltoEtiquetas ===
+                0 ||
+              indice ===
+                datosGrafico.length -
+                  1;
+
+            return (
+              <g key={punto.clave}>
+<circle
+  cx={obtenerXGrafico(indice)}
+  cy={obtenerYGrafico(
+    punto.valorGenerado
+  )}
+  r="14"
+  fill="transparent"
+>
+  <title>
+    {`${punto.etiqueta} | Pedidos: ${
+      punto.pedidos
+    } | Valor generado: ${formatoMoneda(
+      punto.valorGenerado
+    )} | Ventas reales: ${formatoMoneda(
+      punto.ventasReales
+    )}`}
+  </title>
+</circle>
+                <circle
+                  cx={obtenerXGrafico(
+                    indice
+                  )}
+                  cy={obtenerYGrafico(
+                    punto.valorGenerado
+                  )}
+                  r="4"
+                  fill="#0f172a"
+                />
+
+                {punto.ventasReales >
+                  0 && (
+                  <circle
+                    cx={obtenerXGrafico(
+                      indice
+                    )}
+                    cy={obtenerYGrafico(
+                      punto.ventasReales
+                    )}
+                    r="4"
+                    fill="#10b981"
+                  />
+                )}
+
+                {mostrarEtiqueta && (
+                  <text
+                    x={obtenerXGrafico(
+                      indice
+                    )}
+                    y={
+                      altoGrafico - 5
+                    }
+                    textAnchor="middle"
+                    fontSize="11"
+                    fill="#64748b"
+                  >
+                    {punto.etiqueta}
+                  </text>
+                )}
+              </g>
+            );
+          }
+        )}
+      </svg>
+    </div>
+  </div>
+</section>
 
       <div className="grid gap-6 xl:grid-cols-2">
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
