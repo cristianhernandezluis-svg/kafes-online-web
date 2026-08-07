@@ -11,7 +11,10 @@ export type ConfiguracionTiendaPublica = {
   email: string;
   direccion: string;
   horarioAtencion: string;
-
+  metaEventoPedido:
+  | "CompleteRegistration"
+  | "Lead"
+  | "Purchase";
   logoUrl: string;
 
   moneda: string;
@@ -40,7 +43,8 @@ export type AsesorWhatsAppPublico = {
   imagenUrl: string;
 };
 
-export async function obtenerConfiguracionTienda(): Promise<ConfiguracionTiendaPublica> {
+export async function obtenerConfiguracionTienda(): 
+Promise<ConfiguracionTiendaPublica> {
   const configuracion =
     await prisma.configuracionTienda.findUnique({
       where: {
@@ -53,6 +57,12 @@ export async function obtenerConfiguracionTienda(): Promise<ConfiguracionTiendaP
       configuracion?.nombreTienda,
       "KAFES ONLINE"
     ),
+
+metaEventoPedido:
+  configuracion?.metaEventoPedido === "Lead" ||
+  configuracion?.metaEventoPedido === "Purchase"
+    ? configuracion.metaEventoPedido
+    : "CompleteRegistration",
 
     razonSocial: texto(
       configuracion?.razonSocial

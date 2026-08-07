@@ -469,6 +469,8 @@ model ConfiguracionTienda {
   metaPixelId     String? @default("1247868925891875")
   metaPixelActivo Boolean @default(true)
 
+  metaEventoPedido String @default("CompleteRegistration")
+
   tiktokPixelId     String? @default("D8D21TBC77UFK9KDRPDG")
   tiktokPixelActivo Boolean @default(true)
 

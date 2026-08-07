@@ -34,6 +34,25 @@ function obtenerBooleano(
   return formData.get(campo) === "on";
 }
 
+function obtenerMetaEventoPedido(
+  formData: FormData
+) {
+  const valor = obtenerTexto(
+    formData,
+    "metaEventoPedido"
+  );
+
+  if (
+    valor === "Purchase" ||
+    valor === "Lead" ||
+    valor === "CompleteRegistration"
+  ) {
+    return valor;
+  }
+
+  return "CompleteRegistration";
+}
+
 function limpiarWhatsApp(valor: string) {
   return valor.replace(/\D/g, "");
 }
@@ -171,6 +190,9 @@ export async function guardarConfiguracionTienda(
       "metaPixelActivo"
     );
 
+const metaEventoPedido =
+  obtenerMetaEventoPedido(formData);
+
   const tiktokPixelId =
     obtenerTextoONull(
       formData,
@@ -233,7 +255,8 @@ export async function guardarConfiguracionTienda(
       textoFooter,
 
       metaPixelId,
-      metaPixelActivo,
+metaPixelActivo,
+metaEventoPedido,
 
       tiktokPixelId,
       tiktokPixelActivo,
@@ -267,7 +290,8 @@ export async function guardarConfiguracionTienda(
       textoFooter,
 
       metaPixelId,
-      metaPixelActivo,
+metaPixelActivo,
+metaEventoPedido,
 
       tiktokPixelId,
       tiktokPixelActivo,

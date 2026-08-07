@@ -264,14 +264,18 @@ useEffect(() => {
     setPedidoFinalizado(true);
 
     if (typeof window !== "undefined") {
-      window.fbq?.("track", "Purchase", {
-        value: resultado.pedido.total,
-        currency: "PEN",
-        content_ids: [String(producto.id)],
-        content_name: producto.nombre,
-        content_type: "product",
-        num_items: cantidad,
-      });
+      window.fbq?.(
+  "track",
+  configuracionTienda.metaEventoPedido,
+  {
+    value: resultado.pedido.total,
+    currency: "PEN",
+    content_ids: [String(producto.id)],
+    content_name: producto.nombre,
+    content_type: "product",
+    num_items: cantidad,
+  }
+);
 
       window.ttq?.track("CompletePayment", {
         value: resultado.pedido.total,

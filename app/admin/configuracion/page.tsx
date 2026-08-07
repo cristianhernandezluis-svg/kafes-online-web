@@ -291,6 +291,39 @@ export default async function ConfiguracionPage({
         AddToCart, InitiateCheckout y Purchase
         en Meta Ads.
       </p>
+<div className="mt-5">
+  <label className="mb-2 block text-sm font-bold text-slate-700">
+    Evento al completar un pedido
+  </label>
+
+  <select
+    name="metaEventoPedido"
+    defaultValue={
+      configuracion?.metaEventoPedido ??
+      "CompleteRegistration"
+    }
+    className="h-11 w-full rounded-xl border border-blue-200 bg-white px-4 text-sm font-semibold text-slate-700 outline-none focus:border-blue-500"
+  >
+    <option value="CompleteRegistration">
+      Registro completado — Recomendado para contraentrega
+    </option>
+
+    <option value="Lead">
+      Lead — Cliente potencial
+    </option>
+
+    <option value="Purchase">
+      Purchase — Compra
+    </option>
+  </select>
+
+  <p className="mt-2 text-xs leading-5 text-slate-600">
+    Para pedidos contraentrega recomendamos
+    Registro completado. Purchase debería
+    reservarse para una venta realmente
+    confirmada o entregada.
+  </p>
+</div>
     </div>
 
     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
@@ -324,11 +357,12 @@ export default async function ConfiguracionPage({
         </label>
       </div>
 
-      <p className="mt-3 text-xs leading-5 text-slate-600">
-        Utilizado para medir visitas,
-        productos vistos, carrito, checkout
-        y compras provenientes de TikTok Ads.
-      </p>
+      <p className="mt-3 text-xs leading-5 text-blue-700">
+  Meta Pixel seguirá midiendo PageView,
+  ViewContent, AddToCart e InitiateCheckout.
+  El evento final del pedido será el que
+  selecciones arriba.
+</p>
     </div>
 
     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
