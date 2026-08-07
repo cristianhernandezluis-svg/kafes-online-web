@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
+import { cambiarEstadoPedido } from "./actions";
 import {
   ArrowLeft,
   MapPin,
@@ -288,6 +289,127 @@ export default async function PedidoDetallePage({
           <aside className="space-y-6">
             <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <h2 className="text-lg font-black text-slate-950">
+
+<section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+  <h2 className="text-lg font-black text-slate-950">
+    Acciones rápidas
+  </h2>
+
+  <p className="mt-1 text-sm text-slate-500">
+    Actualiza el estado operativo del pedido.
+  </p>
+
+  <div className="mt-4 grid grid-cols-2 gap-2">
+    <form action={cambiarEstadoPedido}>
+      <input
+        type="hidden"
+        name="pedidoId"
+        value={pedido.id}
+      />
+      <input
+        type="hidden"
+        name="nuevoEstado"
+        value="CONFIRMADO"
+      />
+
+      <button
+        type="submit"
+        disabled={pedido.estado === "CONFIRMADO"}
+        className="w-full rounded-xl bg-emerald-600 px-3 py-3 text-sm font-bold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        Confirmar
+      </button>
+    </form>
+
+    <form action={cambiarEstadoPedido}>
+      <input
+        type="hidden"
+        name="pedidoId"
+        value={pedido.id}
+      />
+      <input
+        type="hidden"
+        name="nuevoEstado"
+        value="PREPARANDO"
+      />
+
+      <button
+        type="submit"
+        disabled={pedido.estado === "PREPARANDO"}
+        className="w-full rounded-xl bg-amber-500 px-3 py-3 text-sm font-bold text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        Preparando
+      </button>
+    </form>
+
+    <form action={cambiarEstadoPedido}>
+      <input
+        type="hidden"
+        name="pedidoId"
+        value={pedido.id}
+      />
+      <input
+        type="hidden"
+        name="nuevoEstado"
+        value="ENVIADO"
+      />
+
+      <button
+        type="submit"
+        disabled={pedido.estado === "ENVIADO"}
+        className="w-full rounded-xl bg-violet-600 px-3 py-3 text-sm font-bold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        Enviado
+      </button>
+    </form>
+
+    <form action={cambiarEstadoPedido}>
+      <input
+        type="hidden"
+        name="pedidoId"
+        value={pedido.id}
+      />
+      <input
+        type="hidden"
+        name="nuevoEstado"
+        value="ENTREGADO"
+      />
+
+      <button
+        type="submit"
+        disabled={pedido.estado === "ENTREGADO"}
+        className="w-full rounded-xl bg-green-700 px-3 py-3 text-sm font-bold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        Entregado
+      </button>
+    </form>
+
+    <form
+      action={cambiarEstadoPedido}
+      className="col-span-2"
+    >
+      <input
+        type="hidden"
+        name="pedidoId"
+        value={pedido.id}
+      />
+      <input
+        type="hidden"
+        name="nuevoEstado"
+        value="CANCELADO"
+      />
+
+      <button
+        type="submit"
+        disabled={pedido.estado === "CANCELADO"}
+        className="w-full rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm font-bold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        Cancelar pedido
+      </button>
+    </form>
+  </div>
+</section>
+
                 Estado del pedido
               </h2>
 
