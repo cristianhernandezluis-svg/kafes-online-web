@@ -427,8 +427,8 @@ const valorMaximoGrafico = Math.max(
 );
 
 const anchoGrafico = 1000;
-const altoGrafico = 300;
-const margenX = 45;
+const altoGrafico = 320;
+const margenX = 95;
 const margenY = 30;
 
 const anchoUtil =
@@ -493,6 +493,46 @@ const saltoEtiquetas = Math.max(
     datosGrafico.length / 8
   )
 );
+
+const maxPedidosGrafico = Math.max(
+  1,
+  ...datosGrafico.map(
+    (punto) => punto.pedidos
+  )
+);
+
+const altoGraficoPedidos = 180;
+const margenSuperiorPedidos = 20;
+const margenInferiorPedidos = 35;
+
+const altoUtilPedidos =
+  altoGraficoPedidos -
+  margenSuperiorPedidos -
+  margenInferiorPedidos;
+
+const anchoBarraPedidos = Math.max(
+  8,
+  Math.min(
+    28,
+    (anchoUtil /
+      Math.max(
+        datosGrafico.length,
+        1
+      )) *
+      0.55
+  )
+);
+
+function obtenerYPedidos(
+  valor: number
+) {
+  return (
+    margenSuperiorPedidos +
+    (1 -
+      valor / maxPedidosGrafico) *
+      altoUtilPedidos
+  );
+}
 
   const pedidosHoy = pedidosMes;
 
@@ -955,13 +995,17 @@ const saltoEtiquetas = Math.max(
 
         {datosGrafico.map(
           (punto, indice) => {
-            const mostrarEtiqueta =
-              indice %
-                saltoEtiquetas ===
-                0 ||
-              indice ===
-                datosGrafico.length -
-                  1;
+            const ultimoIndice =
+  datosGrafico.length - 1;
+
+const mostrarEtiqueta =
+  indice === 0 ||
+  indice === ultimoIndice ||
+  (
+    indice % saltoEtiquetas === 0 &&
+    indice <=
+      ultimoIndice - saltoEtiquetas
+  );
 
             return (
               <g key={punto.clave}>
@@ -1029,6 +1073,131 @@ const saltoEtiquetas = Math.max(
         )}
       </svg>
     </div>
+
+<div className="mt-6 border-t border-slate-200 pt-5">
+  <div className="mb-4">
+    <h3 className="text-sm font-black text-slate-900">
+      Pedidos
+    </h3>
+
+    <p className="mt-1 text-xs text-slate-500">
+      Cantidad de pedidos generados en cada período.
+    </p>
+  </div>
+
+  <div className="overflow-x-auto">
+    <svg
+      viewBox={`0 0 ${anchoGrafico} ${altoGraficoPedidos}`}
+      className="min-w-[700px] w-full"
+      role="img"
+      aria-label="Gráfico de pedidos"
+    >
+      <line
+        x1={margenX}
+        y1={
+          margenSuperiorPedidos +
+          altoUtilPedidos
+        }
+        x2={
+          anchoGrafico - margenX
+        }
+        y2={
+          margenSuperiorPedidos +
+          altoUtilPedidos
+        }
+        stroke="#e2e8f0"
+        strokeWidth="1"
+      />
+
+      {datosGrafico.map(
+        (punto, indice) => {
+          const x =
+            obtenerXGrafico(indice);
+
+          const y =
+            obtenerYPedidos(
+              punto.pedidos
+            );
+
+          const altura =
+            margenSuperiorPedidos +
+            altoUtilPedidos -
+            y;
+
+          const ultimoIndice =
+            datosGrafico.length - 1;
+
+          const mostrarEtiqueta =
+            indice === 0 ||
+            indice === ultimoIndice ||
+            (
+              indice %
+                saltoEtiquetas ===
+                0 &&
+              indice <=
+                ultimoIndice -
+                  saltoEtiquetas
+            );
+
+          return (
+            <g key={punto.clave}>
+              <rect
+                x={
+                  x -
+                  anchoBarraPedidos /
+                    2
+                }
+                y={y}
+                width={
+                  anchoBarraPedidos
+                }
+                height={Math.max(
+                  0,
+                  altura
+                )}
+                rx="4"
+                fill="#0f172a"
+              >
+                <title>
+                  {`${punto.etiqueta} | ${punto.pedidos} pedidos`}
+                </title>
+              </rect>
+
+              {punto.pedidos > 0 && (
+                <text
+                  x={x}
+                  y={y - 7}
+                  textAnchor="middle"
+                  fontSize="11"
+                  fontWeight="700"
+                  fill="#0f172a"
+                >
+                  {punto.pedidos}
+                </text>
+              )}
+
+              {mostrarEtiqueta && (
+                <text
+                  x={x}
+                  y={
+                    altoGraficoPedidos -
+                    5
+                  }
+                  textAnchor="middle"
+                  fontSize="11"
+                  fill="#64748b"
+                >
+                  {punto.etiqueta}
+                </text>
+              )}
+            </g>
+          );
+        }
+      )}
+    </svg>
+  </div>
+</div>
+
   </div>
 </section>
 
