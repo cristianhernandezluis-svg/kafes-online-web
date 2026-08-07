@@ -13,6 +13,7 @@ import {
 import type { ReactNode } from "react";
 
 import type { ProductoPublico } from "./product-types";
+import type { ConfiguracionTiendaPublica } from "@/lib/configuracion-tienda";
 
 const regionesPeru = [
   "Amazonas",
@@ -44,11 +45,15 @@ const regionesPeru = [
 
 type CheckoutModalProps = {
   open: boolean;
+  dni: string;
+  onDniChange: (value: string) => void;
   producto: ProductoPublico;
   cantidad: number;
   total: number;
   loading: boolean;
   pedidoFinalizado: boolean;
+
+  configuracionTienda: ConfiguracionTiendaPublica;
 
   nombre: string;
   celular: string;
@@ -71,6 +76,9 @@ type CheckoutModalProps = {
 export default function CheckoutModal({
   open,
   producto,
+  dni,
+  onDniChange,
+  configuracionTienda,
   cantidad,
   total,
   loading,
@@ -93,6 +101,29 @@ export default function CheckoutModal({
   if (!open) {
     return null;
   }
+
+const esPedidoConAdelanto =
+  configuracionTienda.checkoutTipoPedido ===
+  "ADELANTO";
+
+const esPagoCompleto =
+  configuracionTienda.checkoutTipoPedido ===
+  "PAGO_COMPLETO";
+
+const montoAdelanto = esPedidoConAdelanto
+  ? Math.min(
+      Math.max(
+        0,
+        configuracionTienda.checkoutMontoAdelanto
+      ),
+      total
+    )
+  : 0;
+
+const saldoPendiente = Math.max(
+  0,
+  total - montoAdelanto
+);
 
   return (
     <div
@@ -124,8 +155,8 @@ export default function CheckoutModal({
                 </p>
 
                 <h2 className="text-2xl font-black leading-tight">
-                  Finaliza tu pedido
-                </h2>
+  {configuracionTienda.checkoutTitulo}
+</h2>
 
                 <p className="mt-1 text-sm font-semibold text-black/80">
                   🚚 Envíos rápidos a todo el Perú 🇵🇪
@@ -137,7 +168,53 @@ export default function CheckoutModal({
                 cantidad={cantidad}
               />
 
-              <OrderTotals total={total} />
+              {configuracionTienda.checkoutMostrarTotal && (
+  <>
+    <OrderTotals total={total} />
+
+    {esPedidoConAdelanto && (
+      <div className="mt-3 space-y-2 border-t border-slate-200 pt-3">
+        <div className="flex items-center justify-between text-sm">
+          <span className="font-semibold text-slate-600">
+            Adelanto para confirmar
+          </span>
+
+          <span className="font-black text-slate-900">
+            S/{montoAdelanto.toFixed(2)}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between text-sm">
+          <span className="font-semibold text-slate-600">
+            Saldo pendiente
+          </span>
+
+          <span className="font-black text-slate-900">
+            S/{saldoPendiente.toFixed(2)}
+          </span>
+        </div>
+      </div>
+    )}
+{esPagoCompleto && (
+  <div className="mt-3 border-t border-slate-200 pt-3">
+    <div className="flex items-center justify-between text-sm">
+      <span className="font-semibold text-slate-600">
+        Pago requerido para confirmar
+      </span>
+
+      <span className="font-black text-slate-900">
+        S/{total.toFixed(2)}
+      </span>
+    </div>
+
+    <p className="mt-2 text-xs text-slate-500">
+      El pedido quedará pendiente hasta confirmar el pago.
+    </p>
+  </div>
+)}
+
+  </>
+)}
 
               <div className="space-y-3 p-4">
                 <CheckoutInput
@@ -159,37 +236,54 @@ export default function CheckoutModal({
                   autoComplete="tel"
                 />
 
-                <CheckoutInput
-                  icon={<MapPin size={18} />}
-                  placeholder="Ciudad o distrito *"
-                  value={ciudad}
-                  onChange={onCiudadChange}
-                  name="address-level2"
-                  autoComplete="address-level2"
-                />
+                {configuracionTienda.checkoutMostrarCiudad && (
+  <CheckoutInput
+    icon={<MapPin size={18} />}
+    placeholder={`Ciudad o distrito${
+      configuracionTienda.checkoutCiudadObligatoria
+        ? " *"
+        : ""
+    }`}
+    value={ciudad}
+    onChange={onCiudadChange}
+    name="address-level2"
+    autoComplete="address-level2"
+    required={
+      configuracionTienda.checkoutCiudadObligatoria
+    }
+  />
+)}
 
-                <select
-                  required
-                  value={region}
-                  onChange={(event) =>
-                    onRegionChange(event.target.value)
-                  }
-                  name="region"
-                  autoComplete="address-level1"
-                  className="w-full rounded-2xl border bg-white px-5 py-4 text-lg font-semibold text-zinc-700 outline-none"
-                >
-                  <option value="">
-                    Selecciona tu región *
-                  </option>
+                {configuracionTienda.checkoutMostrarRegion && (
+  <select
+    required={
+      configuracionTienda.checkoutRegionObligatoria
+    }
+    value={region}
+    onChange={(event) =>
+      onRegionChange(event.target.value)
+    }
+    name="region"
+    autoComplete="address-level1"
+    className="w-full rounded-2xl border bg-white px-5 py-4 text-lg font-semibold text-zinc-700 outline-none"
+  >
+    <option value="">
+      Selecciona tu región
+      {configuracionTienda.checkoutRegionObligatoria
+        ? " *"
+        : ""}
+    </option>
 
-                  {regionesPeru.map((item) => (
-                    <option key={item} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
+    {regionesPeru.map((item) => (
+      <option key={item} value={item}>
+        {item}
+      </option>
+    ))}
+  </select>
+)}
 
-                {region && (
+                {configuracionTienda.checkoutMostrarRegion &&
+  region && (
                   <div className="rounded-2xl border border-green-300 bg-green-50 px-4 py-3 text-sm font-bold text-green-700">
                     {region === "Lima"
                       ? "✅ Pago contra entrega disponible en Lima Metropolitana"
@@ -197,24 +291,41 @@ export default function CheckoutModal({
                   </div>
                 )}
 
-                <CheckoutInput
-                  icon={<Home size={18} />}
-                  placeholder="Dirección exacta *"
-                  value={direccion}
-                  onChange={onDireccionChange}
-                  name="street-address"
-                  autoComplete="street-address"
-                />
+                {configuracionTienda.checkoutMostrarDireccion && (
+  <CheckoutInput
+    icon={<Home size={18} />}
+    placeholder={`Dirección exacta${
+      configuracionTienda.checkoutDireccionObligatoria
+        ? " *"
+        : ""
+    }`}
+    value={direccion}
+    onChange={onDireccionChange}
+    name="street-address"
+    autoComplete="street-address"
+    required={
+      configuracionTienda.checkoutDireccionObligatoria
+    }
+  />
+)}
 
-                <CheckoutInput
-                  icon={<MapPin size={18} />}
-                  placeholder="Referencia"
-                  value={referencia}
-                  onChange={onReferenciaChange}
-                  name="address-line2"
-                  autoComplete="address-line2"
-                  required={false}
-                />
+                {configuracionTienda.checkoutMostrarReferencia && (
+  <CheckoutInput
+    icon={<MapPin size={18} />}
+    placeholder={`Referencia${
+      configuracionTienda.checkoutReferenciaObligatoria
+        ? " *"
+        : ""
+    }`}
+    value={referencia}
+    onChange={onReferenciaChange}
+    name="address-line2"
+    autoComplete="address-line2"
+    required={
+      configuracionTienda.checkoutReferenciaObligatoria
+    }
+  />
+)}
 
                 <button
                   type="button"
@@ -225,18 +336,21 @@ export default function CheckoutModal({
                   <Truck size={22} />
 
                   {loading
-                    ? "ENVIANDO..."
-                    : "REALIZAR PEDIDO"}
+  ? "ENVIANDO..."
+  : configuracionTienda.checkoutBotonTexto}
                 </button>
 
                 <p className="mt-3 text-center text-xs font-semibold text-zinc-500">
-                  🔒 Tus datos están protegidos y tu pedido será
-                  confirmado por WhatsApp.
-                </p>
+  {configuracionTienda.checkoutTextoConfianza}
+</p>
               </div>
             </>
           ) : (
-            <OrderSuccess />
+            <OrderSuccess
+  mensaje={
+    configuracionTienda.checkoutMensajeExito
+  }
+/>
           )}
         </div>
       </div>
@@ -335,7 +449,11 @@ function OrderTotals({
   );
 }
 
-function OrderSuccess() {
+function OrderSuccess({
+  mensaje,
+}: {
+  mensaje: string;
+}) {
   return (
     <div className="p-10 text-center">
       <div className="mb-5 flex justify-center">
@@ -350,8 +468,8 @@ function OrderSuccess() {
       </h2>
 
       <p className="text-lg leading-8 text-zinc-600">
-        Gracias por confiar en KAFES ONLINE.
-      </p>
+  {mensaje}
+</p>
 
       <div className="mt-6 space-y-3 rounded-2xl border border-green-200 bg-green-50 p-4 text-left">
         <p className="font-bold text-green-700">

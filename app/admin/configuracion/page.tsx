@@ -224,6 +224,441 @@ export default async function ConfiguracionPage({
   <WhatsAppAdvisorManager />
 </Card>
 
+<Card
+  title="Pedidos y Checkout"
+  description="Configura cómo funciona el formulario de compra y qué información solicitar al cliente."
+>
+  <div className="space-y-6">
+    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+      <div className="grid gap-5 md:grid-cols-2">
+        <label className="flex h-11 cursor-pointer items-center gap-3 rounded-xl border border-emerald-200 bg-white px-4">
+          <input
+            type="checkbox"
+            name="checkoutActivo"
+            defaultChecked={
+              configuracion?.checkoutActivo ??
+              true
+            }
+            className="h-4 w-4"
+          />
+
+          <span className="text-sm font-bold text-slate-700">
+            Checkout activo
+          </span>
+        </label>
+
+        <div>
+          <label className="mb-2 block text-sm font-bold text-slate-700">
+            Tipo de pedido
+          </label>
+
+          <select
+            name="checkoutTipoPedido"
+            defaultValue={
+              configuracion?.checkoutTipoPedido ??
+              "CONTRAENTREGA"
+            }
+            className="h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 outline-none focus:border-slate-700"
+          >
+            <option value="CONTRAENTREGA">
+              Pago contra entrega
+            </option>
+
+            <option value="ADELANTO">
+              Pedido con adelanto
+            </option>
+
+            <option value="PAGO_COMPLETO">
+              Pago completo
+            </option>
+          </select>
+<div>
+  <label className="mb-2 block text-sm font-bold text-slate-700">
+    Monto de adelanto
+  </label>
+
+  <div className="relative">
+    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-slate-500">
+      S/
+    </span>
+
+    <input
+      type="number"
+      name="checkoutMontoAdelanto"
+      min={0}
+      step="0.01"
+      defaultValue={
+        configuracion?.checkoutMontoAdelanto
+          ? Number(
+              configuracion.checkoutMontoAdelanto
+            )
+          : 30
+      }
+      className="h-11 w-full rounded-xl border border-slate-300 bg-white pl-11 pr-4 text-sm font-semibold text-slate-700 outline-none focus:border-slate-700"
+    />
+  </div>
+
+  <p className="mt-2 text-xs leading-5 text-slate-500">
+    Se utilizará cuando el tipo de pedido sea
+    “Pedido con adelanto”.
+  </p>
+</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <p className="mb-4 text-sm font-black text-slate-900">
+        Textos del checkout
+      </p>
+
+      <div className="space-y-5">
+        <Input
+          label="Título del checkout"
+          name="checkoutTitulo"
+          defaultValue={
+            configuracion?.checkoutTitulo ??
+            "Completa tus datos para realizar tu pedido"
+          }
+          placeholder="Completa tus datos para realizar tu pedido"
+        />
+
+        <Input
+          label="Texto del botón"
+          name="checkoutBotonTexto"
+          defaultValue={
+            configuracion?.checkoutBotonTexto ??
+            "REALIZAR PEDIDO"
+          }
+          placeholder="REALIZAR PEDIDO"
+        />
+
+        <Textarea
+          label="Mensaje después de registrar el pedido"
+          name="checkoutMensajeExito"
+          defaultValue={
+            configuracion?.checkoutMensajeExito ??
+            "Tu pedido fue registrado correctamente."
+          }
+          placeholder="Tu pedido fue registrado correctamente."
+        />
+
+        <Input
+          label="Texto de confianza"
+          name="checkoutTextoConfianza"
+          defaultValue={
+            configuracion?.checkoutTextoConfianza ??
+            "Compra segura | Envíos a todo el Perú"
+          }
+          placeholder="Compra segura | Envíos a todo el Perú"
+        />
+      </div>
+    </div>
+
+    <div className="border-t border-slate-200 pt-6">
+      <p className="mb-4 text-sm font-black text-slate-900">
+        Campos del cliente
+      </p>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <p className="mb-3 text-sm font-black text-slate-900">
+            Dirección
+          </p>
+
+          <div className="space-y-3">
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="checkoutMostrarDireccion"
+                defaultChecked={
+                  configuracion?.checkoutMostrarDireccion ??
+                  true
+                }
+              />
+
+              <span className="text-sm font-semibold text-slate-700">
+                Mostrar campo
+              </span>
+            </label>
+
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="checkoutDireccionObligatoria"
+                defaultChecked={
+                  configuracion?.checkoutDireccionObligatoria ??
+                  true
+                }
+              />
+
+              <span className="text-sm font-semibold text-slate-700">
+                Campo obligatorio
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <p className="mb-3 text-sm font-black text-slate-900">
+            Referencia
+          </p>
+
+          <div className="space-y-3">
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="checkoutMostrarReferencia"
+                defaultChecked={
+                  configuracion?.checkoutMostrarReferencia ??
+                  true
+                }
+              />
+
+              <span className="text-sm font-semibold text-slate-700">
+                Mostrar campo
+              </span>
+            </label>
+
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="checkoutReferenciaObligatoria"
+                defaultChecked={
+                  configuracion?.checkoutReferenciaObligatoria ??
+                  false
+                }
+              />
+
+              <span className="text-sm font-semibold text-slate-700">
+                Campo obligatorio
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <p className="mb-3 text-sm font-black text-slate-900">
+            DNI
+          </p>
+
+          <div className="space-y-3">
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="checkoutMostrarDni"
+                defaultChecked={
+                  configuracion?.checkoutMostrarDni ??
+                  false
+                }
+              />
+
+              <span className="text-sm font-semibold text-slate-700">
+                Mostrar campo
+              </span>
+            </label>
+
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="checkoutDniObligatorio"
+                defaultChecked={
+                  configuracion?.checkoutDniObligatorio ??
+                  false
+                }
+              />
+
+              <span className="text-sm font-semibold text-slate-700">
+                Campo obligatorio
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <p className="mb-3 text-sm font-black text-slate-900">
+            Departamento / Región
+          </p>
+
+          <div className="space-y-3">
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="checkoutMostrarRegion"
+                defaultChecked={
+                  configuracion?.checkoutMostrarRegion ??
+                  true
+                }
+              />
+
+              <span className="text-sm font-semibold text-slate-700">
+                Mostrar campo
+              </span>
+            </label>
+
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="checkoutRegionObligatoria"
+                defaultChecked={
+                  configuracion?.checkoutRegionObligatoria ??
+                  true
+                }
+              />
+
+              <span className="text-sm font-semibold text-slate-700">
+                Campo obligatorio
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <p className="mb-3 text-sm font-black text-slate-900">
+            Ciudad
+          </p>
+
+          <div className="space-y-3">
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="checkoutMostrarCiudad"
+                defaultChecked={
+                  configuracion?.checkoutMostrarCiudad ??
+                  true
+                }
+              />
+
+              <span className="text-sm font-semibold text-slate-700">
+                Mostrar campo
+              </span>
+            </label>
+
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="checkoutCiudadObligatoria"
+                defaultChecked={
+                  configuracion?.checkoutCiudadObligatoria ??
+                  true
+                }
+              />
+
+              <span className="text-sm font-semibold text-slate-700">
+                Campo obligatorio
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div className="border-t border-slate-200 pt-6">
+      <p className="mb-4 text-sm font-black text-slate-900">
+        Comportamiento del pedido
+      </p>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4">
+          <input
+            type="checkbox"
+            name="checkoutPermitirCantidad"
+            defaultChecked={
+              configuracion?.checkoutPermitirCantidad ??
+              true
+            }
+          />
+
+          <span className="text-sm font-bold text-slate-700">
+            Permitir cambiar cantidad
+          </span>
+        </label>
+
+        <div>
+          <label className="mb-2 block text-sm font-bold text-slate-700">
+            Cantidad máxima
+          </label>
+
+          <input
+            type="number"
+            name="checkoutCantidadMaxima"
+            min={1}
+            max={99}
+            defaultValue={
+              configuracion?.checkoutCantidadMaxima ??
+              5
+            }
+            className="h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold outline-none focus:border-slate-700"
+          />
+        </div>
+
+        <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4">
+          <input
+            type="checkbox"
+            name="checkoutMostrarTotal"
+            defaultChecked={
+              configuracion?.checkoutMostrarTotal ??
+              true
+            }
+          />
+
+          <span className="text-sm font-bold text-slate-700">
+            Mostrar total del pedido
+          </span>
+        </label>
+
+        <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4">
+          <input
+            type="checkbox"
+            name="checkoutBotonFijo"
+            defaultChecked={
+              configuracion?.checkoutBotonFijo ??
+              true
+            }
+          />
+
+          <span className="text-sm font-bold text-slate-700">
+            Mostrar botón fijo Comprar ahora
+          </span>
+        </label>
+
+        <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 md:col-span-2">
+          <input
+            type="checkbox"
+            name="checkoutWhatsAppPostPedido"
+            defaultChecked={
+              configuracion?.checkoutWhatsAppPostPedido ??
+              false
+            }
+          />
+
+          <div>
+            <p className="text-sm font-bold text-slate-700">
+              Abrir WhatsApp después del pedido
+            </p>
+
+            <p className="mt-1 text-xs text-slate-500">
+              Podremos usar esta opción para enviar al cliente a WhatsApp después de registrar correctamente su pedido.
+            </p>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+      <p className="text-sm font-black text-amber-900">
+        Importante
+      </p>
+
+      <p className="mt-1 text-xs leading-5 text-amber-800">
+        Por ahora estas opciones se guardarán desde
+        Configuración. En el siguiente paso conectaremos
+        cada una con el checkout público del producto.
+      </p>
+    </div>
+  </div>
+</Card>
+
           <Card
             title="Identidad visual"
             description="Configura el logo principal de KAFES ONLINE."

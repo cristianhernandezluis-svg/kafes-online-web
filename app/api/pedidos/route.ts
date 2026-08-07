@@ -7,6 +7,7 @@ type CrearPedidoBody = {
   cantidad?: number;
   nombre?: string;
   celular?: string;
+  dni?: string;
   ciudad?: string;
   region?: string;
   direccion?: string;
@@ -26,32 +27,220 @@ function generarCodigoPedido() {
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as CrearPedidoBody;
+        const body = (await request.json()) as CrearPedidoBody;
+
+    const configuracion =
+      await prisma.configuracionTienda.findUnique({
+        where: {
+          id: 1,
+        },
+        select: {
+          checkoutActivo: true,
+checkoutTipoPedido: true,
+checkoutMontoAdelanto: true,
+checkoutMostrarDni: true,
+checkoutDniObligatorio: true,
+
+          checkoutMostrarCiudad: true,
+          checkoutCiudadObligatoria: true,
+
+          checkoutMostrarRegion: true,
+          checkoutRegionObligatoria: true,
+
+          checkoutMostrarDireccion: true,
+          checkoutDireccionObligatoria: true,
+
+          checkoutMostrarReferencia: true,
+          checkoutReferenciaObligatoria: true,
+
+          checkoutPermitirCantidad: true,
+          checkoutCantidadMaxima: true,
+        },
+      });
+
+    const checkoutActivo =
+      configuracion?.checkoutActivo ?? true;
+
+const checkoutTipoPedido =
+  configuracion?.checkoutTipoPedido ??
+  "CONTRAENTREGA";
+
+const metodoPago =
+  checkoutTipoPedido === "CONTRAENTREGA"
+    ? "CONTRA_ENTREGA"
+    : "OTRO";
+
+    if (!checkoutActivo) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "Los pedidos están temporalmente desactivados.",
+        },
+        {
+          status: 503,
+        },
+      );
+    }
 
     const productoId = Number(body.productoId);
 
-    const cantidad = Math.max(
+    const cantidadSolicitada = Math.max(
       1,
       Math.floor(Number(body.cantidad) || 1),
     );
 
+    const cantidadMaxima = Math.max(
+      1,
+      configuracion?.checkoutCantidadMaxima ?? 5,
+    );
+
+    const permitirCantidad =
+      configuracion?.checkoutPermitirCantidad ??
+      true;
+
+    const cantidad = permitirCantidad
+      ? Math.min(
+          cantidadSolicitada,
+          cantidadMaxima,
+        )
+      : 1;
+
     const nombre = limpiarTexto(body.nombre);
 
-    const celular = limpiarTexto(body.celular).replace(
-      /\s+/g,
-      "",
-    );
+    const celular = limpiarTexto(
+      body.celular,
+    ).replace(/\s+/g, "");
+
+const dni = limpiarTexto(
+  body.dni
+).replace(/\D/g, "");
+
+const mostrarDni =
+  configuracion?.checkoutMostrarDni ??
+  false;
+
+const dniObligatorio =
+  mostrarDni &&
+  (configuracion?.checkoutDniObligatorio ??
+    false);
+
+if (dniObligatorio && !dni) {
+  return NextResponse.json(
+    {
+      ok: false,
+      error: "Ingresa tu DNI.",
+    },
+    {
+      status: 400,
+    },
+  );
+}
+
+if (dni && dni.length !== 8) {
+  return NextResponse.json(
+    {
+      ok: false,
+      error:
+        "El DNI debe tener 8 dígitos.",
+    },
+    {
+      status: 400,
+    },
+  );
+}
 
     const ciudad = limpiarTexto(body.ciudad);
     const region = limpiarTexto(body.region);
-    const direccion = limpiarTexto(body.direccion);
-    const referencia = limpiarTexto(body.referencia);
+    const direccion = limpiarTexto(
+      body.direccion,
+    );
+    const referencia = limpiarTexto(
+      body.referencia,
+    );
 
-    if (!Number.isInteger(productoId) || productoId <= 0) {
+    if (
+      !Number.isInteger(productoId) ||
+      productoId <= 0
+    ) {
       return NextResponse.json(
         {
           ok: false,
-          error: "El producto seleccionado no es válido.",
+          error:
+            "El producto seleccionado no es válido.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    if (!nombre || !celular) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "Completa tu nombre y celular.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    const mostrarCiudad =
+      configuracion?.checkoutMostrarCiudad ??
+      true;
+
+    const ciudadObligatoria =
+      mostrarCiudad &&
+      (configuracion?.checkoutCiudadObligatoria ??
+        true);
+
+    const mostrarRegion =
+      configuracion?.checkoutMostrarRegion ??
+      true;
+
+    const regionObligatoria =
+      mostrarRegion &&
+      (configuracion?.checkoutRegionObligatoria ??
+        true);
+
+    const mostrarDireccion =
+      configuracion?.checkoutMostrarDireccion ??
+      true;
+
+    const direccionObligatoria =
+      mostrarDireccion &&
+      (configuracion?.checkoutDireccionObligatoria ??
+        true);
+
+    const mostrarReferencia =
+      configuracion?.checkoutMostrarReferencia ??
+      true;
+
+    const referenciaObligatoria =
+      mostrarReferencia &&
+      (configuracion?.checkoutReferenciaObligatoria ??
+        false);
+
+    if (ciudadObligatoria && !ciudad) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Ingresa tu ciudad o distrito.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    if (regionObligatoria && !region) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Selecciona tu región.",
         },
         {
           status: 400,
@@ -60,16 +249,30 @@ export async function POST(request: Request) {
     }
 
     if (
-      !nombre ||
-      !celular ||
-      !ciudad ||
-      !region ||
+      direccionObligatoria &&
       !direccion
     ) {
       return NextResponse.json(
         {
           ok: false,
-          error: "Completa todos los campos obligatorios.",
+          error:
+            "Ingresa tu dirección de entrega.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    if (
+      referenciaObligatoria &&
+      !referencia
+    ) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "Ingresa una referencia de entrega.",
         },
         {
           status: 400,
@@ -81,7 +284,8 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           ok: false,
-          error: "Ingresa un número de celular válido.",
+          error:
+            "Ingresa un número de celular válido.",
         },
         {
           status: 400,
@@ -123,6 +327,28 @@ export async function POST(request: Request) {
     const descuento = 0;
     const total = subtotal - descuento + costoEnvio;
 
+const montoAdelantoConfigurado = Math.max(
+  0,
+  Number(
+    configuracion?.checkoutMontoAdelanto ?? 30
+  )
+);
+
+let montoAdelanto = 0;
+let montoPendiente = total;
+
+if (checkoutTipoPedido === "ADELANTO") {
+  montoAdelanto = Math.min(
+    montoAdelantoConfigurado,
+    total
+  );
+
+  montoPendiente = Math.max(
+    0,
+    total - montoAdelanto
+  );
+}
+
     const resultado = await prisma.$transaction(async (tx) => {
       /*
        * Buscamos al cliente por celular.
@@ -141,23 +367,25 @@ export async function POST(request: Request) {
               id: clienteExistente.id,
             },
             data: {
-              nombre,
-              ciudad,
-              region,
-              direccion,
-              referencia: referencia || null,
-              activo: true,
-            },
+  nombre,
+  dni: dni || null,
+  ciudad,
+  region,
+  direccion,
+  referencia: referencia || null,
+  activo: true,
+},
           })
         : await tx.cliente.create({
             data: {
-              nombre,
-              telefono: celular,
-              ciudad,
-              region,
-              direccion,
-              referencia: referencia || null,
-            },
+  nombre,
+  telefono: celular,
+  dni: dni || null,
+  ciudad,
+  region,
+  direccion,
+  referencia: referencia || null,
+},
           });
 
       const pedido = await tx.pedido.create({
@@ -168,6 +396,7 @@ export async function POST(request: Request) {
 
           nombreCliente: nombre,
           telefonoCliente: celular,
+          dniCliente: dni || null,
 
           ciudad,
           region,
@@ -175,17 +404,18 @@ export async function POST(request: Request) {
           referencia: referencia || null,
 
           estado: "NUEVO",
-          estadoPago: "PENDIENTE",
-          metodoPago: "CONTRA_ENTREGA",
-          estadoEnvio: "PENDIENTE",
+estadoPago: "PENDIENTE",
+metodoPago,
+tipoPedido: checkoutTipoPedido,
+estadoEnvio: "PENDIENTE",
 
           subtotal,
           descuento,
           costoEnvio,
           total,
 
-          montoAdelanto: 0,
-          montoPendiente: total,
+          montoAdelanto,
+montoPendiente,
 
           items: {
             create: {

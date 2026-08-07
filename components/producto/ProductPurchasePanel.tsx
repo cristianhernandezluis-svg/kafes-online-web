@@ -21,6 +21,11 @@ type ProductPurchasePanelProps = {
   producto: ProductoPublico;
   cantidad: number;
   whatsapp: string;
+
+  checkoutActivo: boolean;
+  permitirCantidad: boolean;
+  cantidadMaxima: number;
+
   onCantidadChange: (cantidad: number) => void;
   onComprar: () => void;
   comprarAhoraRef: RefObject<HTMLButtonElement | null>;
@@ -31,6 +36,9 @@ export default function ProductPurchasePanel({
   producto,
   cantidad,
   whatsapp,
+  checkoutActivo,
+  permitirCantidad,
+  cantidadMaxima,
   onCantidadChange,
   onComprar,
   comprarAhoraRef,
@@ -39,9 +47,24 @@ export default function ProductPurchasePanel({
     onCantidadChange(Math.max(1, cantidad - 1));
   };
 
-  const aumentarCantidad = () => {
-    onCantidadChange(cantidad + 1);
-  };
+  const limiteCantidad = Math.max(
+  1,
+  Math.min(
+    cantidadMaxima,
+    producto.stock > 0
+      ? producto.stock
+      : cantidadMaxima
+  )
+);
+
+const aumentarCantidad = () => {
+  onCantidadChange(
+    Math.min(
+      limiteCantidad,
+      cantidad + 1
+    )
+  );
+};
 
   const ahorro =
     producto.precioAntes && producto.precioAntes > producto.precio
@@ -200,34 +223,51 @@ const promedioFormateado =
 
       <div className="mt-6 flex flex-wrap items-end justify-between gap-4 border-t border-zinc-200 pt-6">
         <div>
-          <label className="text-sm font-black text-zinc-950">Cantidad</label>
-          <div className="mt-2 inline-flex overflow-hidden rounded-2xl border border-zinc-300 bg-white">
-            <button
-              type="button"
-              onClick={disminuirCantidad}
-              disabled={cantidad <= 1}
-              aria-label="Disminuir cantidad"
-              className="grid h-12 w-12 place-items-center transition hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <Minus size={18} />
-            </button>
+  <label className="text-sm font-black text-zinc-950">
+    Cantidad
+  </label>
 
-            <div className="grid h-12 min-w-14 place-items-center border-x border-zinc-300 px-3 text-lg font-black">
-              {cantidad}
-            </div>
+  {permitirCantidad ? (
+    <div className="mt-2 inline-flex overflow-hidden rounded-2xl border border-zinc-300 bg-white">
+      <button
+        type="button"
+        onClick={disminuirCantidad}
+        disabled={cantidad <= 1}
+        aria-label="Disminuir cantidad"
+        className="grid h-12 w-12 place-items-center transition hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        <Minus size={18} />
+      </button>
 
-            <button
-              type="button"
-              onClick={aumentarCantidad}
-              aria-label="Aumentar cantidad"
-              className="grid h-12 w-12 place-items-center transition hover:bg-zinc-100"
-            >
-              <Plus size={18} />
-            </button>
-          </div>
-        </div>
+      <div className="grid h-12 min-w-14 place-items-center border-x border-zinc-300 px-3 text-lg font-black">
+        {cantidad}
+      </div>
 
-        <div className="pb-1 text-right text-sm font-bold">
+      <button
+        type="button"
+        onClick={aumentarCantidad}
+        disabled={
+          cantidad >= limiteCantidad
+        }
+        aria-label="Aumentar cantidad"
+        className="grid h-12 w-12 place-items-center transition hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        <Plus size={18} />
+      </button>
+    </div>
+  ) : (
+    <div className="mt-2 flex h-12 min-w-14 items-center justify-center rounded-2xl border border-zinc-300 bg-zinc-50 px-5 text-lg font-black">
+      1
+    </div>
+  )}
+
+  {permitirCantidad && (
+    <p className="mt-2 text-xs font-semibold text-zinc-500">
+      Máximo {limiteCantidad} por pedido
+    </p>
+  )}
+</div>
+                   <div className="pb-1 text-right text-sm font-bold">
           {pocasUnidades ? (
             <p className="text-orange-600">Quedan {producto.stock} unidades</p>
           ) : disponible ? (
@@ -244,11 +284,18 @@ const promedioFormateado =
           ref={comprarAhoraRef}
           type="button"
           onClick={onComprar}
-          disabled={!disponible}
+          disabled={
+  !disponible ||
+  !checkoutActivo
+}
           className="flex w-full items-center justify-center gap-3 rounded-2xl border-b-4 border-yellow-600 bg-yellow-400 px-5 py-4 text-lg font-black text-black shadow-[0_12px_30px_rgba(250,204,21,0.28)] transition hover:-translate-y-0.5 hover:bg-yellow-300 active:translate-y-0 disabled:cursor-not-allowed disabled:border-zinc-400 disabled:bg-zinc-300 disabled:text-zinc-500 disabled:shadow-none"
         >
           <ShoppingCart size={22} />
-          {disponible ? "COMPRAR AHORA" : "PRODUCTO AGOTADO"}
+          {!checkoutActivo
+  ? "PEDIDOS TEMPORALMENTE DESACTIVADOS"
+  : disponible
+    ? "COMPRAR AHORA"
+    : "PRODUCTO AGOTADO"}
         </button>
 
         <a

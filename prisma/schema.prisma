@@ -290,6 +290,7 @@ model Pedido {
   estado      EstadoPedido @default(NUEVO)
   estadoPago  EstadoPago   @default(PENDIENTE)
   metodoPago  MetodoPago   @default(CONTRA_ENTREGA)
+  tipoPedido  String       @default("CONTRAENTREGA")
   estadoEnvio EstadoEnvio  @default(PENDIENTE)
 
   subtotal       Decimal @db.Decimal(10, 2)
@@ -479,6 +480,37 @@ model ConfiguracionTienda {
 
   googleTagManagerId     String?
   googleTagManagerActivo Boolean @default(false)
+
+  // PEDIDOS Y CHECKOUT
+  checkoutActivo         Boolean @default(true)
+  checkoutTipoPedido     String  @default("CONTRAENTREGA")
+  checkoutMontoAdelanto  Decimal @default(30) @db.Decimal(10, 2)
+  checkoutTitulo         String  @default("Completa tus datos para realizar tu pedido")
+  checkoutBotonTexto     String  @default("REALIZAR PEDIDO")
+  checkoutMensajeExito   String  @default("Tu pedido fue registrado correctamente.")
+  checkoutTextoConfianza String  @default("Compra segura | Envíos a todo el Perú")
+
+  checkoutMostrarDireccion     Boolean @default(true)
+  checkoutDireccionObligatoria Boolean @default(true)
+
+  checkoutMostrarReferencia     Boolean @default(true)
+  checkoutReferenciaObligatoria Boolean @default(false)
+
+  checkoutMostrarDni     Boolean @default(false)
+  checkoutDniObligatorio Boolean @default(false)
+
+  checkoutMostrarRegion     Boolean @default(true)
+  checkoutRegionObligatoria Boolean @default(true)
+
+  checkoutMostrarCiudad     Boolean @default(true)
+  checkoutCiudadObligatoria Boolean @default(true)
+
+  checkoutPermitirCantidad Boolean @default(true)
+  checkoutCantidadMaxima   Int     @default(5)
+
+  checkoutMostrarTotal       Boolean @default(true)
+  checkoutBotonFijo          Boolean @default(true)
+  checkoutWhatsAppPostPedido Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

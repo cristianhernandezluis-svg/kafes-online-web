@@ -53,6 +53,7 @@ const [loading, setLoading] = useState(false);
 const [cantidad, setCantidad] = useState(1);
 const [nombre, setNombre] = useState("");
 const [celular, setCelular] = useState("");
+const [dni, setDni] = useState("");
 const [ciudad, setCiudad] = useState("");
 const [region, setRegion] = useState("");
 const [direccion, setDireccion] = useState("");
@@ -63,6 +64,31 @@ const viewContentTrackedSlug = useRef<string | null>(null);
 
 const precio = producto?.precio || 0;
 const total = precio * cantidad;
+
+useEffect(() => {
+  const cantidadMaxima = Math.max(
+    1,
+    configuracionTienda.checkoutCantidadMaxima
+  );
+
+  if (
+    !configuracionTienda.checkoutPermitirCantidad
+  ) {
+    if (cantidad !== 1) {
+      setCantidad(1);
+    }
+
+    return;
+  }
+
+  if (cantidad > cantidadMaxima) {
+    setCantidad(cantidadMaxima);
+  }
+}, [
+  cantidad,
+  configuracionTienda.checkoutPermitirCantidad,
+  configuracionTienda.checkoutCantidadMaxima,
+]);
 
 useEffect(() => {
   const onScroll = () => {
@@ -127,7 +153,14 @@ useEffect(() => {
   }
 
   const abrirCheckout = () => {
-    window.ttq?.track("AddToCart", {
+  if (!configuracionTienda.checkoutActivo) {
+    alert(
+      "Los pedidos están temporalmente desactivados."
+    );
+    return;
+  }
+
+  window.ttq?.track("AddToCart", {
       content_id: slug,
       content_name: producto.nombre,
       content_type: "product",
@@ -182,10 +215,51 @@ useEffect(() => {
 
   
   const finalizarPedido = async () => {
-  if (!nombre || !celular || !ciudad || !region || !direccion) {
-    alert("Completa todos los campos obligatorios");
-    return;
-  }
+  if (!nombre.trim()) {
+  alert("Ingresa tu nombre completo.");
+  return;
+}
+
+if (!celular.trim()) {
+  alert("Ingresa tu número de celular.");
+  return;
+}
+
+if (
+  configuracionTienda.checkoutMostrarCiudad &&
+  configuracionTienda.checkoutCiudadObligatoria &&
+  !ciudad.trim()
+) {
+  alert("Ingresa tu ciudad o distrito.");
+  return;
+}
+
+if (
+  configuracionTienda.checkoutMostrarRegion &&
+  configuracionTienda.checkoutRegionObligatoria &&
+  !region.trim()
+) {
+  alert("Selecciona tu región.");
+  return;
+}
+
+if (
+  configuracionTienda.checkoutMostrarDireccion &&
+  configuracionTienda.checkoutDireccionObligatoria &&
+  !direccion.trim()
+) {
+  alert("Ingresa tu dirección de entrega.");
+  return;
+}
+
+if (
+  configuracionTienda.checkoutMostrarReferencia &&
+  configuracionTienda.checkoutReferenciaObligatoria &&
+  !referencia.trim()
+) {
+  alert("Ingresa una referencia de entrega.");
+  return;
+}
 
   const celularLimpio = celular.replace(/\D/g, "");
 
@@ -193,6 +267,22 @@ useEffect(() => {
     alert("Ingresa un número de celular válido");
     return;
   }
+
+const dniLimpio = dni.replace(/\D/g, "");
+
+if (
+  configuracionTienda.checkoutMostrarDni &&
+  configuracionTienda.checkoutDniObligatorio &&
+  !dniLimpio
+) {
+  alert("Ingresa tu DNI.");
+  return;
+}
+
+if (dniLimpio && dniLimpio.length !== 8) {
+  alert("El DNI debe tener 8 dígitos.");
+  return;
+}
 
   setLoading(true);
 
@@ -207,6 +297,7 @@ useEffect(() => {
         cantidad,
         nombre: nombre.trim(),
         celular: celularLimpio,
+        dni: dniLimpio,
         ciudad: ciudad.trim(),
         region: region.trim(),
         direccion: direccion.trim(),
@@ -245,6 +336,7 @@ useEffect(() => {
             total: resultado.pedido.total,
             nombre: nombre.trim(),
             celular: celularLimpio,
+            dni: dniLimpio,
             ciudad: ciudad.trim(),
             region: region.trim(),
             direccion: direccion.trim(),
@@ -284,6 +376,29 @@ useEffect(() => {
         content_name: producto.nombre,
         quantity: cantidad,
       });
+if (
+  configuracionTienda.checkoutWhatsAppPostPedido
+) {
+  const mensajeWhatsApp = [
+    "Hola, acabo de realizar un pedido en KAFES ONLINE.",
+    "",
+    `Pedido: ${resultado.pedido.codigo}`,
+    `Producto: ${producto.nombre}`,
+    `Cantidad: ${cantidad}`,
+    `Total: S/${resultado.pedido.total}`,
+    `Nombre: ${nombre.trim()}`,
+  ].join("\n");
+
+  const whatsappUrl =
+    `https://wa.me/${configuracionTienda.whatsapp}?text=${encodeURIComponent(
+      mensajeWhatsApp
+    )}`;
+
+  window.setTimeout(() => {
+    window.location.href = whatsappUrl;
+  }, 1200);
+}
+
     }
   } catch (error) {
     console.error("Error al finalizar el pedido:", error);
@@ -404,6 +519,15 @@ useEffect(() => {
   producto={producto}
   cantidad={cantidad}
   whatsapp={configuracionTienda.whatsapp}
+  checkoutActivo={
+    configuracionTienda.checkoutActivo
+  }
+  permitirCantidad={
+    configuracionTienda.checkoutPermitirCantidad
+  }
+  cantidadMaxima={
+    configuracionTienda.checkoutCantidadMaxima
+  }
   onCantidadChange={setCantidad}
   onComprar={abrirCheckout}
   comprarAhoraRef={comprarAhoraRef}
@@ -481,18 +605,21 @@ useEffect(() => {
 <CheckoutModal
   open={openCheckout}
   producto={producto}
+  configuracionTienda={configuracionTienda}
   cantidad={cantidad}
   total={total}
   loading={loading}
   pedidoFinalizado={pedidoFinalizado}
   nombre={nombre}
   celular={celular}
+  dni={dni}
   ciudad={ciudad}
   region={region}
   direccion={direccion}
   referencia={referencia}
   onNombreChange={setNombre}
   onCelularChange={setCelular}
+  onDniChange={setDni}
   onCiudadChange={setCiudad}
   onRegionChange={setRegion}
   onDireccionChange={setDireccion}
@@ -501,7 +628,9 @@ useEffect(() => {
   onSubmit={finalizarPedido}
 />
 
-{!producto.modoGempages && (
+{!producto.modoGempages &&
+  configuracionTienda.checkoutActivo &&
+  configuracionTienda.checkoutBotonFijo && (
   <StickyBuyButton
     visible={mostrarCompraFija}
     onComprar={abrirCheckout}

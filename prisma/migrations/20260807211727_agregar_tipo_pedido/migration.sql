@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "pedidos" ADD COLUMN     "tipoPedido" TEXT NOT NULL DEFAULT 'CONTRAENTREGA';

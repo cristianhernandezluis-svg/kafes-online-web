@@ -53,6 +53,65 @@ function obtenerMetaEventoPedido(
   return "CompleteRegistration";
 }
 
+function obtenerTipoPedido(
+  formData: FormData
+) {
+  const valor = obtenerTexto(
+    formData,
+    "checkoutTipoPedido"
+  );
+
+  if (
+    valor === "CONTRAENTREGA" ||
+    valor === "ADELANTO" ||
+    valor === "PAGO_COMPLETO"
+  ) {
+    return valor;
+  }
+
+  return "CONTRAENTREGA";
+}
+
+function obtenerCantidadMaxima(
+  formData: FormData
+) {
+  const valor = Number(
+    obtenerTexto(
+      formData,
+      "checkoutCantidadMaxima"
+    )
+  );
+
+  if (!Number.isFinite(valor)) {
+    return 5;
+  }
+
+  return Math.min(
+    99,
+    Math.max(1, Math.floor(valor))
+  );
+}
+
+function obtenerMontoAdelanto(
+  formData: FormData
+) {
+  const valor = Number(
+    obtenerTexto(
+      formData,
+      "checkoutMontoAdelanto"
+    )
+  );
+
+  if (
+    !Number.isFinite(valor) ||
+    valor < 0
+  ) {
+    return 30;
+  }
+
+  return Math.round(valor * 100) / 100;
+}
+
 function limpiarWhatsApp(valor: string) {
   return valor.replace(/\D/g, "");
 }
@@ -178,6 +237,8 @@ export async function guardarConfiguracionTienda(
       "textoFooter"
     );
 
+  // TRACKING
+
   const metaPixelId =
     obtenerTextoONull(
       formData,
@@ -190,8 +251,8 @@ export async function guardarConfiguracionTienda(
       "metaPixelActivo"
     );
 
-const metaEventoPedido =
-  obtenerMetaEventoPedido(formData);
+  const metaEventoPedido =
+    obtenerMetaEventoPedido(formData);
 
   const tiktokPixelId =
     obtenerTextoONull(
@@ -229,6 +290,135 @@ const metaEventoPedido =
       "googleTagManagerActivo"
     );
 
+  // PEDIDOS Y CHECKOUT
+
+  const checkoutActivo =
+    obtenerBooleano(
+      formData,
+      "checkoutActivo"
+    );
+
+  const checkoutTipoPedido =
+    obtenerTipoPedido(formData);
+
+  const checkoutMontoAdelanto =
+    obtenerMontoAdelanto(formData);
+
+  const checkoutTitulo =
+    obtenerTexto(
+      formData,
+      "checkoutTitulo"
+    ) ||
+    "Completa tus datos para realizar tu pedido";
+
+  const checkoutBotonTexto =
+    obtenerTexto(
+      formData,
+      "checkoutBotonTexto"
+    ) ||
+    "REALIZAR PEDIDO";
+
+  const checkoutMensajeExito =
+    obtenerTexto(
+      formData,
+      "checkoutMensajeExito"
+    ) ||
+    "Tu pedido fue registrado correctamente.";
+
+  const checkoutTextoConfianza =
+    obtenerTexto(
+      formData,
+      "checkoutTextoConfianza"
+    ) ||
+    "Compra segura | Envíos a todo el Perú";
+
+  const checkoutMostrarDireccion =
+    obtenerBooleano(
+      formData,
+      "checkoutMostrarDireccion"
+    );
+
+  const checkoutDireccionObligatoria =
+    obtenerBooleano(
+      formData,
+      "checkoutDireccionObligatoria"
+    );
+
+  const checkoutMostrarReferencia =
+    obtenerBooleano(
+      formData,
+      "checkoutMostrarReferencia"
+    );
+
+  const checkoutReferenciaObligatoria =
+    obtenerBooleano(
+      formData,
+      "checkoutReferenciaObligatoria"
+    );
+
+  const checkoutMostrarDni =
+    obtenerBooleano(
+      formData,
+      "checkoutMostrarDni"
+    );
+
+  const checkoutDniObligatorio =
+    obtenerBooleano(
+      formData,
+      "checkoutDniObligatorio"
+    );
+
+  const checkoutMostrarRegion =
+    obtenerBooleano(
+      formData,
+      "checkoutMostrarRegion"
+    );
+
+  const checkoutRegionObligatoria =
+    obtenerBooleano(
+      formData,
+      "checkoutRegionObligatoria"
+    );
+
+  const checkoutMostrarCiudad =
+    obtenerBooleano(
+      formData,
+      "checkoutMostrarCiudad"
+    );
+
+  const checkoutCiudadObligatoria =
+    obtenerBooleano(
+      formData,
+      "checkoutCiudadObligatoria"
+    );
+
+  const checkoutPermitirCantidad =
+    obtenerBooleano(
+      formData,
+      "checkoutPermitirCantidad"
+    );
+
+  const checkoutCantidadMaxima =
+    obtenerCantidadMaxima(formData);
+
+  const checkoutMostrarTotal =
+    obtenerBooleano(
+      formData,
+      "checkoutMostrarTotal"
+    );
+
+  const checkoutBotonFijo =
+    obtenerBooleano(
+      formData,
+      "checkoutBotonFijo"
+    );
+
+  const checkoutWhatsAppPostPedido =
+    obtenerBooleano(
+      formData,
+      "checkoutWhatsAppPostPedido"
+    );
+
   await prisma.configuracionTienda.upsert({
     where: {
       id: 1,
@@ -255,8 +445,8 @@ const metaEventoPedido =
       textoFooter,
 
       metaPixelId,
-metaPixelActivo,
-metaEventoPedido,
+      metaPixelActivo,
+      metaEventoPedido,
 
       tiktokPixelId,
       tiktokPixelActivo,
@@ -266,10 +456,41 @@ metaEventoPedido,
 
       googleTagManagerId,
       googleTagManagerActivo,
+
+      checkoutActivo,
+      checkoutTipoPedido,
+      checkoutMontoAdelanto,
+      checkoutTitulo,
+      checkoutBotonTexto,
+      checkoutMensajeExito,
+      checkoutTextoConfianza,
+
+      checkoutMostrarDireccion,
+      checkoutDireccionObligatoria,
+
+      checkoutMostrarReferencia,
+      checkoutReferenciaObligatoria,
+
+      checkoutMostrarDni,
+      checkoutDniObligatorio,
+
+      checkoutMostrarRegion,
+      checkoutRegionObligatoria,
+
+      checkoutMostrarCiudad,
+      checkoutCiudadObligatoria,
+
+      checkoutPermitirCantidad,
+      checkoutCantidadMaxima,
+
+      checkoutMostrarTotal,
+      checkoutBotonFijo,
+      checkoutWhatsAppPostPedido,
     },
 
     create: {
       id: 1,
+
       nombreTienda,
       razonSocial,
       ruc,
@@ -290,8 +511,8 @@ metaEventoPedido,
       textoFooter,
 
       metaPixelId,
-metaPixelActivo,
-metaEventoPedido,
+      metaPixelActivo,
+      metaEventoPedido,
 
       tiktokPixelId,
       tiktokPixelActivo,
@@ -301,6 +522,36 @@ metaEventoPedido,
 
       googleTagManagerId,
       googleTagManagerActivo,
+
+      checkoutActivo,
+      checkoutTipoPedido,
+      checkoutMontoAdelanto,
+      checkoutTitulo,
+      checkoutBotonTexto,
+      checkoutMensajeExito,
+      checkoutTextoConfianza,
+
+      checkoutMostrarDireccion,
+      checkoutDireccionObligatoria,
+
+      checkoutMostrarReferencia,
+      checkoutReferenciaObligatoria,
+
+      checkoutMostrarDni,
+      checkoutDniObligatorio,
+
+      checkoutMostrarRegion,
+      checkoutRegionObligatoria,
+
+      checkoutMostrarCiudad,
+      checkoutCiudadObligatoria,
+
+      checkoutPermitirCantidad,
+      checkoutCantidadMaxima,
+
+      checkoutMostrarTotal,
+      checkoutBotonFijo,
+      checkoutWhatsAppPostPedido,
     },
   });
 
