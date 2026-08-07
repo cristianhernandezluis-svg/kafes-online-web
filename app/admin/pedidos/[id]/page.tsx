@@ -453,6 +453,103 @@ export default async function PedidoDetallePage({
             <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <h2 className="flex items-center gap-2 text-lg font-black text-slate-950">
                 <User size={19} />
+
+<section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+  <h2 className="text-lg font-black text-slate-950">
+    Origen del pedido
+  </h2>
+
+  <div className="mt-4 space-y-3 text-sm">
+    <div className="flex items-center justify-between gap-4">
+      <span className="text-slate-600">
+        Fuente
+      </span>
+
+      <span className="text-right font-bold text-slate-900">
+        {pedido.utmSource || "Directo / Sin atribución"}
+      </span>
+    </div>
+
+    <div className="flex items-center justify-between gap-4">
+      <span className="text-slate-600">
+        Medio
+      </span>
+
+      <span className="text-right font-bold text-slate-900">
+        {pedido.utmMedium || "-"}
+      </span>
+    </div>
+
+    <div className="flex items-center justify-between gap-4">
+      <span className="text-slate-600">
+        Campaña
+      </span>
+
+      <span className="break-all text-right font-bold text-slate-900">
+        {pedido.utmCampaign || "-"}
+      </span>
+    </div>
+
+    <div className="flex items-center justify-between gap-4">
+      <span className="text-slate-600">
+        Anuncio / Contenido
+      </span>
+
+      <span className="break-all text-right font-bold text-slate-900">
+        {pedido.utmContent || "-"}
+      </span>
+    </div>
+
+    {pedido.utmTerm && (
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-slate-600">
+          Término
+        </span>
+
+        <span className="break-all text-right font-bold text-slate-900">
+          {pedido.utmTerm}
+        </span>
+      </div>
+    )}
+
+    {pedido.fbclid && (
+      <div className="border-t border-slate-200 pt-3">
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+          Facebook Click ID
+        </p>
+
+        <p className="mt-1 break-all text-xs text-slate-600">
+          {pedido.fbclid}
+        </p>
+      </div>
+    )}
+
+    {pedido.ttclid && (
+      <div className="border-t border-slate-200 pt-3">
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+          TikTok Click ID
+        </p>
+
+        <p className="mt-1 break-all text-xs text-slate-600">
+          {pedido.ttclid}
+        </p>
+      </div>
+    )}
+
+    {pedido.landingPath && (
+      <div className="border-t border-slate-200 pt-3">
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+          Página de entrada
+        </p>
+
+        <p className="mt-1 break-all text-xs text-slate-600">
+          {pedido.landingPath}
+        </p>
+      </div>
+    )}
+  </div>
+</section>
+
                 Cliente
 
 <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

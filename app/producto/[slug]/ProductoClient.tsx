@@ -31,6 +31,19 @@ declare global {
   }
 }
 
+type AtribucionPedido = {
+  utmSource: string | null;
+  utmMedium: string | null;
+  utmCampaign: string | null;
+  utmContent: string | null;
+  utmTerm: string | null;
+  fbclid: string | null;
+  ttclid: string | null;
+  landingPath: string | null;
+  referrer: string | null;
+  guardadoAt: number;
+};
+
 type ProductoClientProps = {
   producto: ProductoPublico;
   configuracionTienda: ConfiguracionTiendaPublica;
@@ -61,9 +74,122 @@ const [referencia, setReferencia] = useState("");
 
 
 const viewContentTrackedSlug = useRef<string | null>(null);
+const atribucionRef = useRef<AtribucionPedido | null>(
+  null
+);
 
 const precio = producto?.precio || 0;
 const total = precio * cantidad;
+
+useEffect(() => {
+  const CLAVE_ATRIBUCION =
+    "kafes_atribucion_publicitaria";
+
+  const SIETE_DIAS =
+    7 * 24 * 60 * 60 * 1000;
+
+  const parametros = new URLSearchParams(
+    window.location.search
+  );
+
+  const tieneAtribucionNueva =
+    parametros.has("utm_source") ||
+    parametros.has("utm_medium") ||
+    parametros.has("utm_campaign") ||
+    parametros.has("utm_content") ||
+    parametros.has("utm_term") ||
+    parametros.has("fbclid") ||
+    parametros.has("ttclid");
+
+  if (tieneAtribucionNueva) {
+    const nuevaAtribucion: AtribucionPedido = {
+      utmSource:
+        parametros.get("utm_source"),
+      utmMedium:
+        parametros.get("utm_medium"),
+      utmCampaign:
+        parametros.get("utm_campaign"),
+      utmContent:
+        parametros.get("utm_content"),
+      utmTerm:
+        parametros.get("utm_term"),
+      fbclid:
+        parametros.get("fbclid"),
+      ttclid:
+        parametros.get("ttclid"),
+      landingPath:
+        `${window.location.pathname}${window.location.search}`,
+      referrer:
+        document.referrer || null,
+      guardadoAt: Date.now(),
+    };
+
+    atribucionRef.current =
+      nuevaAtribucion;
+
+    try {
+      localStorage.setItem(
+        CLAVE_ATRIBUCION,
+        JSON.stringify(nuevaAtribucion)
+      );
+    } catch {
+      // Si localStorage no está disponible,
+      // el pedido igualmente continúa.
+    }
+
+    return;
+  }
+
+  try {
+    const guardada =
+      localStorage.getItem(
+        CLAVE_ATRIBUCION
+      );
+
+    if (!guardada) {
+      atribucionRef.current = {
+        utmSource: null,
+        utmMedium: null,
+        utmCampaign: null,
+        utmContent: null,
+        utmTerm: null,
+        fbclid: null,
+        ttclid: null,
+        landingPath:
+          window.location.pathname,
+        referrer:
+          document.referrer || null,
+        guardadoAt: Date.now(),
+      };
+
+      return;
+    }
+
+    const atribucionGuardada =
+      JSON.parse(
+        guardada
+      ) as AtribucionPedido;
+
+    const expirada =
+      Date.now() -
+        atribucionGuardada.guardadoAt >
+      SIETE_DIAS;
+
+    if (expirada) {
+      localStorage.removeItem(
+        CLAVE_ATRIBUCION
+      );
+
+      atribucionRef.current = null;
+      return;
+    }
+
+    atribucionRef.current =
+      atribucionGuardada;
+  } catch {
+    atribucionRef.current = null;
+  }
+}, []);
 
 useEffect(() => {
   const cantidadMaxima = Math.max(
@@ -287,24 +413,46 @@ if (dniLimpio && dniLimpio.length !== 8) {
   setLoading(true);
 
   try {
+const atribucion =
+  atribucionRef.current;
     const respuesta = await fetch("/api/pedidos", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        productoId: producto.id,
-        cantidad,
-        nombre: nombre.trim(),
-        celular: celularLimpio,
-        dni: dniLimpio,
-        ciudad: ciudad.trim(),
-        region: region.trim(),
-        direccion: direccion.trim(),
-        referencia: referencia.trim(),
-      }),
-    });
+  productoId: producto.id,
+  cantidad,
+  nombre: nombre.trim(),
+  celular: celularLimpio,
+  dni: dniLimpio,
+  ciudad: ciudad.trim(),
+  region: region.trim(),
+  direccion: direccion.trim(),
+  referencia: referencia.trim(),
 
+  utmSource:
+    atribucion?.utmSource ?? null,
+  utmMedium:
+    atribucion?.utmMedium ?? null,
+  utmCampaign:
+    atribucion?.utmCampaign ?? null,
+  utmContent:
+    atribucion?.utmContent ?? null,
+  utmTerm:
+    atribucion?.utmTerm ?? null,
+
+  fbclid:
+    atribucion?.fbclid ?? null,
+  ttclid:
+    atribucion?.ttclid ?? null,
+
+  landingPath:
+    atribucion?.landingPath ?? null,
+  referrer:
+    atribucion?.referrer ?? null,
+}),
+});
     const resultado = await respuesta.json();
 
     if (!respuesta.ok || !resultado.ok) {

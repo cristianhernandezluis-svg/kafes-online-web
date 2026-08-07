@@ -291,7 +291,19 @@ model Pedido {
   estadoPago  EstadoPago   @default(PENDIENTE)
   metodoPago  MetodoPago   @default(CONTRA_ENTREGA)
   tipoPedido  String       @default("CONTRAENTREGA")
-  estadoEnvio EstadoEnvio  @default(PENDIENTE)
+  // ATRIBUCION Y MEDICION
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmContent  String?
+  utmTerm     String?
+
+  fbclid String? @db.Text
+  ttclid String? @db.Text
+
+  landingPath String?     @db.Text
+  referrer    String?     @db.Text
+  estadoEnvio EstadoEnvio @default(PENDIENTE)
 
   subtotal       Decimal @db.Decimal(10, 2)
   descuento      Decimal @default(0) @db.Decimal(10, 2)

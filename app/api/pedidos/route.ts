@@ -12,6 +12,17 @@ type CrearPedidoBody = {
   region?: string;
   direccion?: string;
   referencia?: string;
+  utmSource?: string | null;
+utmMedium?: string | null;
+utmCampaign?: string | null;
+utmContent?: string | null;
+utmTerm?: string | null;
+
+fbclid?: string | null;
+ttclid?: string | null;
+
+landingPath?: string | null;
+referrer?: string | null;
 };
 
 function limpiarTexto(valor: unknown) {
@@ -158,6 +169,33 @@ if (dni && dni.length !== 8) {
     const referencia = limpiarTexto(
       body.referencia,
     );
+
+const utmSource =
+  limpiarTexto(body.utmSource) || null;
+
+const utmMedium =
+  limpiarTexto(body.utmMedium) || null;
+
+const utmCampaign =
+  limpiarTexto(body.utmCampaign) || null;
+
+const utmContent =
+  limpiarTexto(body.utmContent) || null;
+
+const utmTerm =
+  limpiarTexto(body.utmTerm) || null;
+
+const fbclid =
+  limpiarTexto(body.fbclid) || null;
+
+const ttclid =
+  limpiarTexto(body.ttclid) || null;
+
+const landingPath =
+  limpiarTexto(body.landingPath) || null;
+
+const referrer =
+  limpiarTexto(body.referrer) || null;
 
     if (
       !Number.isInteger(productoId) ||
@@ -407,6 +445,17 @@ if (checkoutTipoPedido === "ADELANTO") {
 estadoPago: "PENDIENTE",
 metodoPago,
 tipoPedido: checkoutTipoPedido,
+utmSource,
+utmMedium,
+utmCampaign,
+utmContent,
+utmTerm,
+
+fbclid,
+ttclid,
+
+landingPath,
+referrer,
 estadoEnvio: "PENDIENTE",
 
           subtotal,
