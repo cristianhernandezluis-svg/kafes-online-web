@@ -27,6 +27,13 @@ function obtenerTextoONull(
   return valor || null;
 }
 
+function obtenerBooleano(
+  formData: FormData,
+  campo: string
+) {
+  return formData.get(campo) === "on";
+}
+
 function limpiarWhatsApp(valor: string) {
   return valor.replace(/\D/g, "");
 }
@@ -152,6 +159,54 @@ export async function guardarConfiguracionTienda(
       "textoFooter"
     );
 
+  const metaPixelId =
+    obtenerTextoONull(
+      formData,
+      "metaPixelId"
+    );
+
+  const metaPixelActivo =
+    obtenerBooleano(
+      formData,
+      "metaPixelActivo"
+    );
+
+  const tiktokPixelId =
+    obtenerTextoONull(
+      formData,
+      "tiktokPixelId"
+    );
+
+  const tiktokPixelActivo =
+    obtenerBooleano(
+      formData,
+      "tiktokPixelActivo"
+    );
+
+  const googleAnalyticsId =
+    obtenerTextoONull(
+      formData,
+      "googleAnalyticsId"
+    );
+
+  const googleAnalyticsActivo =
+    obtenerBooleano(
+      formData,
+      "googleAnalyticsActivo"
+    );
+
+  const googleTagManagerId =
+    obtenerTextoONull(
+      formData,
+      "googleTagManagerId"
+    );
+
+  const googleTagManagerActivo =
+    obtenerBooleano(
+      formData,
+      "googleTagManagerActivo"
+    );
+
   await prisma.configuracionTienda.upsert({
     where: {
       id: 1,
@@ -176,6 +231,18 @@ export async function guardarConfiguracionTienda(
       tiktokUrl,
       youtubeUrl,
       textoFooter,
+
+      metaPixelId,
+      metaPixelActivo,
+
+      tiktokPixelId,
+      tiktokPixelActivo,
+
+      googleAnalyticsId,
+      googleAnalyticsActivo,
+
+      googleTagManagerId,
+      googleTagManagerActivo,
     },
 
     create: {
@@ -198,6 +265,18 @@ export async function guardarConfiguracionTienda(
       tiktokUrl,
       youtubeUrl,
       textoFooter,
+
+      metaPixelId,
+      metaPixelActivo,
+
+      tiktokPixelId,
+      tiktokPixelActivo,
+
+      googleAnalyticsId,
+      googleAnalyticsActivo,
+
+      googleTagManagerId,
+      googleTagManagerActivo,
     },
   });
 

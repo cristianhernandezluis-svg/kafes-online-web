@@ -250,6 +250,175 @@ export default async function ConfiguracionPage({
             </p>
           </Card>
 
+<Card
+  title="Tracking y Analytics"
+  description="Administra los píxeles y herramientas de medición de tu tienda sin modificar el código."
+>
+  <div className="space-y-6">
+    <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end">
+        <div className="flex-1">
+          <Input
+            label="Meta Pixel ID"
+            name="metaPixelId"
+            defaultValue={
+              configuracion?.metaPixelId ??
+              "1247868925891875"
+            }
+            placeholder="Ejemplo: 1247868925891875"
+          />
+        </div>
+
+        <label className="flex h-11 cursor-pointer items-center gap-3 rounded-xl border border-blue-200 bg-white px-4">
+          <input
+            type="checkbox"
+            name="metaPixelActivo"
+            defaultChecked={
+              configuracion?.metaPixelActivo ??
+              true
+            }
+            className="h-4 w-4"
+          />
+
+          <span className="text-sm font-bold text-slate-700">
+            Meta Pixel activo
+          </span>
+        </label>
+      </div>
+
+      <p className="mt-3 text-xs leading-5 text-blue-700">
+        Utilizado para PageView, ViewContent,
+        AddToCart, InitiateCheckout y Purchase
+        en Meta Ads.
+      </p>
+    </div>
+
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end">
+        <div className="flex-1">
+          <Input
+            label="TikTok Pixel ID"
+            name="tiktokPixelId"
+            defaultValue={
+              configuracion?.tiktokPixelId ??
+              "D8D21TBC77UFK9KDRPDG"
+            }
+            placeholder="Ejemplo: D8D21TBC77UFK9KDRPDG"
+          />
+        </div>
+
+        <label className="flex h-11 cursor-pointer items-center gap-3 rounded-xl border border-slate-300 bg-white px-4">
+          <input
+            type="checkbox"
+            name="tiktokPixelActivo"
+            defaultChecked={
+              configuracion?.tiktokPixelActivo ??
+              true
+            }
+            className="h-4 w-4"
+          />
+
+          <span className="text-sm font-bold text-slate-700">
+            TikTok Pixel activo
+          </span>
+        </label>
+      </div>
+
+      <p className="mt-3 text-xs leading-5 text-slate-600">
+        Utilizado para medir visitas,
+        productos vistos, carrito, checkout
+        y compras provenientes de TikTok Ads.
+      </p>
+    </div>
+
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end">
+        <div className="flex-1">
+          <Input
+            label="Google Analytics 4"
+            name="googleAnalyticsId"
+            defaultValue={
+              configuracion?.googleAnalyticsId ??
+              ""
+            }
+            placeholder="Ejemplo: G-XXXXXXXXXX"
+          />
+        </div>
+
+        <label className="flex h-11 cursor-pointer items-center gap-3 rounded-xl border border-slate-300 bg-white px-4">
+          <input
+            type="checkbox"
+            name="googleAnalyticsActivo"
+            defaultChecked={
+              configuracion?.googleAnalyticsActivo ??
+              false
+            }
+            className="h-4 w-4"
+          />
+
+          <span className="text-sm font-bold text-slate-700">
+            Analytics activo
+          </span>
+        </label>
+      </div>
+
+      <p className="mt-3 text-xs leading-5 text-slate-600">
+        Introduce el ID de medición que comienza
+        con G-.
+      </p>
+    </div>
+
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end">
+        <div className="flex-1">
+          <Input
+            label="Google Tag Manager"
+            name="googleTagManagerId"
+            defaultValue={
+              configuracion?.googleTagManagerId ??
+              ""
+            }
+            placeholder="Ejemplo: GTM-XXXXXXX"
+          />
+        </div>
+
+        <label className="flex h-11 cursor-pointer items-center gap-3 rounded-xl border border-slate-300 bg-white px-4">
+          <input
+            type="checkbox"
+            name="googleTagManagerActivo"
+            defaultChecked={
+              configuracion?.googleTagManagerActivo ??
+              false
+            }
+            className="h-4 w-4"
+          />
+
+          <span className="text-sm font-bold text-slate-700">
+            Tag Manager activo
+          </span>
+        </label>
+      </div>
+
+      <p className="mt-3 text-xs leading-5 text-slate-600">
+        Introduce el ID del contenedor que
+        comienza con GTM-.
+      </p>
+    </div>
+
+    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+      <p className="text-sm font-black text-amber-900">
+        Importante
+      </p>
+
+      <p className="mt-1 text-xs leading-5 text-amber-800">
+        Tener un ID guardado no significa que
+        necesariamente esté funcionando. También
+        debe estar marcada su opción de activo.
+      </p>
+    </div>
+  </div>
+</Card>
+
           <Card
             title="Redes sociales"
             description="Agrega los enlaces oficiales de tu negocio."

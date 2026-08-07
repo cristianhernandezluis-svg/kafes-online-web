@@ -466,6 +466,18 @@ model ConfiguracionTienda {
 
   textoFooter String?
 
+  metaPixelId     String? @default("1247868925891875")
+  metaPixelActivo Boolean @default(true)
+
+  tiktokPixelId     String? @default("D8D21TBC77UFK9KDRPDG")
+  tiktokPixelActivo Boolean @default(true)
+
+  googleAnalyticsId     String?
+  googleAnalyticsActivo Boolean @default(false)
+
+  googleTagManagerId     String?
+  googleTagManagerActivo Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
