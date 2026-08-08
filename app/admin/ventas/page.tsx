@@ -1071,36 +1071,39 @@ function claseVariacion(
         })}
       </div>
 
-<section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-  <div className="flex flex-col gap-4 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-    <div>
-      <h2 className="text-lg font-black text-slate-950">
-        Rendimiento de ventas
-      </h2>
+<div className="grid gap-6 xl:grid-cols-2">
+  {/* VENTAS */}
+  <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div className="border-b border-slate-200 px-5 py-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-base font-black text-slate-950">
+            Rendimiento de ventas
+          </h2>
 
-      <p className="mt-1 text-xs text-slate-500">
-        {etiqueta} · Valor generado vs. ventas reales
-      </p>
+          <p className="mt-1 text-xs text-slate-500">
+            {etiqueta} · Valor generado vs. ventas reales
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-3 text-[11px] font-bold">
+          <div className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-slate-950" />
+            Valor generado
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+            Ventas reales
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div className="flex flex-wrap gap-4 text-xs font-bold">
-      <div className="flex items-center gap-2">
-        <span className="h-3 w-3 rounded-full bg-slate-950" />
-        Valor generado
-      </div>
-
-      <div className="flex items-center gap-2">
-        <span className="h-3 w-3 rounded-full bg-emerald-500" />
-        Ventas reales
-      </div>
-    </div>
-  </div>
-
-  <div className="p-4 sm:p-6">
-    <div className="overflow-x-auto">
+    <div className="p-4">
       <svg
         viewBox={`0 0 ${anchoGrafico} ${altoGrafico}`}
-        className="min-w-[700px] w-full"
+        className="w-full"
         role="img"
         aria-label="Gráfico de rendimiento de ventas"
       >
@@ -1135,9 +1138,7 @@ function claseVariacion(
                   fontSize="11"
                   fill="#64748b"
                 >
-                  {formatoMoneda(
-                    valor
-                  )}
+                  {formatoMoneda(valor)}
                 </text>
               </g>
             );
@@ -1165,37 +1166,43 @@ function claseVariacion(
         {datosGrafico.map(
           (punto, indice) => {
             const ultimoIndice =
-  datosGrafico.length - 1;
+              datosGrafico.length - 1;
 
-const mostrarEtiqueta =
-  indice === 0 ||
-  indice === ultimoIndice ||
-  (
-    indice % saltoEtiquetas === 0 &&
-    indice <=
-      ultimoIndice - saltoEtiquetas
-  );
+            const mostrarEtiqueta =
+              indice === 0 ||
+              indice === ultimoIndice ||
+              (
+                indice %
+                  saltoEtiquetas ===
+                  0 &&
+                indice <=
+                  ultimoIndice -
+                    saltoEtiquetas
+              );
 
             return (
               <g key={punto.clave}>
-<circle
-  cx={obtenerXGrafico(indice)}
-  cy={obtenerYGrafico(
-    punto.valorGenerado
-  )}
-  r="14"
-  fill="transparent"
->
-  <title>
-    {`${punto.etiqueta} | Pedidos: ${
-      punto.pedidos
-    } | Valor generado: ${formatoMoneda(
-      punto.valorGenerado
-    )} | Ventas reales: ${formatoMoneda(
-      punto.ventasReales
-    )}`}
-  </title>
-</circle>
+                <circle
+                  cx={obtenerXGrafico(
+                    indice
+                  )}
+                  cy={obtenerYGrafico(
+                    punto.valorGenerado
+                  )}
+                  r="14"
+                  fill="transparent"
+                >
+                  <title>
+                    {`${punto.etiqueta} | Pedidos: ${
+                      punto.pedidos
+                    } | Valor generado: ${formatoMoneda(
+                      punto.valorGenerado
+                    )} | Ventas reales: ${formatoMoneda(
+                      punto.ventasReales
+                    )}`}
+                  </title>
+                </circle>
+
                 <circle
                   cx={obtenerXGrafico(
                     indice
@@ -1242,133 +1249,171 @@ const mostrarEtiqueta =
         )}
       </svg>
     </div>
+  </section>
 
-<div className="mt-6 border-t border-slate-200 pt-5">
-  <div className="mb-4">
-    <h3 className="text-sm font-black text-slate-900">
-      Pedidos
-    </h3>
+  {/* PEDIDOS */}
+  <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div className="border-b border-slate-200 px-5 py-4">
+      <h2 className="text-base font-black text-slate-950">
+        Pedidos
+      </h2>
 
-    <p className="mt-1 text-xs text-slate-500">
-      Cantidad de pedidos generados en cada período.
-    </p>
-  </div>
+      <p className="mt-1 text-xs text-slate-500">
+        {etiqueta} · Cantidad de pedidos generados
+      </p>
+    </div>
 
-  <div className="overflow-x-auto">
-    <svg
-      viewBox={`0 0 ${anchoGrafico} ${altoGraficoPedidos}`}
-      className="min-w-[700px] w-full"
-      role="img"
-      aria-label="Gráfico de pedidos"
-    >
-      <line
-        x1={margenX}
-        y1={
-          margenSuperiorPedidos +
-          altoUtilPedidos
-        }
-        x2={
-          anchoGrafico - margenX
-        }
-        y2={
-          margenSuperiorPedidos +
-          altoUtilPedidos
-        }
-        stroke="#e2e8f0"
-        strokeWidth="1"
-      />
+    <div className="p-4">
+      <svg
+        viewBox={`0 0 ${anchoGrafico} ${altoGrafico}`}
+        className="w-full"
+        role="img"
+        aria-label="Gráfico de pedidos"
+      >
+        {[0, 0.25, 0.5, 0.75, 1].map(
+          (nivel) => {
+            const y =
+              margenY +
+              nivel * altoUtil;
 
-      {datosGrafico.map(
-        (punto, indice) => {
-          const x =
-            obtenerXGrafico(indice);
-
-          const y =
-            obtenerYPedidos(
-              punto.pedidos
+            const valor = Math.round(
+              maxPedidosGrafico *
+                (1 - nivel)
             );
 
-          const altura =
-            margenSuperiorPedidos +
-            altoUtilPedidos -
-            y;
-
-          const ultimoIndice =
-            datosGrafico.length - 1;
-
-          const mostrarEtiqueta =
-            indice === 0 ||
-            indice === ultimoIndice ||
-            (
-              indice %
-                saltoEtiquetas ===
-                0 &&
-              indice <=
-                ultimoIndice -
-                  saltoEtiquetas
-            );
-
-          return (
-            <g key={punto.clave}>
-              <rect
-                x={
-                  x -
-                  anchoBarraPedidos /
-                    2
-                }
-                y={y}
-                width={
-                  anchoBarraPedidos
-                }
-                height={Math.max(
-                  0,
-                  altura
-                )}
-                rx="4"
-                fill="#0f172a"
-              >
-                <title>
-                  {`${punto.etiqueta} | ${punto.pedidos} pedidos`}
-                </title>
-              </rect>
-
-              {punto.pedidos > 0 && (
-                <text
-                  x={x}
-                  y={y - 7}
-                  textAnchor="middle"
-                  fontSize="11"
-                  fontWeight="700"
-                  fill="#0f172a"
-                >
-                  {punto.pedidos}
-                </text>
-              )}
-
-              {mostrarEtiqueta && (
-                <text
-                  x={x}
-                  y={
-                    altoGraficoPedidos -
-                    5
+            return (
+              <g key={nivel}>
+                <line
+                  x1={margenX}
+                  y1={y}
+                  x2={
+                    anchoGrafico -
+                    margenX
                   }
-                  textAnchor="middle"
+                  y2={y}
+                  stroke="#e2e8f0"
+                  strokeWidth="1"
+                />
+
+                <text
+                  x={margenX - 10}
+                  y={y + 4}
+                  textAnchor="end"
                   fontSize="11"
                   fill="#64748b"
                 >
-                  {punto.etiqueta}
+                  {valor}
                 </text>
-              )}
-            </g>
-          );
-        }
-      )}
-    </svg>
-  </div>
-</div>
+              </g>
+            );
+          }
+        )}
 
-  </div>
-</section>
+        {datosGrafico.map(
+          (punto, indice) => {
+            const x =
+              obtenerXGrafico(indice);
+
+            const alturaMaxima =
+              altoUtil;
+
+            const altura =
+              maxPedidosGrafico > 0
+                ? (punto.pedidos /
+                    maxPedidosGrafico) *
+                  alturaMaxima
+                : 0;
+
+            const y =
+              margenY +
+              altoUtil -
+              altura;
+
+            const anchoBarra =
+              Math.max(
+                8,
+                Math.min(
+                  34,
+                  anchoUtil /
+                    Math.max(
+                      datosGrafico.length *
+                        1.8,
+                      1
+                    )
+                )
+              );
+
+            const ultimoIndice =
+              datosGrafico.length - 1;
+
+            const mostrarEtiqueta =
+              indice === 0 ||
+              indice === ultimoIndice ||
+              (
+                indice %
+                  saltoEtiquetas ===
+                  0 &&
+                indice <=
+                  ultimoIndice -
+                    saltoEtiquetas
+              );
+
+            return (
+              <g key={punto.clave}>
+                <rect
+                  x={
+                    x -
+                    anchoBarra / 2
+                  }
+                  y={y}
+                  width={anchoBarra}
+                  height={Math.max(
+                    0,
+                    altura
+                  )}
+                  rx="5"
+                  fill="#0f172a"
+                >
+                  <title>
+                    {`${punto.etiqueta} | ${punto.pedidos} pedidos`}
+                  </title>
+                </rect>
+
+                {punto.pedidos >
+                  0 && (
+                  <text
+                    x={x}
+                    y={y - 8}
+                    textAnchor="middle"
+                    fontSize="11"
+                    fontWeight="700"
+                    fill="#0f172a"
+                  >
+                    {punto.pedidos}
+                  </text>
+                )}
+
+                {mostrarEtiqueta && (
+                  <text
+                    x={x}
+                    y={
+                      altoGrafico - 5
+                    }
+                    textAnchor="middle"
+                    fontSize="11"
+                    fill="#64748b"
+                  >
+                    {punto.etiqueta}
+                  </text>
+                )}
+              </g>
+            );
+          }
+        )}
+      </svg>
+    </div>
+  </section>
+</div>
 
       <div className="grid gap-6 xl:grid-cols-2">
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
