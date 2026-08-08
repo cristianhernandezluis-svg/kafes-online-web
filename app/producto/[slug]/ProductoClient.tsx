@@ -278,6 +278,64 @@ useEffect(() => {
     );
   }
 
+const registrarEventoAnalitica = (
+  evento:
+    | "CHECKOUT_INICIADO"
+    | "PEDIDO_REALIZADO"
+) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    const sesionGuardada =
+      localStorage.getItem(
+        "kafes_sesion_analitica"
+      );
+
+    if (!sesionGuardada) {
+      return;
+    }
+
+    const sesion = JSON.parse(
+      sesionGuardada
+    ) as {
+      sessionId?: string;
+    };
+
+    const sessionId =
+      sesion.sessionId?.trim();
+
+    if (!sessionId) {
+      return;
+    }
+
+    fetch(
+      "/api/analytics/event",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
+        body: JSON.stringify({
+          sessionId,
+          evento,
+        }),
+
+        keepalive: true,
+      }
+    ).catch(() => {
+      // La analítica nunca debe
+      // interrumpir la compra.
+    });
+  } catch {
+    // No bloquear el checkout.
+  }
+};
+
   const abrirCheckout = () => {
   if (!configuracionTienda.checkoutActivo) {
     alert(
@@ -335,6 +393,10 @@ useEffect(() => {
         },
       ],
     });
+
+registrarEventoAnalitica(
+  "CHECKOUT_INICIADO"
+);
 
     setOpenCheckout(true);
   };
@@ -460,6 +522,10 @@ const atribucion =
         resultado.error || "No se pudo registrar el pedido",
       );
     }
+
+registrarEventoAnalitica(
+  "PEDIDO_REALIZADO"
+);
 
     /*
      * Enviamos también la información a n8n.

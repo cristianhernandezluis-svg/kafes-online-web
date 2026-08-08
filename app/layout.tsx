@@ -7,6 +7,8 @@ import prisma from "@/lib/prisma";
 
 import ActualizadorPWA from "./ActualizadorPWA";
 
+import AnalyticsTracker from "./AnalyticsTracker";
+
 export const dynamic = "force-dynamic";
 
 const poppins = Poppins({
@@ -387,7 +389,9 @@ export default async function RootLayout({
 
         <ActualizadorPWA />
 
-        {children}
+<AnalyticsTracker />
+
+{children}
       </body>
     </html>
   );

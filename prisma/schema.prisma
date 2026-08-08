@@ -546,3 +546,41 @@ model AsesorWhatsApp {
   @@index([activo, orden])
   @@map("asesores_whatsapp")
 }
+
+model SesionAnalitica {
+  id        Int    @id @default(autoincrement())
+  sessionId String @unique
+
+  // ORIGEN
+  landingPath String? @db.Text
+  referrer    String? @db.Text
+
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmContent  String?
+  utmTerm     String?
+
+  fbclid String? @db.Text
+  ttclid String? @db.Text
+
+  // DISPOSITIVO
+  deviceType String  @default("DESCONOCIDO")
+  userAgent  String? @db.Text
+
+  // EMBUDO
+  pageViews          Int       @default(1)
+  checkoutIniciadoAt DateTime?
+  pedidoRealizadoAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([deviceType])
+  @@index([utmSource])
+  @@index([utmCampaign])
+  @@index([checkoutIniciadoAt])
+  @@index([pedidoRealizadoAt])
+  @@map("sesiones_analitica")
+}
