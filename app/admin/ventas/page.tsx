@@ -233,8 +233,20 @@ const opcionesPeriodo: {
     etiqueta,
   } = obtenerRangoPeriodo(periodo);
 
-  const pedidosMes =
-    await prisma.pedido.findMany({
+const duracionPeriodo =
+  fin.getTime() - inicio.getTime();
+
+const inicioAnterior = new Date(
+  inicio.getTime() - duracionPeriodo
+);
+
+const finAnterior = inicio;
+
+  const [
+  pedidosMes,
+  pedidosPeriodoAnterior,
+] = await Promise.all([
+  prisma.pedido.findMany({
       where: {
         createdAt: {
   gte: inicio,
@@ -268,9 +280,29 @@ const opcionesPeriodo: {
       },
 
       orderBy: {
-        createdAt: "desc",
-      },
-    });
+  createdAt: "desc",
+},
+}),
+
+prisma.pedido.findMany({
+  where: {
+    createdAt: {
+      gte: inicioAnterior,
+      lt: finAnterior,
+    },
+  },
+
+  select: {
+    id: true,
+    estado: true,
+    total: true,
+    createdAt: true,
+    confirmadoAt: true,
+    entregadoAt: true,
+    canceladoAt: true,
+  },
+}),
+]);
 
 const graficoPorHora =
   periodo === "HOY" ||
@@ -607,6 +639,74 @@ function obtenerYPedidos(
         100
       : 0;
 
+const pedidosNoCanceladosAnterior =
+  pedidosPeriodoAnterior.filter(
+    (pedido) =>
+      pedido.estado !== "CANCELADO"
+  );
+
+const pedidosConfirmadosAnterior =
+  pedidosPeriodoAnterior.filter(
+    (pedido) =>
+      pedido.confirmadoAt !== null
+  );
+
+const pedidosCanceladosAnterior =
+  pedidosPeriodoAnterior.filter(
+    (pedido) =>
+      pedido.estado === "CANCELADO"
+  );
+
+const valorGeneradoAnterior =
+  pedidosNoCanceladosAnterior.reduce(
+    (total, pedido) =>
+      total + Number(pedido.total),
+    0
+  );
+
+function calcularVariacion(
+  actual: number,
+  anterior: number
+) {
+  if (anterior === 0) {
+    if (actual === 0) {
+      return 0;
+    }
+
+    return null;
+  }
+
+  return (
+    ((actual - anterior) /
+      anterior) *
+    100
+  );
+}
+
+const variacionPedidos =
+  calcularVariacion(
+    pedidosMes.length,
+    pedidosPeriodoAnterior.length
+  );
+
+const variacionValor =
+  calcularVariacion(
+    valorGeneradoHoy,
+    valorGeneradoAnterior
+  );
+
+const variacionConfirmados =
+  calcularVariacion(
+    pedidosConfirmadosMes.length,
+    pedidosConfirmadosAnterior.length
+  );
+
+const variacionCancelados =
+  calcularVariacion(
+    pedidosCanceladosMes.length,
+    pedidosCanceladosAnterior.length
+  );
+
   /*
    * PRODUCTOS MÁS PEDIDOS
    */
@@ -755,82 +855,125 @@ function obtenerYPedidos(
     )
     .slice(0, 8);
 
+function claseVariacion(
+  variacion: number | null,
+  inversa = false
+) {
+  if (variacion === null) {
+    return "text-blue-600";
+  }
+
+  if (variacion === 0) {
+    return "text-slate-500";
+  }
+
+  const positiva = variacion > 0;
+
+  if (inversa) {
+    return positiva
+      ? "text-red-600"
+      : "text-emerald-600";
+  }
+
+  return positiva
+    ? "text-emerald-600"
+    : "text-red-600";
+}
+
   const tarjetas = [
-    {
-      titulo: `Pedidos · ${etiqueta}`,
-      valor: formatoNumero(
-        pedidosHoy.length
-      ),
-      descripcion:
-        "Pedidos generados hoy",
-      icono: ShoppingCart,
-    },
-    {
-      titulo: `Valor generado · ${etiqueta}`,
-      valor: formatoMoneda(
-        valorGeneradoHoy
-      ),
-      descripcion:
-        "Sin contar cancelados",
-      icono: TrendingUp,
-    },
-    {
-      titulo: "Valor de pedidos",
-      valor: formatoNumero(
-        pedidosMes.length
-      ),
-      descripcion: formatoMoneda(
-        valorPedidosMes
-      ),
-      icono: ChartNoAxesCombined,
-    },
-    {
-      titulo: "Ventas reales",
-      valor: formatoMoneda(
-        ventasRealesMes
-      ),
-      descripcion: `${pedidosEntregadosMes.length} pedidos entregados`,
-      icono: CircleDollarSign,
-    },
-    {
-      titulo: "Confirmados",
-      valor: formatoNumero(
-        pedidosConfirmadosMes.length
-      ),
-      descripcion: formatoPorcentaje(
-        porcentajeConfirmacion
-      ),
-      icono: BadgeCheck,
-    },
-    {
-      titulo: "Cancelados",
-      valor: formatoNumero(
-        pedidosCanceladosMes.length
-      ),
-      descripcion: formatoPorcentaje(
-        porcentajeCancelacion
-      ),
-      icono: Ban,
-    },
-    {
-      titulo: "Entregados",
-      valor: formatoNumero(
-        pedidosEntregadosMes.length
-      ),
-      descripcion:
-        "Ventas completadas",
-      icono: PackageCheck,
-    },
-    {
-      titulo: "Ticket promedio",
-      valor: formatoMoneda(
-        ticketPromedio
-      ),
-      descripcion:
-        "Sobre pedidos entregados",
-      icono: CircleDollarSign,
-    },
-  ];
+  {
+    titulo: `Pedidos · ${etiqueta}`,
+    valor: formatoNumero(
+      pedidosHoy.length
+    ),
+    descripcion:
+      "Pedidos generados",
+    icono: ShoppingCart,
+    variacion: variacionPedidos,
+    inversa: false,
+  },
+  {
+    titulo: `Valor generado · ${etiqueta}`,
+    valor: formatoMoneda(
+      valorGeneradoHoy
+    ),
+    descripcion:
+      "Sin contar cancelados",
+    icono: TrendingUp,
+    variacion: variacionValor,
+    inversa: false,
+  },
+  {
+    titulo: "Valor de pedidos",
+    valor: formatoNumero(
+      pedidosMes.length
+    ),
+    descripcion: formatoMoneda(
+      valorPedidosMes
+    ),
+    icono: ChartNoAxesCombined,
+    variacion: undefined,
+    inversa: false,
+  },
+  {
+    titulo: "Ventas reales",
+    valor: formatoMoneda(
+      ventasRealesMes
+    ),
+    descripcion: `${pedidosEntregadosMes.length} pedidos entregados`,
+    icono: CircleDollarSign,
+    variacion: undefined,
+    inversa: false,
+  },
+  {
+    titulo: "Confirmados",
+    valor: formatoNumero(
+      pedidosConfirmadosMes.length
+    ),
+    descripcion: formatoPorcentaje(
+      porcentajeConfirmacion
+    ),
+    icono: BadgeCheck,
+    variacion:
+      variacionConfirmados,
+    inversa: false,
+  },
+  {
+    titulo: "Cancelados",
+    valor: formatoNumero(
+      pedidosCanceladosMes.length
+    ),
+    descripcion: formatoPorcentaje(
+      porcentajeCancelacion
+    ),
+    icono: Ban,
+    variacion:
+      variacionCancelados,
+    inversa: true,
+  },
+  {
+    titulo: "Entregados",
+    valor: formatoNumero(
+      pedidosEntregadosMes.length
+    ),
+    descripcion:
+      "Ventas completadas",
+    icono: PackageCheck,
+    variacion: undefined,
+    inversa: false,
+  },
+  {
+    titulo: "Ticket promedio",
+    valor: formatoMoneda(
+      ticketPromedio
+    ),
+    descripcion:
+      "Sobre pedidos entregados",
+    icono: CircleDollarSign,
+    variacion: undefined,
+    inversa: false,
+  },
+];
 
   return (
     <section className="space-y-6">
@@ -897,6 +1040,32 @@ function obtenerYPedidos(
               <p className="mt-3 text-xs font-semibold text-slate-500">
                 {tarjeta.descripcion}
               </p>
+
+{tarjeta.variacion !== undefined && (
+  <p
+    className={`mt-2 text-xs font-black ${claseVariacion(
+      tarjeta.variacion,
+      tarjeta.inversa
+    )}`}
+  >
+    {tarjeta.variacion === null
+      ? "Nuevo vs período anterior"
+      : tarjeta.variacion > 0
+        ? `↑ ${Math.abs(
+            tarjeta.variacion
+          ).toFixed(
+            1
+          )}% vs período anterior`
+        : tarjeta.variacion < 0
+          ? `↓ ${Math.abs(
+              tarjeta.variacion
+            ).toFixed(
+              1
+            )}% vs período anterior`
+          : "Sin cambio vs período anterior"}
+  </p>
+)}
+
             </div>
           );
         })}
