@@ -401,6 +401,76 @@ registrarEventoAnalitica(
     setOpenCheckout(true);
   };
 
+const obtenerAtribucionActual = (): AtribucionPedido | null => {
+  if (typeof window === "undefined") {
+    return atribucionRef.current;
+  }
+
+  try {
+    const sesionGuardada =
+      localStorage.getItem(
+        "kafes_sesion_analitica"
+      );
+
+    if (sesionGuardada) {
+      const sesion = JSON.parse(
+        sesionGuardada
+      ) as {
+        sessionId?: string;
+        ultimaActividad?: number;
+
+        utmSource?: string | null;
+        utmMedium?: string | null;
+        utmCampaign?: string | null;
+        utmContent?: string | null;
+        utmTerm?: string | null;
+
+        fbclid?: string | null;
+        ttclid?: string | null;
+      };
+
+      if (sesion.sessionId) {
+        return {
+          utmSource:
+            sesion.utmSource ?? null,
+
+          utmMedium:
+            sesion.utmMedium ?? null,
+
+          utmCampaign:
+            sesion.utmCampaign ?? null,
+
+          utmContent:
+            sesion.utmContent ?? null,
+
+          utmTerm:
+            sesion.utmTerm ?? null,
+
+          fbclid:
+            sesion.fbclid ?? null,
+
+          ttclid:
+            sesion.ttclid ?? null,
+
+          landingPath:
+            `${window.location.pathname}${window.location.search}`,
+
+          referrer:
+            document.referrer || null,
+
+          guardadoAt:
+            sesion.ultimaActividad ??
+            Date.now(),
+        };
+      }
+    }
+  } catch {
+    // Si falla la sesión nueva,
+    // usamos la atribución anterior.
+  }
+
+  return atribucionRef.current;
+};
   
   const finalizarPedido = async () => {
   if (!nombre.trim()) {
@@ -476,7 +546,7 @@ if (dniLimpio && dniLimpio.length !== 8) {
 
   try {
 const atribucion =
-  atribucionRef.current;
+  obtenerAtribucionActual();
     const respuesta = await fetch("/api/pedidos", {
       method: "POST",
       headers: {
