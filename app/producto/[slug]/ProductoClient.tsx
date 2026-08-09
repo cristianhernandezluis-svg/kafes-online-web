@@ -547,6 +547,29 @@ if (dniLimpio && dniLimpio.length !== 8) {
   try {
 const atribucion =
   obtenerAtribucionActual();
+
+let sessionId: string | null = null;
+
+try {
+  const sesionGuardada =
+    localStorage.getItem(
+      "kafes_sesion_analitica"
+    );
+
+  if (sesionGuardada) {
+    const sesion = JSON.parse(
+      sesionGuardada
+    ) as {
+      sessionId?: string;
+    };
+
+    sessionId =
+      sesion.sessionId?.trim() || null;
+  }
+} catch {
+  sessionId = null;
+}
+
     const respuesta = await fetch("/api/pedidos", {
       method: "POST",
       headers: {
@@ -555,6 +578,8 @@ const atribucion =
       body: JSON.stringify({
   productoId: producto.id,
   cantidad,
+  sessionId,
+
   nombre: nombre.trim(),
   celular: celularLimpio,
   dni: dniLimpio,

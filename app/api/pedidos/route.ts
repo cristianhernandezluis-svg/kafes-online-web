@@ -12,6 +12,7 @@ type CrearPedidoBody = {
   region?: string;
   direccion?: string;
   referencia?: string;
+sessionId?: string | null;
   utmSource?: string | null;
 utmMedium?: string | null;
 utmCampaign?: string | null;
@@ -196,6 +197,24 @@ const landingPath =
 
 const referrer =
   limpiarTexto(body.referrer) || null;
+
+const sessionIdSolicitado =
+  limpiarTexto(body.sessionId) || null;
+
+const sesionAnalitica =
+  sessionIdSolicitado
+    ? await prisma.sesionAnalitica.findUnique({
+        where: {
+          sessionId: sessionIdSolicitado,
+        },
+        select: {
+          sessionId: true,
+        },
+      })
+    : null;
+
+const sessionId =
+  sesionAnalitica?.sessionId ?? null;
 
     if (
       !Number.isInteger(productoId) ||
@@ -429,6 +448,8 @@ if (checkoutTipoPedido === "ADELANTO") {
       const pedido = await tx.pedido.create({
         data: {
           codigo: generarCodigoPedido(),
+
+          sessionId,
 
           clienteId: cliente.id,
 
