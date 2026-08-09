@@ -314,16 +314,26 @@ prisma.sesionAnalitica.findMany({
   },
 
   select: {
-    id: true,
-    sessionId: true,
-    deviceType: true,
-    pageViews: true,
-    checkoutIniciadoAt: true,
-    pedidoRealizadoAt: true,
-    utmSource: true,
-    utmCampaign: true,
-    createdAt: true,
+  id: true,
+  sessionId: true,
+  deviceType: true,
+  pageViews: true,
+  checkoutIniciadoAt: true,
+  pedidoRealizadoAt: true,
+  utmSource: true,
+  utmCampaign: true,
+  createdAt: true,
+
+  pedidos: {
+    select: {
+      id: true,
+      estado: true,
+      confirmadoAt: true,
+      entregadoAt: true,
+      canceladoAt: true,
+    },
   },
+},
 }),
 
 prisma.sesionAnalitica.findMany({
@@ -787,6 +797,25 @@ const sesionesConPedido =
       null
   ).length;
 
+const sesionesConfirmadas =
+  sesionesPeriodo.filter(
+    (sesion) =>
+      sesion.pedidos.some(
+        (pedido) =>
+          pedido.confirmadoAt !== null
+      )
+  ).length;
+
+const sesionesEntregadas =
+  sesionesPeriodo.filter(
+    (sesion) =>
+      sesion.pedidos.some(
+        (pedido) =>
+          pedido.entregadoAt !== null ||
+          pedido.estado === "ENTREGADO"
+      )
+  ).length;
+
 const conversionCheckout =
   totalSesiones > 0
     ? (sesionesCheckout /
@@ -797,6 +826,20 @@ const conversionCheckout =
 const conversionPedido =
   totalSesiones > 0
     ? (sesionesConPedido /
+        totalSesiones) *
+      100
+    : 0;
+
+const conversionConfirmado =
+  totalSesiones > 0
+    ? (sesionesConfirmadas /
+        totalSesiones) *
+      100
+    : 0;
+
+const conversionEntregado =
+  totalSesiones > 0
+    ? (sesionesEntregadas /
         totalSesiones) *
       100
     : 0;
@@ -1519,6 +1562,89 @@ function claseVariacion(
         />
       </div>
     </div>
+
+    {/* CONFIRMADO */}
+    <div>
+      <div className="mb-2 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-black text-slate-800">
+            Pedido confirmado
+          </p>
+
+          <p className="text-xs text-slate-500">
+            Pedidos confirmados por el equipo
+          </p>
+        </div>
+
+        <div className="text-right">
+          <p className="text-sm font-black text-slate-950">
+            {formatoNumero(
+              sesionesConfirmadas
+            )}
+          </p>
+
+          <p className="text-xs font-black text-blue-600">
+            {formatoPorcentaje(
+              conversionConfirmado
+            )}
+          </p>
+        </div>
+      </div>
+
+      <div className="h-3 overflow-hidden rounded-full bg-slate-100">
+        <div
+          className="h-full rounded-full bg-blue-500"
+          style={{
+            width: `${Math.min(
+              100,
+              conversionConfirmado
+            )}%`,
+          }}
+        />
+      </div>
+    </div>
+
+    {/* ENTREGADO */}
+    <div>
+      <div className="mb-2 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-black text-slate-800">
+            Pedido entregado
+          </p>
+
+          <p className="text-xs text-slate-500">
+            Ventas que llegaron al cliente
+          </p>
+        </div>
+
+        <div className="text-right">
+          <p className="text-sm font-black text-slate-950">
+            {formatoNumero(
+              sesionesEntregadas
+            )}
+          </p>
+
+          <p className="text-xs font-black text-emerald-600">
+            {formatoPorcentaje(
+              conversionEntregado
+            )}
+          </p>
+        </div>
+      </div>
+
+      <div className="h-3 overflow-hidden rounded-full bg-slate-100">
+        <div
+          className="h-full rounded-full bg-emerald-600"
+          style={{
+            width: `${Math.min(
+              100,
+              conversionEntregado
+            )}%`,
+          }}
+        />
+      </div>
+    </div>
+
   </div>
 </section>
 
