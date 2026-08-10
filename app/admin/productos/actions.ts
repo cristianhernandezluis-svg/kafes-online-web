@@ -176,7 +176,11 @@ export async function actualizarProducto(formData: FormData) {
     throw new Error("Producto inválido.");
   }
 
-  const contenidoHtml = obtenerTexto(formData, "contenidoHtml");
+  const esGuardadoContenido = formData.has("contenidoHtml");
+
+const contenidoHtml = esGuardadoContenido
+  ? obtenerTexto(formData, "contenidoHtml")
+  : "";
   const nombre = obtenerTexto(formData, "nombre");
   const slugIngresado = obtenerTexto(formData, "slug");
   const descripcionCorta = obtenerTexto(
@@ -349,7 +353,9 @@ if (marcaId && !marcaSeleccionada) {
     sku: sku || null,
     descripcionCorta: descripcionCorta || null,
     descripcion: descripcion || null,
-    contenidoHtml: contenidoHtml || null,
+    ...(esGuardadoContenido
+  ? { contenidoHtml: contenidoHtml || null }
+  : {}),
     precio,
     precioAntes: precioAntes > 0 ? precioAntes : null,
     stock,
@@ -371,6 +377,8 @@ if (marcaId && !marcaSeleccionada) {
   revalidatePath(`/producto/${slugFinal}`);
 
   redirect(
-    `/admin/productos/${productoId}/editar?tab=informacion&guardado=1`,
-  );
+  `/admin/productos/${productoId}/editar?tab=${
+    esGuardadoContenido ? "contenido" : "informacion"
+  }&guardado=1`,
+);
 }
