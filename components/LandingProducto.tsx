@@ -6,12 +6,57 @@ type LandingProductoProps = {
   };
 };
 
+function optimizarImagenesHtml(html: string) {
+  return html.replace(
+    /<img\b([^>]*?)>/gi,
+    (etiquetaCompleta) => {
+      let etiqueta = etiquetaCompleta;
+
+      etiqueta = etiqueta.replace(
+        /src=(["'])(https:\/\/res\.cloudinary\.com\/dbu4nbnl\/image\/upload\/)([^"']+)\1/gi,
+        (_match, comilla, base, resto) => {
+          const yaOptimizada =
+            resto.startsWith("f_auto,") ||
+            resto.includes("/f_auto,") ||
+            resto.includes("q_auto");
+
+          const url = yaOptimizada
+            ? `${base}${resto}`
+            : `${base}f_auto,q_auto,c_limit,w_1200/${resto}`;
+
+          return `src=${comilla}${url}${comilla}`;
+        },
+      );
+
+      if (!/\bloading=/i.test(etiqueta)) {
+        etiqueta = etiqueta.replace(
+          /<img/i,
+          '<img loading="lazy"',
+        );
+      }
+
+      if (!/\bdecoding=/i.test(etiqueta)) {
+        etiqueta = etiqueta.replace(
+          /<img/i,
+          '<img decoding="async"',
+        );
+      }
+
+      return etiqueta;
+    },
+  );
+}
+
 export default function LandingProducto({
   producto,
 }: LandingProductoProps) {
   if (!producto.contenidoHtml) {
     return null;
   }
+
+  const contenidoOptimizado = optimizarImagenesHtml(
+    producto.contenidoHtml,
+  );
 
   return (
     <section className="bg-white py-10 md:py-16">
@@ -32,7 +77,7 @@ export default function LandingProducto({
             [&_a]:font-bold [&_a]:text-blue-600 [&_a]:underline
           "
           dangerouslySetInnerHTML={{
-            __html: producto.contenidoHtml,
+            __html: contenidoOptimizado,
           }}
         />
       </div>
