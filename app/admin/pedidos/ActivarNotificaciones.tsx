@@ -35,8 +35,24 @@ export default function ActivarNotificaciones() {
       return;
     }
 
-    const registrado =
-      localStorage.getItem("kafes-push-activo") === "true";
+    const esAppInstalada =
+  window.matchMedia("(display-mode: standalone)").matches ||
+  (
+    window.navigator as Navigator & {
+      standalone?: boolean;
+    }
+  ).standalone === true;
+
+if (!esAppInstalada) {
+  setEstado("error");
+  setMensaje(
+    "Las notificaciones de pedidos se activan únicamente desde la app Kafes Admin.",
+  );
+  return;
+}
+
+const registrado =
+  localStorage.getItem("kafes-push-activo-v2") === "true";
 
     setEstado(
       Notification.permission === "granted" && registrado
@@ -97,11 +113,9 @@ export default function ActivarNotificaciones() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          token,
-          nombre: navigator.userAgent.includes("Android")
-            ? "Android de Kafes Admin"
-            : "Navegador de Kafes Admin",
-        }),
+  token,
+  nombre: "KAFES_ADMIN_PWA",
+}),
       });
 
       const data = (await response.json()) as {
@@ -115,7 +129,7 @@ export default function ActivarNotificaciones() {
         );
       }
 
-      localStorage.setItem("kafes-push-activo", "true");
+      localStorage.setItem("kafes-push-activo-v2", "true");
 
       setEstado("activo");
       setMensaje("Este celular recibirá nuevos pedidos.");

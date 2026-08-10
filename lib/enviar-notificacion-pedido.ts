@@ -27,15 +27,16 @@ export async function enviarNotificacionNuevoPedido(
   pedido: DatosPedido,
 ) {
   const dispositivos =
-    await prisma.dispositivoPush.findMany({
-      where: {
-        activo: true,
-      },
-      select: {
-        id: true,
-        token: true,
-      },
-    });
+  await prisma.dispositivoPush.findMany({
+    where: {
+      activo: true,
+      nombre: "KAFES_ADMIN_PWA",
+    },
+    select: {
+      id: true,
+      token: true,
+    },
+  });
 
   if (dispositivos.length === 0) {
     console.log(
