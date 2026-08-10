@@ -8,7 +8,10 @@ import {
 import ImageResize from "tiptap-extension-resize-image";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
-import { TextStyle } from "@tiptap/extension-text-style";
+import {
+  FontSize,
+  TextStyle,
+} from "@tiptap/extension-text-style";
 import { useRef, useState } from "react";
 import {
   AlignCenter,
@@ -54,9 +57,10 @@ export default function ContenidoEditor({
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
-      StarterKit,
-      TextStyle,
-      ImageResize.configure({
+  StarterKit,
+  TextStyle,
+  FontSize,
+  ImageResize.configure({
   minWidth: 120,
   maxWidth: 900,
 }),
@@ -238,6 +242,63 @@ setHtml(editor.getHTML());
           <Italic size={17} />
         </button>
 
+<select
+  defaultValue=""
+  onChange={(event) => {
+    const size = event.target.value;
+
+    if (!size) {
+      return;
+    }
+
+    if (size === "normal") {
+      editor.chain().focus().unsetFontSize().run();
+    } else {
+      editor.chain().focus().setFontSize(size).run();
+    }
+
+    event.target.value = "";
+  }}
+  className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none hover:bg-slate-100"
+  title="Tamaño del texto"
+>
+  <option value="" disabled>
+    Tamaño
+  </option>
+
+  <option value="14px">
+    Pequeño - 14px
+  </option>
+
+  <option value="16px">
+    Normal - 16px
+  </option>
+
+  <option value="18px">
+    Mediano - 18px
+  </option>
+
+  <option value="20px">
+    Destacado - 20px
+  </option>
+
+  <option value="24px">
+    Grande - 24px
+  </option>
+
+  <option value="32px">
+    Título - 32px
+  </option>
+
+  <option value="40px">
+    Título grande - 40px
+  </option>
+
+  <option value="normal">
+    Quitar tamaño
+  </option>
+</select>
+
         <button
           type="button"
           className={boton(
@@ -359,7 +420,7 @@ setHtml(editor.getHTML());
         <input
           ref={inputImagenRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp"
+          accept="image/jpeg,image/png,image/webp,image/gif"
           className="hidden"
           disabled={subiendoImagen}
           onChange={(event) => {
