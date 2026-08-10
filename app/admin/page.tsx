@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import {
   AlertTriangle,
   ArrowRight,
@@ -38,7 +38,7 @@ function obtenerRangoHoyPeru() {
     partes.find((parte) => parte.type === "day")?.value,
   );
 
-  // Perú utiliza UTC-5.
+  // PerÃº utiliza UTC-5.
   const inicio = new Date(
     Date.UTC(year, month - 1, day, 5, 0, 0, 0),
   );
@@ -258,7 +258,7 @@ export default async function AdminPage() {
       href: "/admin/pedidos",
     },
     {
-      titulo: "En preparación",
+      titulo: "En preparaciÃ³n",
       valor: pedidosPreparando.toString(),
       descripcion: "Confirmados o preparando",
       icono: Clock3,
@@ -427,7 +427,7 @@ export default async function AdminPage() {
           <div className="flex items-center justify-between border-b border-slate-200 p-5">
             <div>
               <h2 className="font-black">
-                Últimos pedidos
+                Ãšltimos pedidos
               </h2>
 
               <p className="mt-1 text-sm text-slate-500">
@@ -451,11 +451,11 @@ export default async function AdminPage() {
               />
 
               <p className="mt-4 font-bold">
-                Todavía no hay pedidos
+                TodavÃ­a no hay pedidos
               </p>
 
               <p className="mt-1 text-sm text-slate-500">
-                Los pedidos nuevos aparecerán aquí.
+                Los pedidos nuevos aparecerÃ¡n aquÃ­.
               </p>
             </div>
           ) : (
@@ -466,7 +466,7 @@ export default async function AdminPage() {
                   href={`/admin/pedidos/${pedido.id}`}
                   className="block p-4 transition hover:bg-slate-50 sm:p-5"
                 >
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="font-black text-slate-950">
@@ -490,17 +490,17 @@ export default async function AdminPage() {
                         {pedido.items[0]?.nombreProducto ??
                           "Pedido sin producto"}
                         {pedido.items[0]?.cantidad
-                          ? ` × ${pedido.items[0].cantidad}`
+                          ? ` Ã— ${pedido.items[0].cantidad}`
                           : ""}
                       </p>
 
                       <p className="mt-1 text-xs text-slate-400">
-                        {pedido.ciudad} ·{" "}
+                        {pedido.ciudad} Â·{" "}
                         {formatearFecha(pedido.createdAt)}
                       </p>
                     </div>
 
-                    <div className="shrink-0 text-right">
+                    <div className="shrink-0 text-left sm:text-right">
                       <p className="font-black">
                         {formatearDinero(
                           Number(pedido.total),
@@ -523,11 +523,11 @@ export default async function AdminPage() {
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="border-b border-slate-200 p-5">
             <h2 className="font-black">
-              Productos más vendidos
+              Productos mÃ¡s vendidos
             </h2>
 
             <p className="mt-1 text-sm text-slate-500">
-              Según las unidades pedidas
+              SegÃºn las unidades pedidas
             </p>
           </div>
 
@@ -539,11 +539,11 @@ export default async function AdminPage() {
               />
 
               <p className="mt-4 font-bold">
-                Sin información de ventas
+                Sin informaciÃ³n de ventas
               </p>
 
               <p className="mt-1 text-sm text-slate-500">
-                Los productos vendidos aparecerán aquí.
+                Los productos vendidos aparecerÃ¡n aquÃ­.
               </p>
             </div>
           ) : (
