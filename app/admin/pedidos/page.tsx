@@ -527,103 +527,145 @@ export default async function PedidosPage({
                 </thead>
 
                 <tbody>
-                  {pedidos.map((pedido) => (
-                    <tr
-                      key={pedido.id}
-                      className="border-b border-slate-100 transition hover:bg-slate-50"
-                    >
-                      <td className="px-5 py-4">
-                        <Link
-                          href={`/admin/pedidos/${pedido.id}`}
-                          className="font-black text-slate-950 hover:underline"
-                        >
-                          #{pedido.codigo}
-                        </Link>
-                      </td>
+                  {pedidos.map((pedido) => {
+  const hrefPedido = `/admin/pedidos/${pedido.id}`;
 
-                      <td className="whitespace-nowrap px-5 py-4 text-sm text-slate-600">
-                        {formatoFecha(pedido.createdAt)}
-                      </td>
+  return (
+    <tr
+      key={pedido.id}
+      className="cursor-pointer border-b border-slate-100 transition hover:bg-slate-50"
+    >
+      <td className="p-0">
+        <Link
+          href={hrefPedido}
+          className="block px-5 py-4 font-black text-slate-950"
+        >
+          #{pedido.codigo}
+        </Link>
+      </td>
 
-                      <td className="px-5 py-4">
-                        <p className="font-bold text-slate-900">
-                          {pedido.nombreCliente}
-                        </p>
+      <td className="p-0">
+        <Link
+          href={hrefPedido}
+          className="block whitespace-nowrap px-5 py-4 text-sm text-slate-600"
+        >
+          {formatoFecha(pedido.createdAt)}
+        </Link>
+      </td>
 
-                        <p className="mt-1 text-xs text-slate-500">
-                          {pedido.telefonoCliente}
-                        </p>
-                      </td>
+      <td className="p-0">
+        <Link
+          href={hrefPedido}
+          className="block px-5 py-4"
+        >
+          <p className="font-bold text-slate-900">
+            {pedido.nombreCliente}
+          </p>
 
-                      <td className="px-5 py-4 text-sm font-semibold text-slate-600">
+          <p className="mt-1 text-xs text-slate-500">
+            {pedido.telefonoCliente}
+          </p>
+        </Link>
+      </td>
 
-<td className="px-5 py-4">
-  <p className="text-sm font-bold text-slate-900">
-    {pedido.utmSource
-      ? pedido.utmSource
-          .replaceAll("_", " ")
-          .replace(/^\w/, (letra) =>
-            letra.toUpperCase()
-          )
-      : "Directo"}
-  </p>
+      <td className="p-0">
+        <Link
+          href={hrefPedido}
+          className="block px-5 py-4"
+        >
+          <p className="text-sm font-bold text-slate-900">
+            {pedido.utmSource
+              ? pedido.utmSource
+                  .replaceAll("_", " ")
+                  .replace(/^\w/, (letra) =>
+                    letra.toUpperCase(),
+                  )
+              : "Directo"}
+          </p>
 
-  {pedido.utmCampaign && (
-    <p className="mt-1 max-w-[180px] truncate text-xs text-slate-500">
-      {pedido.utmCampaign}
-    </p>
-  )}
+          {pedido.utmCampaign && (
+            <p className="mt-1 max-w-[180px] truncate text-xs text-slate-500">
+              {pedido.utmCampaign}
+            </p>
+          )}
 
-  {pedido.utmContent && (
-    <p className="mt-1 max-w-[180px] truncate text-xs font-semibold text-slate-600">
-      {pedido.utmContent}
-    </p>
-  )}
-</td>
+          {pedido.utmContent && (
+            <p className="mt-1 max-w-[180px] truncate text-xs font-semibold text-slate-600">
+              {pedido.utmContent}
+            </p>
+          )}
+        </Link>
+      </td>
 
-                        {pedido.ciudad}
-                      </td>
+      <td className="p-0">
+        <Link
+          href={hrefPedido}
+          className="block px-5 py-4 text-sm font-semibold text-slate-600"
+        >
+          {pedido.ciudad}
+        </Link>
+      </td>
 
-                      <td className="px-5 py-4 text-sm text-slate-600">
-                        {pedido.items.reduce(
-                          (total, item) =>
-                            total + item.cantidad,
-                          0,
-                        )}{" "}
-                        unidades
-                      </td>
+      <td className="p-0">
+        <Link
+          href={hrefPedido}
+          className="block px-5 py-4 text-sm text-slate-600"
+        >
+          {pedido.items.reduce(
+            (total, item) => total + item.cantidad,
+            0,
+          )}{" "}
+          unidades
+        </Link>
+      </td>
 
-                      <td className="whitespace-nowrap px-5 py-4 font-black text-slate-950">
-                        {formatoMoneda(Number(pedido.total))}
-                      </td>
+      <td className="p-0">
+        <Link
+          href={hrefPedido}
+          className="block whitespace-nowrap px-5 py-4 font-black text-slate-950"
+        >
+          {formatoMoneda(Number(pedido.total))}
+        </Link>
+      </td>
 
-                      <td className="px-5 py-4">
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
-                          {formatoEstado(pedido.estadoPago)}
-                        </span>
-                      </td>
+      <td className="p-0">
+        <Link
+          href={hrefPedido}
+          className="block px-5 py-4"
+        >
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
+            {formatoEstado(pedido.estadoPago)}
+          </span>
+        </Link>
+      </td>
 
-                      <td className="px-5 py-4">
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-bold ${claseEstado(
-                            pedido.estado,
-                          )}`}
-                        >
-                          {formatoEstado(pedido.estado)}
-                        </span>
-                      </td>
+      <td className="p-0">
+        <Link
+          href={hrefPedido}
+          className="block px-5 py-4"
+        >
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-bold ${claseEstado(
+              pedido.estado,
+            )}`}
+          >
+            {formatoEstado(pedido.estado)}
+          </span>
+        </Link>
+      </td>
 
-                      <td className="px-5 py-4 text-right">
-                        <Link
-                          href={`/admin/pedidos/${pedido.id}`}
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-200 hover:text-slate-950"
-                          title="Ver pedido"
-                        >
-                          <ChevronRight size={18} />
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
+      <td className="p-0">
+        <Link
+          href={hrefPedido}
+          className="flex min-h-[68px] items-center justify-end px-5 py-4 text-slate-500 transition hover:text-slate-950"
+          title="Ver pedido"
+        >
+          <ChevronRight size={18} />
+        </Link>
+      </td>
+    </tr>
+  );
+})}
                 </tbody>
               </table>
             </div>
