@@ -115,21 +115,21 @@ export default async function PedidoDetallePage({
   const enlaceWhatsApp = `https://wa.me/${telefonoWhatsApp}?text=${mensajeWhatsApp}`;
 
   return (
-    <main className="min-h-screen bg-slate-100 p-6">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-6">
+    <main className="min-h-screen bg-slate-100 p-3 sm:p-5 lg:p-6">
+      <div className="mx-auto w-full max-w-7xl">
+        <div className="mb-5">
           <Link
             href="/admin/pedidos"
-            className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-slate-600 transition hover:text-slate-950"
+            className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-950"
           >
             <ArrowLeft size={17} />
             Volver a pedidos
           </Link>
 
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-3xl font-black text-slate-950">
+                <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
                   Pedido #{pedido.codigo}
                 </h1>
 
@@ -142,7 +142,7 @@ export default async function PedidoDetallePage({
                 </span>
               </div>
 
-              <p className="mt-2 text-sm text-slate-600">
+              <p className="mt-1 text-sm text-slate-500">
                 Creado el {formatoFecha(pedido.createdAt)}
               </p>
             </div>
@@ -159,11 +159,11 @@ export default async function PedidoDetallePage({
           </div>
         </div>
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="space-y-6">
-            <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="border-b border-slate-200 px-5 py-4">
-                <h2 className="flex items-center gap-2 text-lg font-black text-slate-950">
+        <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_380px]">
+          <div className="space-y-4">
+            <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+              <div className="border-b border-slate-200 px-5 py-3">
+                <h2 className="flex items-center gap-2 text-base font-bold text-slate-950">
                   <Package size={20} />
                   Productos
                 </h2>
@@ -173,9 +173,9 @@ export default async function PedidoDetallePage({
                 {pedido.items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex gap-4 px-5 py-5"
+                    className="flex gap-4 px-5 py-4"
                   >
-                    <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
                       {item.imagenUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -192,7 +192,7 @@ export default async function PedidoDetallePage({
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="font-bold text-slate-950">
+                      <p className="font-semibold leading-snug text-slate-950">
                         {item.nombreProducto}
                       </p>
 
@@ -215,8 +215,8 @@ export default async function PedidoDetallePage({
                 ))}
               </div>
 
-              <div className="border-t border-slate-200 bg-slate-50 px-5 py-5">
-                <div className="ml-auto max-w-sm space-y-3">
+              <div className="border-t border-slate-200 bg-white px-5 py-4">
+                <div className="ml-auto max-w-sm space-y-2">
                   <div className="flex justify-between text-sm text-slate-600">
                     <span>Subtotal</span>
                     <span>
@@ -248,35 +248,35 @@ export default async function PedidoDetallePage({
               </div>
             </section>
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="text-lg font-black text-slate-950">
-                Historial
+            <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h2 className="text-base font-bold text-slate-950">
+                Cronología
               </h2>
 
               {pedido.historial.length === 0 ? (
-                <p className="mt-4 text-sm text-slate-500">
+                <p className="mt-3 text-sm text-slate-500">
                   Todavía no hay movimientos registrados.
                 </p>
               ) : (
-                <div className="mt-5 space-y-5">
+                <div className="mt-3 space-y-3">
                   {pedido.historial.map((registro) => (
                     <div
                       key={registro.id}
-                      className="relative border-l-2 border-slate-200 pl-5"
+                      className="relative border-l border-slate-200 pl-5"
                     >
-                      <div className="absolute -left-[7px] top-1 h-3 w-3 rounded-full bg-slate-950" />
+                      <div className="absolute -left-[5px] top-1 h-2.5 w-2.5 rounded-full bg-slate-900" />
 
-                      <p className="font-bold text-slate-900">
+                      <p className="font-semibold text-slate-900">
                         {registro.accion}
                       </p>
 
                       {registro.descripcion && (
-                        <p className="mt-1 text-sm text-slate-600">
+                        <p className="mt-0.5 text-sm text-slate-600">
                           {registro.descripcion}
                         </p>
                       )}
 
-                      <p className="mt-2 text-xs text-slate-400">
+                      <p className="mt-1 text-xs text-slate-400">
                         {formatoFecha(registro.createdAt)}
                       </p>
                     </div>
@@ -287,11 +287,11 @@ export default async function PedidoDetallePage({
           </div>
 
           <aside className="space-y-6">
-            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="text-lg font-black text-slate-950">
+            <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <h2 className="text-base font-bold text-slate-950">
 
-<section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-  <h2 className="text-lg font-black text-slate-950">
+<section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+  <h2 className="text-base font-bold text-slate-950">
     Acciones rápidas
   </h2>
 
@@ -299,7 +299,7 @@ export default async function PedidoDetallePage({
     Actualiza el estado operativo del pedido.
   </p>
 
-  <div className="mt-4 grid grid-cols-2 gap-2">
+  <div className="mt-3 grid grid-cols-2 gap-2">
     <form action={cambiarEstadoPedido}>
       <input
         type="hidden"
@@ -315,7 +315,7 @@ export default async function PedidoDetallePage({
       <button
         type="submit"
         disabled={pedido.estado === "CONFIRMADO"}
-        className="w-full rounded-xl bg-emerald-600 px-3 py-3 text-sm font-bold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full rounded-lg bg-emerald-600 px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-40"
       >
         Confirmar
       </button>
@@ -336,7 +336,7 @@ export default async function PedidoDetallePage({
       <button
         type="submit"
         disabled={pedido.estado === "PREPARANDO"}
-        className="w-full rounded-xl bg-amber-500 px-3 py-3 text-sm font-bold text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm font-semibold text-amber-800 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-40"
       >
         Preparando
       </button>
@@ -357,7 +357,7 @@ export default async function PedidoDetallePage({
       <button
         type="submit"
         disabled={pedido.estado === "ENVIADO"}
-        className="w-full rounded-xl bg-violet-600 px-3 py-3 text-sm font-bold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
       >
         Enviado
       </button>
@@ -378,7 +378,7 @@ export default async function PedidoDetallePage({
       <button
         type="submit"
         disabled={pedido.estado === "ENTREGADO"}
-        className="w-full rounded-xl bg-green-700 px-3 py-3 text-sm font-bold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-40"
       >
         Entregado
       </button>
@@ -402,7 +402,7 @@ export default async function PedidoDetallePage({
       <button
         type="submit"
         disabled={pedido.estado === "CANCELADO"}
-        className="w-full rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm font-bold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full rounded-lg border border-red-200 bg-white px-3 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40"
       >
         Cancelar pedido
       </button>
@@ -413,8 +413,8 @@ export default async function PedidoDetallePage({
                 Estado del pedido
               </h2>
 
-              <div className="mt-4 space-y-3">
-                <div className="flex items-center justify-between">
+              <div className="mt-3 divide-y divide-slate-100">
+                <div className="flex items-center justify-between py-2.5">
                   <span className="text-sm text-slate-600">
                     Pedido
                   </span>
@@ -428,7 +428,7 @@ export default async function PedidoDetallePage({
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between py-2.5">
                   <span className="text-sm text-slate-600">
                     Pago
                   </span>
@@ -438,7 +438,7 @@ export default async function PedidoDetallePage({
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between py-2.5">
                   <span className="text-sm text-slate-600">
                     Envío
                   </span>
@@ -450,16 +450,16 @@ export default async function PedidoDetallePage({
               </div>
             </section>
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="flex items-center gap-2 text-lg font-black text-slate-950">
+            <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <h2 className="flex items-center gap-2 text-base font-bold text-slate-950">
                 <User size={19} />
 
-<section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-  <h2 className="text-lg font-black text-slate-950">
+<section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+  <h2 className="text-base font-bold text-slate-950">
     Origen del pedido
   </h2>
 
-  <div className="mt-4 space-y-3 text-sm">
+  <div className="mt-3 space-y-2 text-sm">
     <div className="flex items-center justify-between gap-4">
       <span className="text-slate-600">
         Fuente
@@ -552,12 +552,12 @@ export default async function PedidoDetallePage({
 
                 Cliente
 
-<section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-  <h2 className="text-lg font-black text-slate-950">
+<section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+  <h2 className="text-base font-bold text-slate-950">
     Pago y checkout
   </h2>
 
-  <div className="mt-4 space-y-3">
+  <div className="mt-3 space-y-2">
     <div className="flex items-center justify-between gap-4">
       <span className="text-sm text-slate-600">
         Tipo de pedido
@@ -624,7 +624,7 @@ export default async function PedidoDetallePage({
 
               </h2>
 
-              <div className="mt-4 space-y-4">
+              <div className="mt-3 space-y-3">
                 <div>
                   <p className="font-bold text-slate-950">
                     {pedido.nombreCliente}
@@ -644,13 +644,13 @@ export default async function PedidoDetallePage({
               </div>
             </section>
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="flex items-center gap-2 text-lg font-black text-slate-950">
+            <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <h2 className="flex items-center gap-2 text-base font-bold text-slate-950">
                 <MapPin size={19} />
                 Dirección de entrega
               </h2>
 
-              <div className="mt-4 space-y-2 text-sm leading-6 text-slate-700">
+              <div className="mt-3 space-y-1.5 text-sm leading-6 text-slate-700">
                 <p>{pedido.direccion}</p>
                 <p>
                   {pedido.ciudad}
@@ -667,30 +667,30 @@ export default async function PedidoDetallePage({
 
             {(pedido.observaciones ||
               pedido.notasInternas) && (
-              <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 className="text-lg font-black text-slate-950">
+              <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <h2 className="text-base font-bold text-slate-950">
                   Notas
                 </h2>
 
                 {pedido.observaciones && (
-                  <div className="mt-4">
+                  <div className="mt-3">
                     <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
                       Cliente
                     </p>
 
-                    <p className="mt-2 text-sm leading-6 text-slate-700">
+                    <p className="mt-1.5 text-sm leading-6 text-slate-700">
                       {pedido.observaciones}
                     </p>
                   </div>
                 )}
 
                 {pedido.notasInternas && (
-                  <div className="mt-4">
+                  <div className="mt-3">
                     <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
                       Internas
                     </p>
 
-                    <p className="mt-2 text-sm leading-6 text-slate-700">
+                    <p className="mt-1.5 text-sm leading-6 text-slate-700">
                       {pedido.notasInternas}
                     </p>
                   </div>
