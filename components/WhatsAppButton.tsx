@@ -67,13 +67,13 @@ export default function WhatsAppButton({
           onClick={() =>
             setOpen((actual) => !actual)
           }
-          className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full shadow-[0_10px_30px_rgba(37,211,102,0.45)] transition-all hover:scale-110 animate-[pulse_2s_ease-in-out_infinite]"
+          className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full shadow-[0_10px_30px_rgba(37,211,102,0.45)] transition-all hover:scale-110 animate-[pulse_2s_ease-in-out_infinite]"
         >
           <Image
             src="/whatsapp-logo.png"
             alt="WhatsApp"
-            width={64}
-            height={64}
+            width={56}
+            height={56}
             className="h-full w-full object-cover"
           />
         </button>
