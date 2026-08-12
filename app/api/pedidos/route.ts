@@ -363,6 +363,11 @@ const sessionId =
         id: true,
         nombre: true,
         precio: true,
+        imagenes: {
+          orderBy: [{ esPrincipal: "desc" }, { orden: "asc" }],
+          take: 1,
+          select: { url: true },
+        },
       },
     });
 
@@ -491,6 +496,7 @@ montoPendiente,
             create: {
               productoId: producto.id,
               nombreProducto: producto.nombre,
+              imagenUrl: producto.imagenes[0]?.url ?? null,
               precioUnitario,
               cantidad,
               subtotal,
