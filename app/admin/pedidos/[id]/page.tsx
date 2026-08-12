@@ -92,6 +92,17 @@ export default async function PedidoDetallePage({
         orderBy: {
           id: "asc",
         },
+        include: {
+          producto: {
+            select: {
+              imagenes: {
+                orderBy: [{ esPrincipal: "desc" }, { orden: "asc" }],
+                take: 1,
+                select: { url: true },
+              },
+            },
+          },
+        },
       },
       historial: {
         orderBy: {
@@ -176,10 +187,10 @@ export default async function PedidoDetallePage({
                     className="flex gap-4 px-5 py-4"
                   >
                     <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
-                      {item.imagenUrl ? (
+                      {item.imagenUrl || item.producto?.imagenes[0]?.url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={item.imagenUrl}
+                          src={item.imagenUrl || item.producto?.imagenes[0]?.url || ""}
                           alt={item.nombreProducto}
                           className="h-full w-full object-contain"
                         />
