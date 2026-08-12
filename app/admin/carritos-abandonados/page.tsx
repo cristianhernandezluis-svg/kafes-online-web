@@ -357,6 +357,7 @@ export default async function CarritosAbandonadosPage({
             </div>
 
             <select
+              key={estado}
               name="estado"
               defaultValue={estado}
               className="h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold outline-none focus:border-slate-950"
