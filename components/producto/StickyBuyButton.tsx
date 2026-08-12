@@ -18,9 +18,9 @@ export default function StickyBuyButton({
       <button
         type="button"
         onClick={onComprar}
-        className="w-full rounded-2xl bg-green-500 py-4 text-lg font-black text-white shadow-lg transition hover:bg-green-600 active:scale-[0.98]"
+        className="w-full rounded-2xl border-b-4 border-yellow-600 bg-yellow-400 py-4 text-lg font-black text-black shadow-lg transition hover:bg-yellow-300 active:scale-[0.98]"
       >
-        🛒 COMPRAR AHORA
+        REALIZAR PEDIDO
       </button>
     </div>
   );
