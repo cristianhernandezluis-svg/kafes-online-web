@@ -35,7 +35,6 @@ type ProductPurchasePanelProps = {
 export default function ProductPurchasePanel({
   producto,
   cantidad,
-  whatsapp,
   checkoutActivo,
   permitirCantidad,
   cantidadMaxima,
@@ -92,11 +91,6 @@ const promedioOpiniones =
 
 const promedioFormateado =
   promedioOpiniones.toFixed(1);
-
-  const whatsappUrl = `https://wa.me/${whatsapp}?text=${encodeURIComponent(
-  `Hola, deseo información sobre ${producto.nombre}`,
-)}`;
-
   return (
     <aside className="rounded-[28px] border border-zinc-200 bg-white p-5 shadow-[0_20px_70px_rgba(0,0,0,0.08)] sm:p-7 lg:sticky lg:top-28 lg:self-start">
       <div className="flex flex-wrap items-center gap-2">
@@ -297,16 +291,6 @@ const promedioFormateado =
     ? "COMPRAR AHORA"
     : "PRODUCTO AGOTADO"}
         </button>
-
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex w-full items-center justify-center gap-3 rounded-2xl bg-green-600 px-5 py-4 text-base font-black text-white transition hover:bg-green-700 active:scale-[0.99]"
-        >
-          <MessageCircle size={21} />
-          CONSULTAR POR WHATSAPP
-        </a>
       </div>
 
       <div className="mt-5 flex items-start gap-3 rounded-2xl bg-green-50 p-4 text-sm text-green-800">
