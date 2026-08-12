@@ -309,23 +309,6 @@ const saldoPendiente = Math.max(
   />
 )}
 
-                {configuracionTienda.checkoutMostrarReferencia && (
-  <CheckoutInput
-    icon={<MapPin size={18} />}
-    placeholder={`Referencia${
-      configuracionTienda.checkoutReferenciaObligatoria
-        ? " *"
-        : ""
-    }`}
-    value={referencia}
-    onChange={onReferenciaChange}
-    name="address-line2"
-    autoComplete="address-line2"
-    required={
-      configuracionTienda.checkoutReferenciaObligatoria
-    }
-  />
-)}
 
                 <button
                   type="button"
