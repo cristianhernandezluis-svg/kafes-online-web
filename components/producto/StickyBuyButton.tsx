@@ -1,5 +1,7 @@
 "use client";
 
+import { ShoppingCart } from "lucide-react";
+
 type StickyBuyButtonProps = {
   visible: boolean;
   onComprar: () => void;
@@ -18,8 +20,9 @@ export default function StickyBuyButton({
       <button
         type="button"
         onClick={onComprar}
-        className="w-full rounded-2xl border-b-4 border-yellow-600 bg-yellow-400 py-4 text-lg font-black text-black shadow-lg transition hover:bg-yellow-300 active:scale-[0.98]"
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 border-yellow-600 bg-yellow-400 py-4 text-lg font-black text-black shadow-[0_10px_25px_rgba(250,204,21,0.35)] transition duration-200 hover:-translate-y-0.5 hover:bg-yellow-300 active:translate-y-0 active:scale-[0.98]"
       >
+        <ShoppingCart size={22} className="animate-bounce" />
         REALIZAR PEDIDO
       </button>
     </div>
