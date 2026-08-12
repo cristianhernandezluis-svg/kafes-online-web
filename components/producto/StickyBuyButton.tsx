@@ -20,9 +20,9 @@ export default function StickyBuyButton({
       <button
         type="button"
         onClick={onComprar}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 border-yellow-600 bg-yellow-400 py-4 text-lg font-black text-black shadow-[0_10px_25px_rgba(250,204,21,0.35)] transition duration-200 hover:-translate-y-0.5 hover:bg-yellow-300 active:translate-y-0 active:scale-[0.98]"
+        className="flex w-full animate-pulse items-center justify-center gap-2 rounded-2xl border-b-4 border-yellow-600 bg-yellow-400 py-4 text-lg font-black text-black shadow-[0_10px_25px_rgba(250,204,21,0.35)] transition duration-200 hover:-translate-y-0.5 hover:bg-yellow-300 active:translate-y-0 active:scale-[0.98]"
       >
-        <ShoppingCart size={22} className="animate-bounce" />
+        <ShoppingCart size={22}  />
         REALIZAR PEDIDO
       </button>
     </div>
