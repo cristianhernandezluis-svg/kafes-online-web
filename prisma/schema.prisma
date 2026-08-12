@@ -591,3 +591,43 @@ model SesionAnalitica {
   @@index([pedidoRealizadoAt])
   @@map("sesiones_analitica")
 }
+
+model CarritoAbandonado {
+  id             Int     @id @default(autoincrement())
+  sessionId      String  @unique
+  productoId     Int
+  productoNombre String
+  productoSlug   String
+  imagenUrl      String?
+  precio         Decimal @db.Decimal(10, 2)
+  cantidad       Int     @default(1)
+  total          Decimal @db.Decimal(10, 2)
+
+  nombre    String?
+  celular   String?
+  ciudad    String?
+  region    String?
+  direccion String?
+
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmContent  String?
+  fbclid      String? @db.Text
+  ttclid      String? @db.Text
+
+  estado             String    @default("ABIERTO")
+  checkoutIniciadoAt DateTime  @default(now())
+  ultimaActividadAt  DateTime  @default(now())
+  recuperadoAt       DateTime?
+  pedidoId           Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([estado])
+  @@index([celular])
+  @@index([productoId])
+  @@index([updatedAt])
+  @@map("carritos_abandonados")
+}

@@ -262,6 +262,78 @@ useEffect(() => {
     });
   }, [slug, producto, precio]);
 
+useEffect(() => {
+  if (!openCheckout || pedidoFinalizado || !producto) {
+    return;
+  }
+
+  const temporizador = window.setTimeout(() => {
+    try {
+      const sesionGuardada = localStorage.getItem(
+        "kafes_sesion_analitica"
+      );
+
+      if (!sesionGuardada) {
+        return;
+      }
+
+      const sesion = JSON.parse(
+        sesionGuardada
+      ) as {
+        sessionId?: string;
+      };
+
+      const sessionId =
+        sesion.sessionId?.trim();
+
+      if (!sessionId) {
+        return;
+      }
+
+      fetch(
+        "/api/carritos-abandonados",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            sessionId,
+            productoId: producto.id,
+            cantidad,
+            nombre,
+            celular,
+            ciudad,
+            region,
+            direccion,
+          }),
+          keepalive: true,
+        }
+      ).catch(() => {
+        // El guardado del carrito no debe
+        // interrumpir la compra.
+      });
+    } catch {
+      // No bloquear el checkout.
+    }
+  }, 800);
+
+  return () => {
+    window.clearTimeout(temporizador);
+  };
+}, [
+  openCheckout,
+  pedidoFinalizado,
+  producto?.id,
+  cantidad,
+  nombre,
+  celular,
+  ciudad,
+  region,
+  direccion,
+]);
+
   if (!producto) {
     return (
       <main className="min-h-screen flex items-center justify-center text-center px-6">
@@ -336,6 +408,63 @@ const registrarEventoAnalitica = (
   }
 };
 
+const guardarCarritoAbandonado = () => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    const sesionGuardada =
+      localStorage.getItem(
+        "kafes_sesion_analitica"
+      );
+
+    if (!sesionGuardada) {
+      return;
+    }
+
+    const sesion = JSON.parse(
+      sesionGuardada
+    ) as {
+      sessionId?: string;
+    };
+
+    const sessionId =
+      sesion.sessionId?.trim();
+
+    if (!sessionId) {
+      return;
+    }
+
+    fetch(
+      "/api/carritos-abandonados",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          sessionId,
+          productoId: producto.id,
+          cantidad,
+          nombre,
+          celular,
+          ciudad,
+          region,
+          direccion,
+        }),
+        keepalive: true,
+      }
+    ).catch(() => {
+      // El registro del carrito nunca
+      // debe interrumpir la compra.
+    });
+  } catch {
+    // No bloquear el checkout.
+  }
+};
+
   const abrirCheckout = () => {
   if (!configuracionTienda.checkoutActivo) {
     alert(
@@ -398,6 +527,7 @@ registrarEventoAnalitica(
   "CHECKOUT_INICIADO"
 );
 
+    guardarCarritoAbandonado();
     setOpenCheckout(true);
   };
 

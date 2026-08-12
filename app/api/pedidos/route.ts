@@ -523,6 +523,19 @@ montoPendiente,
 },
       });
 
+      if (sessionId) {
+        const ahoraRecuperado = new Date();
+
+        await tx.carritoAbandonado.updateMany({
+          where: { sessionId },
+          data: {
+            estado: "RECUPERADO",
+            pedidoId: pedido.id,
+            recuperadoAt: ahoraRecuperado,
+            ultimaActividadAt: ahoraRecuperado,
+          },
+        });
+      }
       return pedido;
     });
 

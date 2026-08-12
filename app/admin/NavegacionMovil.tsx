@@ -13,6 +13,7 @@ import {
   Package,
   Settings,
   ShoppingCart,
+  ShoppingBasket,
   Tags,
   Users,
   X,
@@ -33,6 +34,11 @@ const navegacionPrincipal = [
     nombre: "Pedidos",
     href: "/admin/pedidos",
     icono: ShoppingCart,
+  },
+  {
+    nombre: "Carritos abandonados",
+    href: "/admin/carritos-abandonados",
+    icono: ShoppingBasket,
   },
   {
     nombre: "Clientes",

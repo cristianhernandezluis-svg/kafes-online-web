@@ -13,6 +13,7 @@ import {
   Package,
   Settings,
   ShoppingCart,
+  ShoppingBasket,
   Tags,
   Users,
 } from "lucide-react";
@@ -52,6 +53,11 @@ const menu = [
     nombre: "Pedidos",
     href: "/admin/pedidos",
     icono: ShoppingCart,
+  },
+  {
+    nombre: "Carritos abandonados",
+    href: "/admin/carritos-abandonados",
+    icono: ShoppingBasket,
   },
   {
     nombre: "Clientes",
