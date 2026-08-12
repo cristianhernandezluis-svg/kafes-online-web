@@ -288,7 +288,7 @@ const promedioFormateado =
           {!checkoutActivo
   ? "PEDIDOS TEMPORALMENTE DESACTIVADOS"
   : disponible
-    ? "COMPRAR AHORA"
+    ? "REALIZAR PEDIDO"
     : "PRODUCTO AGOTADO"}
         </button>
       </div>
