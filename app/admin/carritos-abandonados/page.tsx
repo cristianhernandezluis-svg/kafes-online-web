@@ -441,6 +441,28 @@ export default async function CarritosAbandonadosPage({
                   ? "bg-amber-100 text-amber-700"
                   : "bg-blue-100 text-blue-700";
 
+              const textoPaso =
+                carrito.ultimoPaso === "PEDIDO_CREADO"
+                  ? "Pedido creado"
+                  : carrito.ultimoPaso === "ERROR_PEDIDO"
+                    ? "Error al realizar pedido"
+                    : carrito.ultimoPaso === "INTENTO_PEDIDO"
+                      ? "Intentó realizar pedido"
+                      : carrito.ultimoPaso === "DATOS_COMPLETOS"
+                        ? "Datos completos"
+                        : "Checkout iniciado";
+
+              const clasePaso =
+                carrito.ultimoPaso === "PEDIDO_CREADO"
+                  ? "bg-emerald-100 text-emerald-700"
+                  : carrito.ultimoPaso === "ERROR_PEDIDO"
+                    ? "bg-red-100 text-red-700"
+                    : carrito.ultimoPaso === "INTENTO_PEDIDO"
+                      ? "bg-violet-100 text-violet-700"
+                      : carrito.ultimoPaso === "DATOS_COMPLETOS"
+                        ? "bg-blue-100 text-blue-700"
+                        : "bg-slate-100 text-slate-600";
+
               const urlWhatsApp =
                 carrito.celular &&
                 !esRecuperado
@@ -487,6 +509,12 @@ export default async function CarritosAbandonadosPage({
                           >
                             {textoEstado}
                           </span>
+
+                          <span
+                            className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase ${clasePaso}`}
+                          >
+                            {textoPaso}
+                          </span>
                         </div>
 
                         <p className="mt-1 text-sm font-bold text-slate-700">
@@ -504,6 +532,18 @@ export default async function CarritosAbandonadosPage({
                             carrito.checkoutIniciadoAt,
                           )}
                         </p>
+
+                        {carrito.intentoPedidoAt && (
+                          <p className="mt-1 text-xs font-semibold text-violet-600">
+                            Intento: {formatoFecha(carrito.intentoPedidoAt)}
+                          </p>
+                        )}
+
+                        {carrito.errorPedido && (
+                          <div className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold leading-5 text-red-700">
+                            Error: {carrito.errorPedido}
+                          </div>
+                        )}
                       </div>
                     </div>
 

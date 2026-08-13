@@ -617,8 +617,12 @@ model CarritoAbandonado {
   ttclid      String? @db.Text
 
   estado             String    @default("ABIERTO")
+  ultimoPaso         String    @default("CHECKOUT_INICIADO")
   checkoutIniciadoAt DateTime  @default(now())
   ultimaActividadAt  DateTime  @default(now())
+  intentoPedidoAt    DateTime?
+  errorPedido        String?   @db.Text
+  errorPedidoAt      DateTime?
   recuperadoAt       DateTime?
   pedidoId           Int?
 

@@ -74,6 +74,7 @@ const [referencia, setReferencia] = useState("");
 
 
 const viewContentTrackedSlug = useRef<string | null>(null);
+const intentoPedidoRef = useRef(false);
 const atribucionRef = useRef<AtribucionPedido | null>(
   null
 );
@@ -290,6 +291,28 @@ useEffect(() => {
         return;
       }
 
+      const celularLimpioCarrito = celular.replace(/\\D/g, "");
+
+      const datosCompletos = Boolean(
+        nombre.trim() &&
+        celularLimpioCarrito.length >= 9 &&
+        (!configuracionTienda.checkoutMostrarCiudad ||
+          !configuracionTienda.checkoutCiudadObligatoria ||
+          ciudad.trim()) &&
+        (!configuracionTienda.checkoutMostrarRegion ||
+          !configuracionTienda.checkoutRegionObligatoria ||
+          region.trim()) &&
+        (!configuracionTienda.checkoutMostrarDireccion ||
+          !configuracionTienda.checkoutDireccionObligatoria ||
+          direccion.trim()) &&
+        (!configuracionTienda.checkoutMostrarDni ||
+          !configuracionTienda.checkoutDniObligatorio ||
+          dni.replace(/\\D/g, "").length === 8) &&
+        (!configuracionTienda.checkoutMostrarReferencia ||
+          !configuracionTienda.checkoutReferenciaObligatoria ||
+          referencia.trim())
+      );
+
       fetch(
         "/api/carritos-abandonados",
         {
@@ -307,6 +330,9 @@ useEffect(() => {
             ciudad,
             region,
             direccion,
+            ...(!intentoPedidoRef.current && datosCompletos
+              ? { ultimoPaso: "DATOS_COMPLETOS" }
+              : {}),
           }),
           keepalive: true,
         }
@@ -408,7 +434,7 @@ const registrarEventoAnalitica = (
   }
 };
 
-const guardarCarritoAbandonado = () => {
+const guardarCarritoAbandonado = (ultimoPaso?: string, errorPedido?: string) => {
   if (typeof window === "undefined") {
     return;
   }
@@ -453,6 +479,8 @@ const guardarCarritoAbandonado = () => {
           ciudad,
           region,
           direccion,
+          ...(ultimoPaso ? { ultimoPaso } : {}),
+          ...(errorPedido ? { errorPedido } : {}),
         }),
         keepalive: true,
       }
@@ -672,6 +700,9 @@ if (dniLimpio && dniLimpio.length !== 8) {
   return;
 }
 
+  intentoPedidoRef.current = true;
+  guardarCarritoAbandonado("INTENTO_PEDIDO");
+
   setLoading(true);
 
   try {
@@ -846,6 +877,8 @@ if (
       error instanceof Error
         ? error.message
         : "No pudimos registrar el pedido";
+
+    guardarCarritoAbandonado("ERROR_PEDIDO", mensaje);
 
     alert(`${mensaje}. Inténtalo nuevamente.`);
   } finally {

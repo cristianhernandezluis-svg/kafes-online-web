@@ -501,6 +501,7 @@ montoPendiente,
           where: { sessionId },
           data: {
             estado: "RECUPERADO",
+            ultimoPaso: "PEDIDO_CREADO",
             pedidoId: pedido.id,
             recuperadoAt: ahoraRecuperado,
             ultimaActividadAt: ahoraRecuperado,

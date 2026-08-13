@@ -179,10 +179,16 @@ checkoutMontoAdelanto: Number(
       "Completa tus datos para realizar tu pedido"
     ),
 
-    checkoutBotonTexto: texto(
-      configuracion?.checkoutBotonTexto,
-      "REALIZAR PEDIDO"
-    ),
+    checkoutBotonTexto: (() => {
+      const valor = texto(
+        configuracion?.checkoutBotonTexto,
+        "REALIZAR PEDIDO"
+      );
+
+      return valor.trim().toUpperCase() === "CONFIRMAR PEDIDO"
+        ? "REALIZAR PEDIDO"
+        : valor;
+    })(),
 
     checkoutMensajeExito: texto(
       configuracion?.checkoutMensajeExito,
