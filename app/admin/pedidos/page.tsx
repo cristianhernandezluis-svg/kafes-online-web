@@ -332,8 +332,8 @@ export default async function PedidosPage({
 
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="border-b border-slate-200 p-4">
-          <form className="flex flex-col gap-3 lg:flex-row">
-            <div className="relative flex-1">
+          <form className="grid grid-cols-2 gap-3 lg:flex lg:flex-row">
+            <div className="relative col-span-2 flex-1 lg:col-span-1">
               <Search
                 size={18}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
@@ -351,7 +351,7 @@ export default async function PedidosPage({
             <select
               name="estado"
               defaultValue={estado}
-              className="h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold outline-none focus:border-slate-950"
+              className="min-w-0 h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold outline-none focus:border-slate-950 lg:w-auto lg:px-4"
             >
               {estadosPedido.map((item) => (
                 <option key={item} value={item}>
@@ -364,7 +364,7 @@ export default async function PedidosPage({
 
             <button
               type="submit"
-              className="h-11 rounded-xl bg-slate-950 px-6 text-sm font-bold text-white transition hover:bg-slate-800"
+              className="h-11 w-full rounded-xl bg-slate-950 px-4 text-sm font-bold text-white transition hover:bg-slate-800 lg:w-auto lg:px-6"
             >
               Buscar
             </button>
@@ -372,7 +372,7 @@ export default async function PedidosPage({
             {(buscar || estado !== "TODOS") && (
               <Link
                 href="/admin/pedidos"
-                className="flex h-11 items-center justify-center rounded-xl border border-slate-300 px-5 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
+                className="col-span-2 flex h-11 items-center justify-center rounded-xl border border-slate-300 px-5 text-sm font-bold text-slate-700 transition hover:bg-slate-100 lg:col-span-1"
               >
                 Limpiar
               </Link>
@@ -494,9 +494,9 @@ export default async function PedidosPage({
                           Pago
                         </p>
 
-                        <p className="mt-1 font-bold text-slate-700">
+                        <span className={`mt-1 inline-flex rounded-full px-2.5 py-1 text-[11px] font-black ${pedido.estadoPago === "PENDIENTE" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-700"}`}>
                           {pedido.estadoPago === "PENDIENTE" ? "PAGO" : formatoEstado(pedido.estadoPago)}
-                        </p>
+                        </span>
                       </div>
                     </div>
 
@@ -633,7 +633,7 @@ export default async function PedidosPage({
           href={hrefPedido}
           className="block px-5 py-4"
         >
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
+          <span className={`rounded-full px-3 py-1 text-xs font-bold ${pedido.estadoPago === "PENDIENTE" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-700"}`}>
             {pedido.estadoPago === "PENDIENTE" ? "PAGO" : formatoEstado(pedido.estadoPago)}
           </span>
         </Link>
