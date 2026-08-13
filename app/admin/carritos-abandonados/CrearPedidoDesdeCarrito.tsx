@@ -4,12 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   LoaderCircle,
+  Package,
   ShoppingCart,
+  X,
 } from "lucide-react";
 
 type CrearPedidoDesdeCarritoProps = {
   sessionId: string;
   productoId: number;
+  productoNombre: string;
   cantidad: number;
 
   nombre: string | null;
@@ -42,6 +45,7 @@ type RespuestaPedido = {
 export default function CrearPedidoDesdeCarrito({
   sessionId,
   productoId,
+  productoNombre,
   cantidad,
   nombre,
   celular,
@@ -57,33 +61,113 @@ export default function CrearPedidoDesdeCarrito({
 }: CrearPedidoDesdeCarritoProps) {
   const router = useRouter();
 
+  const [modalAbierto, setModalAbierto] =
+    useState(false);
+
   const [creando, setCreando] =
     useState(false);
 
   const [error, setError] =
     useState("");
 
-  const datosBasicosCompletos =
-    Boolean(nombre?.trim()) &&
-    Boolean(celular?.trim());
+  const [nombreEditado, setNombreEditado] =
+    useState(nombre ?? "");
+
+  const [celularEditado, setCelularEditado] =
+    useState(celular ?? "");
+
+  const [ciudadEditada, setCiudadEditada] =
+    useState(ciudad ?? "");
+
+  const [regionEditada, setRegionEditada] =
+    useState(region ?? "");
+
+  const [
+    direccionEditada,
+    setDireccionEditada,
+  ] = useState(direccion ?? "");
+
+  const [
+    cantidadEditada,
+    setCantidadEditada,
+  ] = useState(
+    Math.max(1, cantidad),
+  );
+
+  function abrirModal() {
+    setNombreEditado(nombre ?? "");
+    setCelularEditado(celular ?? "");
+    setCiudadEditada(ciudad ?? "");
+    setRegionEditada(region ?? "");
+    setDireccionEditada(
+      direccion ?? "",
+    );
+    setCantidadEditada(
+      Math.max(1, cantidad),
+    );
+    setError("");
+    setModalAbierto(true);
+  }
+
+  function cerrarModal() {
+    if (creando) {
+      return;
+    }
+
+    setModalAbierto(false);
+    setError("");
+  }
 
   async function crearPedido() {
     if (creando) {
       return;
     }
 
-    if (!datosBasicosCompletos) {
+    const nombreLimpio =
+      nombreEditado.trim();
+
+    const celularLimpio =
+      celularEditado
+        .replace(/\s+/g, "")
+        .trim();
+
+    const ciudadLimpia =
+      ciudadEditada.trim();
+
+    const regionLimpia =
+      regionEditada.trim();
+
+    const direccionLimpia =
+      direccionEditada.trim();
+
+    if (!nombreLimpio) {
       setError(
-        "Falta el nombre o celular del cliente.",
+        "Ingresa el nombre del cliente.",
       );
       return;
     }
 
-    const confirmado = window.confirm(
-      "¿El cliente confirmó la compra? Se creará un pedido NUEVO y pasará a Pedidos.",
-    );
+    if (!celularLimpio) {
+      setError(
+        "Ingresa el celular del cliente.",
+      );
+      return;
+    }
 
-    if (!confirmado) {
+    if (celularLimpio.length < 9) {
+      setError(
+        "Ingresa un celular válido.",
+      );
+      return;
+    }
+
+    if (
+      !Number.isInteger(cantidadEditada) ||
+      cantidadEditada < 1
+    ) {
+      setError(
+        "La cantidad no es válida.",
+      );
       return;
     }
 
@@ -101,20 +185,16 @@ export default function CrearPedidoDesdeCarrito({
           },
           body: JSON.stringify({
             productoId,
-            cantidad,
+            cantidad: cantidadEditada,
             sessionId,
 
-            nombre: nombre?.trim() ?? "",
-            celular:
-              celular?.trim() ?? "",
+            nombre: nombreLimpio,
+            celular: celularLimpio,
 
             dni: "",
-            ciudad:
-              ciudad?.trim() ?? "",
-            region:
-              region?.trim() ?? "",
-            direccion:
-              direccion?.trim() ?? "",
+            ciudad: ciudadLimpia,
+            region: regionLimpia,
+            direccion: direccionLimpia,
             referencia: "",
 
             utmSource,
@@ -147,18 +227,8 @@ export default function CrearPedidoDesdeCarrito({
         return;
       }
 
-      /*
-       * /api/pedidos ya se encarga de:
-       *
-       * 1. Crear el pedido como NUEVO.
-       * 2. Crear o actualizar al cliente.
-       * 3. Guardar el producto y precio.
-       * 4. Marcar este carrito como RECUPERADO.
-       * 5. Vincular el pedidoId al carrito.
-       *
-       * Después llevamos al asesor
-       * directamente al pedido creado.
-       */
+      setModalAbierto(false);
+
       router.push(
         `/admin/pedidos/${data.pedido.id}`,
       );
@@ -179,37 +249,249 @@ export default function CrearPedidoDesdeCarrito({
   }
 
   return (
-    <div>
+    <>
       <button
         type="button"
-        onClick={crearPedido}
-        disabled={
-          creando ||
-          !datosBasicosCompletos
-        }
-        className="inline-flex h-10 items-center gap-2 rounded-xl bg-slate-950 px-4 text-sm font-black text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+        onClick={abrirModal}
+        className="inline-flex h-10 items-center gap-2 rounded-xl bg-slate-950 px-4 text-sm font-black text-white transition hover:bg-slate-800"
       >
-        {creando ? (
-          <>
-            <LoaderCircle
-              size={16}
-              className="animate-spin"
-            />
-            Creando...
-          </>
-        ) : (
-          <>
-            <ShoppingCart size={16} />
-            Crear pedido
-          </>
-        )}
+        <ShoppingCart size={16} />
+        Crear pedido
       </button>
 
-      {error && (
-        <p className="mt-2 max-w-56 text-xs font-semibold text-red-600">
-          {error}
-        </p>
+      {modalAbierto && (
+        <div
+          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Crear pedido desde carrito"
+        >
+          <div className="max-h-[92vh] w-full overflow-y-auto rounded-t-3xl bg-white shadow-2xl sm:max-w-2xl sm:rounded-3xl">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4 sm:px-6">
+              <div>
+                <h2 className="text-xl font-black text-slate-950">
+                  Crear pedido
+                </h2>
+
+                <p className="mt-1 text-sm text-slate-500">
+                  Revisa los datos antes de
+                  enviarlo a Pedidos.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={cerrarModal}
+                disabled={creando}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200 disabled:opacity-50"
+                aria-label="Cerrar"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-5 p-5 sm:p-6">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-white shadow-sm">
+                    <Package
+                      size={21}
+                      className="text-slate-700"
+                    />
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
+                      Producto
+                    </p>
+
+                    <p className="mt-1 font-black text-slate-950">
+                      {productoNombre}
+                    </p>
+
+                    <p className="mt-1 text-xs text-slate-500">
+                      El producto no se puede
+                      cambiar desde esta ventana.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <label className="block">
+                  <span className="mb-1.5 block text-sm font-bold text-slate-700">
+                    Nombre y apellido
+                  </span>
+
+                  <input
+                    type="text"
+                    value={nombreEditado}
+                    onChange={(event) =>
+                      setNombreEditado(
+                        event.target.value,
+                      )
+                    }
+                    placeholder="Nombre del cliente"
+                    className="h-12 w-full rounded-xl border border-slate-300 px-4 text-sm outline-none transition focus:border-slate-950"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-1.5 block text-sm font-bold text-slate-700">
+                    Celular
+                  </span>
+
+                  <input
+                    type="tel"
+                    value={celularEditado}
+                    onChange={(event) =>
+                      setCelularEditado(
+                        event.target.value,
+                      )
+                    }
+                    placeholder="999999999"
+                    className="h-12 w-full rounded-xl border border-slate-300 px-4 text-sm outline-none transition focus:border-slate-950"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-1.5 block text-sm font-bold text-slate-700">
+                    Región
+                  </span>
+
+                  <input
+                    type="text"
+                    value={regionEditada}
+                    onChange={(event) =>
+                      setRegionEditada(
+                        event.target.value,
+                      )
+                    }
+                    placeholder="Ej. Lima"
+                    className="h-12 w-full rounded-xl border border-slate-300 px-4 text-sm outline-none transition focus:border-slate-950"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-1.5 block text-sm font-bold text-slate-700">
+                    Ciudad / distrito
+                  </span>
+
+                  <input
+                    type="text"
+                    value={ciudadEditada}
+                    onChange={(event) =>
+                      setCiudadEditada(
+                        event.target.value,
+                      )
+                    }
+                    placeholder="Ej. San Juan de Lurigancho"
+                    className="h-12 w-full rounded-xl border border-slate-300 px-4 text-sm outline-none transition focus:border-slate-950"
+                  />
+                </label>
+              </div>
+
+              <label className="block">
+                <span className="mb-1.5 block text-sm font-bold text-slate-700">
+                  Dirección de entrega
+                </span>
+
+                <textarea
+                  value={direccionEditada}
+                  onChange={(event) =>
+                    setDireccionEditada(
+                      event.target.value,
+                    )
+                  }
+                  placeholder="Dirección actualizada del cliente"
+                  rows={3}
+                  className="w-full resize-none rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-slate-950"
+                />
+              </label>
+
+              <label className="block sm:max-w-[180px]">
+                <span className="mb-1.5 block text-sm font-bold text-slate-700">
+                  Cantidad
+                </span>
+
+                <input
+                  type="number"
+                  min={1}
+                  max={20}
+                  value={cantidadEditada}
+                  onChange={(event) => {
+                    const valor = Number(
+                      event.target.value,
+                    );
+
+                    setCantidadEditada(
+                      Number.isFinite(valor)
+                        ? Math.max(
+                            1,
+                            Math.floor(valor),
+                          )
+                        : 1,
+                    );
+                  }}
+                  className="h-12 w-full rounded-xl border border-slate-300 px-4 text-sm font-bold outline-none transition focus:border-slate-950"
+                />
+              </label>
+
+              {error && (
+                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                  {error}
+                </div>
+              )}
+
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                <p className="text-sm font-bold text-amber-900">
+                  Confirma solamente cuando el
+                  cliente ya aceptó comprar.
+                </p>
+
+                <p className="mt-1 text-xs leading-5 text-amber-700">
+                  Al confirmar se creará un pedido
+                  NUEVO y este carrito pasará
+                  automáticamente a Recuperados.
+                </p>
+              </div>
+            </div>
+
+            <div className="sticky bottom-0 flex flex-col-reverse gap-2 border-t border-slate-200 bg-white p-4 sm:flex-row sm:justify-end sm:px-6">
+              <button
+                type="button"
+                onClick={cerrarModal}
+                disabled={creando}
+                className="h-11 rounded-xl border border-slate-300 px-5 text-sm font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                onClick={crearPedido}
+                disabled={creando}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 text-sm font-black text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+              >
+                {creando ? (
+                  <>
+                    <LoaderCircle
+                      size={17}
+                      className="animate-spin"
+                    />
+                    Creando pedido...
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart size={17} />
+                    Confirmar y crear pedido
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
-    </div>
+    </>
   );
 }

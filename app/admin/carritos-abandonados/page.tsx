@@ -583,6 +583,7 @@ export default async function CarritosAbandonadosPage({
                         <CrearPedidoDesdeCarrito
                           sessionId={carrito.sessionId}
                           productoId={carrito.productoId}
+                          productoNombre={carrito.productoNombre}
                           cantidad={carrito.cantidad}
                           nombre={carrito.nombre}
                           celular={carrito.celular}
