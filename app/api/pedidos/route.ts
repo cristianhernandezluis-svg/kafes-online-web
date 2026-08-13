@@ -272,15 +272,6 @@ const sessionId =
       (configuracion?.checkoutDireccionObligatoria ??
         true);
 
-    const mostrarReferencia =
-      configuracion?.checkoutMostrarReferencia ??
-      true;
-
-    const referenciaObligatoria =
-      mostrarReferencia &&
-      (configuracion?.checkoutReferenciaObligatoria ??
-        false);
-
     if (ciudadObligatoria && !ciudad) {
       return NextResponse.json(
         {
@@ -305,31 +296,11 @@ const sessionId =
       );
     }
 
-    if (
-      direccionObligatoria &&
-      !direccion
-    ) {
+    if (direccionObligatoria && !direccion) {
       return NextResponse.json(
         {
           ok: false,
-          error:
-            "Ingresa tu dirección de entrega.",
-        },
-        {
-          status: 400,
-        },
-      );
-    }
-
-    if (
-      referenciaObligatoria &&
-      !referencia
-    ) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error:
-            "Ingresa una referencia de entrega.",
+          error: "Ingresa tu dirección de entrega.",
         },
         {
           status: 400,
