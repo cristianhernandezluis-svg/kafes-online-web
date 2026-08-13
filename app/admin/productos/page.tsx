@@ -111,7 +111,7 @@ export default async function ProductosPage() {
             </Link>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full min-w-[900px]">
               <thead className="bg-slate-50 text-left text-xs uppercase tracking-wider text-slate-500">
                 <tr>
@@ -243,6 +243,67 @@ export default async function ProductosPage() {
             </table>
           </div>
         )}
+
+        {productos.length > 0 && (
+          <div className="divide-y divide-slate-200 md:hidden">
+            {productos.map((producto) => (
+              <Link
+                key={producto.id}
+                href={`/admin/productos/${producto.id}/editar`}
+                className="block p-4 transition active:bg-slate-50"
+              >
+                <div className="flex min-w-0 items-start gap-3">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                    {producto.imagenes[0]?.url ? (
+                      <img
+                        src={producto.imagenes[0].url}
+                        alt={producto.nombre}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Package size={22} className="text-slate-400" />
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex min-w-0 items-start justify-between gap-2">
+                      <p className="min-w-0 flex-1 text-sm font-black leading-5 text-slate-950">
+                        {producto.nombre}
+                      </p>
+
+                      <Badge variant={obtenerEstado(producto.estado)}>
+                        {producto.estado}
+                      </Badge>
+                    </div>
+
+                    <p className="mt-1 truncate text-[11px] text-slate-400">
+                      /producto/{producto.slug}
+                    </p>
+
+                    <p className="mt-2 text-xs text-slate-500">
+                      {producto.categoria?.nombre ?? "Sin categoría"} · {producto.marca?.nombre ?? "Sin marca"}
+                    </p>
+
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <p className="text-base font-black text-slate-950">
+                        S/ {Number(producto.precio).toFixed(2)}
+                      </p>
+
+                      <p className="text-xs font-semibold text-slate-500">
+                        Stock: {producto.stock}
+                      </p>
+                    </div>
+
+                    <p className="mt-2 text-xs font-bold text-slate-900">
+                      Editar producto →
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
       </div>
     </section>
   );
