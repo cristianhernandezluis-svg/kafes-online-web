@@ -495,7 +495,7 @@ export default async function PedidosPage({
                         </p>
 
                         <p className="mt-1 font-bold text-slate-700">
-                          {formatoEstado(pedido.estadoPago)}
+                          {pedido.estadoPago === "PENDIENTE" ? "PAGO" : formatoEstado(pedido.estadoPago)}
                         </p>
                       </div>
                     </div>
@@ -634,7 +634,7 @@ export default async function PedidosPage({
           className="block px-5 py-4"
         >
           <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
-            {formatoEstado(pedido.estadoPago)}
+            {pedido.estadoPago === "PENDIENTE" ? "PAGO" : formatoEstado(pedido.estadoPago)}
           </span>
         </Link>
       </td>
