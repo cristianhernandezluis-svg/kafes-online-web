@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BarChart3,
   Boxes,
@@ -90,6 +90,22 @@ const opcionesAdicionales = [
 export default function NavegacionMovil() {
   const pathname = usePathname();
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const [anchoViewport, setAnchoViewport] = useState<number | null>(null);
+
+  useEffect(() => {
+    const actualizarAncho = () => {
+      setAnchoViewport(document.documentElement.clientWidth);
+    };
+
+    actualizarAncho();
+    window.addEventListener("resize", actualizarAncho);
+    window.visualViewport?.addEventListener("resize", actualizarAncho);
+
+    return () => {
+      window.removeEventListener("resize", actualizarAncho);
+      window.visualViewport?.removeEventListener("resize", actualizarAncho);
+    };
+  }, []);
 
   function estaActivo(href: string) {
     if (href === "/admin") {
@@ -186,7 +202,10 @@ export default function NavegacionMovil() {
         </div>
       )}
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50 w-full overflow-hidden border-t border-slate-200 bg-white/95 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur lg:hidden">
+      <nav
+        style={anchoViewport ? { width: anchoViewport } : undefined}
+        className="fixed bottom-0 left-0 z-50 overflow-hidden border-t border-slate-200 bg-white/95 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur lg:hidden"
+      >
         <div className="grid w-full grid-cols-5">
           {navegacionPrincipal.map((item) => {
             const Icono = item.icono;
