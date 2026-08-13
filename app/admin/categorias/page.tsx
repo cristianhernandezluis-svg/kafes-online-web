@@ -123,119 +123,143 @@ export default async function CategoriasPage() {
               </thead>
 
               <tbody className="divide-y divide-slate-200">
-                {categorias.map((categoria) => (
-                  <tr
-                    key={categoria.id}
-                    className="transition hover:bg-slate-50"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                          {categoria.imagenUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={categoria.imagenUrl}
-                              alt={categoria.nombre}
-                              className="h-full w-full object-contain"
-                            />
-                          ) : (
-                            <FolderTree
-                              size={22}
-                              className="text-slate-400"
-                            />
-                          )}
-                        </div>
+  {categorias.map((categoria) => {
+    const hrefEditar = `/admin/categorias/${categoria.id}/editar`;
 
-                        <div className="min-w-0">
-                          <p className="font-bold text-slate-950">
-                            {categoria.nombre}
-                          </p>
+    return (
+      <tr
+        key={categoria.id}
+        className="cursor-pointer transition hover:bg-slate-50"
+      >
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4"
+          >
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                {categoria.imagenUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={categoria.imagenUrl}
+                    alt={categoria.nombre}
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <FolderTree
+                    size={22}
+                    className="text-slate-400"
+                  />
+                )}
+              </div>
 
-                          <p className="mt-1 text-xs text-slate-500">
-                            /categoria/{categoria.slug}
-                          </p>
+              <div className="min-w-0">
+                <p className="font-bold text-slate-950">
+                  {categoria.nombre}
+                </p>
 
-                          {categoria.descripcion && (
-                            <p className="mt-1 line-clamp-1 max-w-md text-xs text-slate-400">
-                              {categoria.descripcion}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </td>
+                <p className="mt-1 text-xs text-slate-500">
+                  /categoria/{categoria.slug}
+                </p>
 
-                    <td className="px-6 py-4">
-                      <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">
-                        {categoria._count.productos}
-                      </span>
-                    </td>
+                {categoria.descripcion && (
+                  <p className="mt-1 line-clamp-1 max-w-md text-xs text-slate-400">
+                    {categoria.descripcion}
+                  </p>
+                )}
+              </div>
+            </div>
+          </Link>
+        </td>
 
-                    <td className="px-6 py-4 text-sm font-bold text-slate-700">
-                      {categoria.orden}
-                    </td>
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4"
+          >
+            <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">
+              {categoria._count.productos}
+            </span>
+          </Link>
+        </td>
 
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex rounded-full px-3 py-1 text-xs font-black ${
-                          categoria.activa
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-slate-100 text-slate-600"
-                        }`}
-                      >
-                        {categoria.activa
-                          ? "ACTIVA"
-                          : "OCULTA"}
-                      </span>
-                    </td>
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4 text-sm font-bold text-slate-700"
+          >
+            {categoria.orden}
+          </Link>
+        </td>
 
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <form
-                          action={cambiarEstadoCategoria}
-                        >
-                          <input
-                            type="hidden"
-                            name="categoriaId"
-                            value={categoria.id}
-                          />
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4"
+          >
+            <span
+              className={`inline-flex rounded-full px-3 py-1 text-xs font-black ${
+                categoria.activa
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-slate-100 text-slate-600"
+              }`}
+            >
+              {categoria.activa
+                ? "ACTIVA"
+                : "OCULTA"}
+            </span>
+          </Link>
+        </td>
 
-                          <input
-                            type="hidden"
-                            name="activa"
-                            value={String(
-                              !categoria.activa
-                            )}
-                          />
+        <td className="px-6 py-4">
+          <div className="flex items-center justify-end gap-2">
+            <form
+              action={cambiarEstadoCategoria}
+            >
+              <input
+                type="hidden"
+                name="categoriaId"
+                value={categoria.id}
+              />
 
-                          <button
-                            type="submit"
-                            title={
-                              categoria.activa
-                                ? "Ocultar categoría"
-                                : "Activar categoría"
-                            }
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100"
-                          >
-                            {categoria.activa ? (
-                              <EyeOff size={17} />
-                            ) : (
-                              <Eye size={17} />
-                            )}
-                          </button>
-                        </form>
+              <input
+                type="hidden"
+                name="activa"
+                value={String(
+                  !categoria.activa,
+                )}
+              />
 
-                        <Link
-                          href={`/admin/categorias/${categoria.id}/editar`}
-                          className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-slate-950 px-4 text-sm font-bold text-white transition hover:bg-slate-800"
-                        >
-                          <Pencil size={16} />
-                          Editar
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+              <button
+                type="submit"
+                title={
+                  categoria.activa
+                    ? "Ocultar categoría"
+                    : "Activar categoría"
+                }
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100"
+              >
+                {categoria.activa ? (
+                  <EyeOff size={17} />
+                ) : (
+                  <Eye size={17} />
+                )}
+              </button>
+            </form>
+
+            <Link
+              href={hrefEditar}
+              className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-slate-950 px-4 text-sm font-bold text-white transition hover:bg-slate-800"
+            >
+              <Pencil size={16} />
+              Editar
+            </Link>
+          </div>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
             </table>
           </div>
         )}
