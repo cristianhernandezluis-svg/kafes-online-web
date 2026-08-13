@@ -307,10 +307,7 @@ useEffect(() => {
           direccion.trim()) &&
         (!configuracionTienda.checkoutMostrarDni ||
           !configuracionTienda.checkoutDniObligatorio ||
-          dni.replace(/\\D/g, "").length === 8) &&
-        (!configuracionTienda.checkoutMostrarReferencia ||
-          !configuracionTienda.checkoutReferenciaObligatoria ||
-          referencia.trim())
+          dni.replace(/\\D/g, "").length === 8)
       );
 
       fetch(
@@ -668,14 +665,7 @@ if (
   return;
 }
 
-if (
-  configuracionTienda.checkoutMostrarReferencia &&
-  configuracionTienda.checkoutReferenciaObligatoria &&
-  !referencia.trim()
-) {
-  alert("Ingresa una referencia de entrega.");
-  return;
-}
+
 
   const celularLimpio = celular.replace(/\D/g, "");
 
