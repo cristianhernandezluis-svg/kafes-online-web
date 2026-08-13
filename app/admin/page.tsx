@@ -38,7 +38,7 @@ function obtenerRangoHoyPeru() {
     partes.find((parte) => parte.type === "day")?.value,
   );
 
-  // PerÃº utiliza UTC-5.
+  // Perú utiliza UTC-5.
   const inicio = new Date(
     Date.UTC(year, month - 1, day, 5, 0, 0, 0),
   );
@@ -258,7 +258,7 @@ export default async function AdminPage() {
       href: "/admin/pedidos",
     },
     {
-      titulo: "En preparaciÃ³n",
+      titulo: "En preparación",
       valor: pedidosPreparando.toString(),
       descripcion: "Confirmados o preparando",
       icono: Clock3,
@@ -427,7 +427,7 @@ export default async function AdminPage() {
           <div className="flex items-center justify-between border-b border-slate-200 p-5">
             <div>
               <h2 className="font-black">
-                Ãšltimos pedidos
+                Últimos pedidos
               </h2>
 
               <p className="mt-1 text-sm text-slate-500">
@@ -451,11 +451,11 @@ export default async function AdminPage() {
               />
 
               <p className="mt-4 font-bold">
-                TodavÃ­a no hay pedidos
+                Todavía no hay pedidos
               </p>
 
               <p className="mt-1 text-sm text-slate-500">
-                Los pedidos nuevos aparecerÃ¡n aquÃ­.
+                Los pedidos nuevos aparecerán aquí.
               </p>
             </div>
           ) : (
@@ -490,12 +490,12 @@ export default async function AdminPage() {
                         {pedido.items[0]?.nombreProducto ??
                           "Pedido sin producto"}
                         {pedido.items[0]?.cantidad
-                          ? ` Ã— ${pedido.items[0].cantidad}`
+                          ? ` × ${pedido.items[0].cantidad}`
                           : ""}
                       </p>
 
                       <p className="mt-1 text-xs text-slate-400">
-                        {pedido.ciudad} Â·{" "}
+                        {pedido.ciudad} ·{" "}
                         {formatearFecha(pedido.createdAt)}
                       </p>
                     </div>
@@ -523,11 +523,11 @@ export default async function AdminPage() {
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="border-b border-slate-200 p-5">
             <h2 className="font-black">
-              Productos mÃ¡s vendidos
+              Productos más vendidos
             </h2>
 
             <p className="mt-1 text-sm text-slate-500">
-              SegÃºn las unidades pedidas
+              Según las unidades pedidas
             </p>
           </div>
 
@@ -539,11 +539,11 @@ export default async function AdminPage() {
               />
 
               <p className="mt-4 font-bold">
-                Sin informaciÃ³n de ventas
+                Sin información de ventas
               </p>
 
               <p className="mt-1 text-sm text-slate-500">
-                Los productos vendidos aparecerÃ¡n aquÃ­.
+                Los productos vendidos aparecerán aquí.
               </p>
             </div>
           ) : (
