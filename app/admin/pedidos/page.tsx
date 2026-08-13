@@ -64,6 +64,28 @@ function formatoEstado(estado: string) {
     .replace(/^\w/, (letra) => letra.toUpperCase());
 }
 
+function formatoEstadoPago(estado: string) {
+  const nombres: Record<string, string> = {
+    PENDIENTE: "Pago pendiente",
+    ADELANTO: "Adelanto",
+    PAGADO: "Pagado",
+    REEMBOLSADO: "Reembolsado",
+  };
+
+  return nombres[estado] ?? formatoEstado(estado);
+}
+
+function claseEstadoPago(estado: string) {
+  const estilos: Record<string, string> = {
+    PENDIENTE: "bg-amber-100 text-amber-800",
+    ADELANTO: "bg-blue-100 text-blue-700",
+    PAGADO: "bg-emerald-100 text-emerald-700",
+    REEMBOLSADO: "bg-slate-200 text-slate-700",
+  };
+
+  return estilos[estado] ?? "bg-slate-100 text-slate-700";
+}
+
 function claseEstado(estado: string) {
   const estilos: Record<string, string> = {
     NUEVO: "bg-blue-100 text-blue-700",
@@ -494,8 +516,8 @@ export default async function PedidosPage({
                           Pago
                         </p>
 
-                        <span className={`mt-1 inline-flex rounded-full px-2.5 py-1 text-[11px] font-black ${pedido.estadoPago === "PENDIENTE" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-700"}`}>
-                          {pedido.estadoPago === "PENDIENTE" ? "PAGO" : formatoEstado(pedido.estadoPago)}
+                        <span className={`mt-1 inline-flex rounded-full px-2.5 py-1 text-[11px] font-black ${claseEstadoPago(pedido.estadoPago)}`}>
+                          {formatoEstadoPago(pedido.estadoPago)}
                         </span>
                       </div>
                     </div>
@@ -633,8 +655,8 @@ export default async function PedidosPage({
           href={hrefPedido}
           className="block px-5 py-4"
         >
-          <span className={`rounded-full px-3 py-1 text-xs font-bold ${pedido.estadoPago === "PENDIENTE" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-700"}`}>
-            {pedido.estadoPago === "PENDIENTE" ? "PAGO" : formatoEstado(pedido.estadoPago)}
+          <span className={`rounded-full px-3 py-1 text-xs font-bold ${claseEstadoPago(pedido.estadoPago)}`}>
+            {formatoEstadoPago(pedido.estadoPago)}
           </span>
         </Link>
       </td>
