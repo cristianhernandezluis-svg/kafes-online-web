@@ -1,5 +1,6 @@
 import Link from "next/link";
 import prisma from "@/lib/prisma";
+import CrearPedidoDesdeCarrito from "./CrearPedidoDesdeCarrito";
 import {
   CircleCheck,
   Clock3,
@@ -576,6 +577,25 @@ export default async function CarritosAbandonadosPage({
                           />
                           Recuperar
                         </a>
+                      )}
+
+                      {!esRecuperado && (
+                        <CrearPedidoDesdeCarrito
+                          sessionId={carrito.sessionId}
+                          productoId={carrito.productoId}
+                          cantidad={carrito.cantidad}
+                          nombre={carrito.nombre}
+                          celular={carrito.celular}
+                          ciudad={carrito.ciudad}
+                          region={carrito.region}
+                          direccion={carrito.direccion}
+                          utmSource={carrito.utmSource}
+                          utmMedium={carrito.utmMedium}
+                          utmCampaign={carrito.utmCampaign}
+                          utmContent={carrito.utmContent}
+                          fbclid={carrito.fbclid}
+                          ttclid={carrito.ttclid}
+                        />
                       )}
 
                       {carrito.pedidoId && (
