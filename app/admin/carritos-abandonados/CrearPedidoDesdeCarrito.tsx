@@ -13,6 +13,7 @@ type CrearPedidoDesdeCarritoProps = {
   sessionId: string;
   productoId: number;
   productoNombre: string;
+  imagenUrl: string | null;
   cantidad: number;
 
   nombre: string | null;
@@ -30,6 +31,10 @@ type CrearPedidoDesdeCarritoProps = {
   ttclid: string | null;
 };
 
+const DEPARTAMENTOS_PERU = [
+  "Amazonas", "Áncash", "Apurímac", "Arequipa", "Ayacucho", "Cajamarca", "Callao", "Cusco", "Huancavelica", "Huánuco", "Ica", "Junín", "La Libertad", "Lambayeque", "Lima", "Loreto", "Madre de Dios", "Moquegua", "Pasco", "Piura", "Puno", "San Martín", "Tacna", "Tumbes", "Ucayali",
+] as const;
+
 type RespuestaPedido = {
   ok?: boolean;
   error?: string;
@@ -46,6 +51,7 @@ export default function CrearPedidoDesdeCarrito({
   sessionId,
   productoId,
   productoNombre,
+  imagenUrl,
   cantidad,
   nombre,
   celular,
@@ -293,11 +299,17 @@ export default function CrearPedidoDesdeCarrito({
             <div className="space-y-5 p-5 sm:p-6">
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-white shadow-sm">
-                    <Package
-                      size={21}
-                      className="text-slate-700"
-                    />
+                  <div className="flex h-14 w-14 flex-none items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                    {imagenUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={imagenUrl}
+                        alt={productoNombre}
+                        className="h-full w-full object-contain p-1"
+                      />
+                    ) : (
+                      <Package size={21} className="text-slate-700" />
+                    )}
                   </div>
 
                   <div className="min-w-0">
@@ -323,53 +335,19 @@ export default function CrearPedidoDesdeCarrito({
                     Nombre y apellido
                   </span>
 
-                  <input
-                    type="text"
-                    value={nombreEditado}
-                    onChange={(event) =>
-                      setNombreEditado(
-                        event.target.value,
-                      )
-                    }
-                    placeholder="Nombre del cliente"
-                    className="h-12 w-full rounded-xl border border-slate-300 px-4 text-sm outline-none transition focus:border-slate-950"
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="mb-1.5 block text-sm font-bold text-slate-700">
-                    Celular
-                  </span>
-
-                  <input
-                    type="tel"
-                    value={celularEditado}
-                    onChange={(event) =>
-                      setCelularEditado(
-                        event.target.value,
-                      )
-                    }
-                    placeholder="999999999"
-                    className="h-12 w-full rounded-xl border border-slate-300 px-4 text-sm outline-none transition focus:border-slate-950"
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="mb-1.5 block text-sm font-bold text-slate-700">
-                    Región
-                  </span>
-
-                  <input
-                    type="text"
+                  <select
                     value={regionEditada}
-                    onChange={(event) =>
-                      setRegionEditada(
-                        event.target.value,
-                      )
-                    }
-                    placeholder="Ej. Lima"
-                    className="h-12 w-full rounded-xl border border-slate-300 px-4 text-sm outline-none transition focus:border-slate-950"
-                  />
+                    onChange={(event) => setRegionEditada(event.target.value)}
+                    className="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm outline-none transition focus:border-slate-950"
+                  >
+                    <option value="">Selecciona un departamento</option>
+                    {regionEditada && !DEPARTAMENTOS_PERU.includes(regionEditada as (typeof DEPARTAMENTOS_PERU)[number]) && (
+                      <option value={regionEditada}>{regionEditada}</option>
+                    )}
+                    {DEPARTAMENTOS_PERU.map((departamento) => (
+                      <option key={departamento} value={departamento}>{departamento}</option>
+                    ))}
+                  </select>
                 </label>
 
                 <label className="block">
