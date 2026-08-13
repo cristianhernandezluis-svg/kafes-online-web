@@ -193,55 +193,107 @@ export default async function AdminHomePage() {
                     : "border-dashed border-slate-300 opacity-70"
                 }`}
               >
-                <div className="flex items-center gap-4">
-                  <button
-                    type="button"
-                    aria-label="Cambiar orden"
-                    title="El orden por arrastre se habilitará en la siguiente etapa"
-                    className="cursor-not-allowed text-slate-300"
-                  >
-                    <GripVertical size={24} />
-                  </button>
+                <div className="flex flex-1 items-center gap-4">
+  <button
+    type="button"
+    aria-label="Cambiar orden"
+    title="El orden por arrastre se habilitará en la siguiente etapa"
+    className="cursor-not-allowed text-slate-300"
+  >
+    <GripVertical size={24} />
+  </button>
 
-                  <div
-                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
-                      seccion.activo
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-slate-100 text-slate-400"
-                    }`}
-                  >
-                    <span className="text-sm font-black">
-                      {seccion.orden}
-                    </span>
-                  </div>
+  {rutaEdicion ? (
+    <Link
+      href={rutaEdicion}
+      className="flex min-w-0 flex-1 items-center gap-4 rounded-xl transition hover:bg-slate-50"
+    >
+      <div
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
+          seccion.activo
+            ? "bg-yellow-100 text-yellow-700"
+            : "bg-slate-100 text-slate-400"
+        }`}
+      >
+        <span className="text-sm font-black">
+          {seccion.orden}
+        </span>
+      </div>
 
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-black text-slate-950">
-                        {seccion.nombre}
-                      </h3>
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="font-black text-slate-950">
+            {seccion.nombre}
+          </h3>
 
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-[10px] font-black tracking-wide ${
-                          seccion.activo
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-slate-100 text-slate-500"
-                        }`}
-                      >
-                        {seccion.activo ? "VISIBLE" : "OCULTO"}
-                      </span>
-                    </div>
+          <span
+            className={`rounded-full px-2.5 py-1 text-[10px] font-black tracking-wide ${
+              seccion.activo
+                ? "bg-emerald-100 text-emerald-700"
+                : "bg-slate-100 text-slate-500"
+            }`}
+          >
+            {seccion.activo
+              ? "VISIBLE"
+              : "OCULTO"}
+          </span>
+        </div>
 
-                    <p className="mt-1 text-sm text-slate-500">
-                      {seccion.subtitulo ??
-                        "Sección de la página principal"}
-                    </p>
+        <p className="mt-1 text-sm text-slate-500">
+          {seccion.subtitulo ??
+            "Sección de la página principal"}
+        </p>
 
-                    <p className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-300">
-                      {seccion.tipo}
-                    </p>
-                  </div>
-                </div>
+        <p className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-300">
+          {seccion.tipo}
+        </p>
+      </div>
+    </Link>
+  ) : (
+    <div className="flex min-w-0 flex-1 items-center gap-4">
+      <div
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
+          seccion.activo
+            ? "bg-yellow-100 text-yellow-700"
+            : "bg-slate-100 text-slate-400"
+        }`}
+      >
+        <span className="text-sm font-black">
+          {seccion.orden}
+        </span>
+      </div>
+
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="font-black text-slate-950">
+            {seccion.nombre}
+          </h3>
+
+          <span
+            className={`rounded-full px-2.5 py-1 text-[10px] font-black tracking-wide ${
+              seccion.activo
+                ? "bg-emerald-100 text-emerald-700"
+                : "bg-slate-100 text-slate-500"
+            }`}
+          >
+            {seccion.activo
+              ? "VISIBLE"
+              : "OCULTO"}
+          </span>
+        </div>
+
+        <p className="mt-1 text-sm text-slate-500">
+          {seccion.subtitulo ??
+            "Sección de la página principal"}
+        </p>
+
+        <p className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-300">
+          {seccion.tipo}
+        </p>
+      </div>
+    </div>
+  )}
+</div>
 
                 <div className="flex flex-wrap gap-2 md:ml-auto">
                   {rutaEdicion ? (
@@ -358,39 +410,51 @@ export default async function AdminHomePage() {
                 key={banner.id}
                 className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={banner.imagenDesktopUrl}
-                  alt={banner.alt}
-                  className="aspect-[16/5] w-full object-cover"
-                />
+                <Link
+  href={`/admin/home/banners/${banner.id}/editar`}
+  className="block"
+>
+  {/* eslint-disable-next-line @next/next/no-img-element */}
+  <img
+    src={banner.imagenDesktopUrl}
+    alt={banner.alt}
+    className="aspect-[16/5] w-full object-cover transition hover:opacity-95"
+  />
+</Link>
 
                 <div className="p-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-xs font-black uppercase tracking-widest text-slate-400">
-                        Orden {banner.orden}
-                      </p>
+                  <Link
+  href={`/admin/home/banners/${banner.id}/editar`}
+  className="block rounded-xl transition hover:bg-slate-50"
+>
+  <div className="flex items-start justify-between gap-4">
+    <div>
+      <p className="text-xs font-black uppercase tracking-widest text-slate-400">
+        Orden {banner.orden}
+      </p>
 
-                      <h3 className="mt-1 text-lg font-black text-slate-950">
-                        {banner.titulo || banner.alt}
-                      </h3>
+      <h3 className="mt-1 text-lg font-black text-slate-950">
+        {banner.titulo || banner.alt}
+      </h3>
 
-                      <p className="mt-1 break-all text-xs text-slate-500">
-                        {banner.href}
-                      </p>
-                    </div>
+      <p className="mt-1 break-all text-xs text-slate-500">
+        {banner.href}
+      </p>
+    </div>
 
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-black ${
-                        banner.activo
-                          ? "bg-emerald-100 text-emerald-700"
-                          : "bg-slate-100 text-slate-500"
-                      }`}
-                    >
-                      {banner.activo ? "ACTIVO" : "OCULTO"}
-                    </span>
-                  </div>
+    <span
+      className={`rounded-full px-3 py-1 text-xs font-black ${
+        banner.activo
+          ? "bg-emerald-100 text-emerald-700"
+          : "bg-slate-100 text-slate-500"
+      }`}
+    >
+      {banner.activo
+        ? "ACTIVO"
+        : "OCULTO"}
+    </span>
+  </div>
+</Link>
 
                   <div className="mt-5 flex flex-wrap gap-2">
                     <Link

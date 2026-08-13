@@ -112,115 +112,134 @@ export default async function MarcasPage() {
               </thead>
 
               <tbody className="divide-y divide-slate-200">
-                {marcas.map((marca) => (
-                  <tr
-                    key={marca.id}
-                    className="transition hover:bg-slate-50"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                          {marca.logoUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={marca.logoUrl}
-                              alt={marca.nombre}
-                              className="h-full w-full object-contain p-1"
-                            />
-                          ) : (
-                            <Tags
-                              size={22}
-                              className="text-slate-400"
-                            />
-                          )}
-                        </div>
+  {marcas.map((marca) => {
+    const hrefEditar = `/admin/marcas/${marca.id}/editar`;
 
-                        <div className="min-w-0">
-                          <p className="font-bold text-slate-950">
-                            {marca.nombre}
-                          </p>
+    return (
+      <tr
+        key={marca.id}
+        className="cursor-pointer transition hover:bg-slate-50"
+      >
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4"
+          >
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                {marca.logoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={marca.logoUrl}
+                    alt={marca.nombre}
+                    className="h-full w-full object-contain p-1"
+                  />
+                ) : (
+                  <Tags
+                    size={22}
+                    className="text-slate-400"
+                  />
+                )}
+              </div>
 
-                          <p className="mt-1 text-xs text-slate-500">
-                            {marca.slug}
-                          </p>
+              <div className="min-w-0">
+                <p className="font-bold text-slate-950">
+                  {marca.nombre}
+                </p>
 
-                          {marca.descripcion && (
-                            <p className="mt-1 line-clamp-1 max-w-md text-xs text-slate-400">
-                              {marca.descripcion}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </td>
+                <p className="mt-1 text-xs text-slate-500">
+                  {marca.slug}
+                </p>
 
-                    <td className="px-6 py-4">
-                      <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">
-                        {marca._count.productos}
-                      </span>
-                    </td>
+                {marca.descripcion && (
+                  <p className="mt-1 line-clamp-1 max-w-md text-xs text-slate-400">
+                    {marca.descripcion}
+                  </p>
+                )}
+              </div>
+            </div>
+          </Link>
+        </td>
 
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex rounded-full px-3 py-1 text-xs font-black ${
-                          marca.activa
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-slate-100 text-slate-600"
-                        }`}
-                      >
-                        {marca.activa
-                          ? "ACTIVA"
-                          : "OCULTA"}
-                      </span>
-                    </td>
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4"
+          >
+            <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">
+              {marca._count.productos}
+            </span>
+          </Link>
+        </td>
 
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <form
-                          action={cambiarEstadoMarca}
-                        >
-                          <input
-                            type="hidden"
-                            name="marcaId"
-                            value={marca.id}
-                          />
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4"
+          >
+            <span
+              className={`inline-flex rounded-full px-3 py-1 text-xs font-black ${
+                marca.activa
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-slate-100 text-slate-600"
+              }`}
+            >
+              {marca.activa
+                ? "ACTIVA"
+                : "OCULTA"}
+            </span>
+          </Link>
+        </td>
 
-                          <input
-                            type="hidden"
-                            name="activa"
-                            value={String(
-                              !marca.activa
-                            )}
-                          />
+        <td className="px-6 py-4">
+          <div className="flex items-center justify-end gap-2">
+            <form
+              action={cambiarEstadoMarca}
+            >
+              <input
+                type="hidden"
+                name="marcaId"
+                value={marca.id}
+              />
 
-                          <button
-                            type="submit"
-                            title={
-                              marca.activa
-                                ? "Ocultar marca"
-                                : "Activar marca"
-                            }
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100"
-                          >
-                            {marca.activa ? (
-                              <EyeOff size={17} />
-                            ) : (
-                              <Eye size={17} />
-                            )}
-                          </button>
-                        </form>
+              <input
+                type="hidden"
+                name="activa"
+                value={String(
+                  !marca.activa,
+                )}
+              />
 
-                        <Link
-                          href={`/admin/marcas/${marca.id}/editar`}
-                          className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-slate-950 px-4 text-sm font-bold text-white transition hover:bg-slate-800"
-                        >
-                          <Pencil size={16} />
-                          Editar
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+              <button
+                type="submit"
+                title={
+                  marca.activa
+                    ? "Ocultar marca"
+                    : "Activar marca"
+                }
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100"
+              >
+                {marca.activa ? (
+                  <EyeOff size={17} />
+                ) : (
+                  <Eye size={17} />
+                )}
+              </button>
+            </form>
+
+            <Link
+              href={hrefEditar}
+              className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-slate-950 px-4 text-sm font-bold text-white transition hover:bg-slate-800"
+            >
+              <Pencil size={16} />
+              Editar
+            </Link>
+          </div>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
             </table>
           </div>
         )}

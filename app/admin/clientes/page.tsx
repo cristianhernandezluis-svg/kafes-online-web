@@ -405,10 +405,15 @@ export default async function ClientesPage({
 
               return (
                 <div
-                  key={cliente.id}
-                  className="p-4 sm:p-5"
-                >
-                  <div className="flex flex-col gap-5 xl:flex-row xl:items-center">
+  key={cliente.id}
+  className="group relative cursor-pointer p-4 transition hover:bg-slate-50 sm:p-5"
+>
+  <Link
+    href={`/admin/clientes/${cliente.id}`}
+    aria-label={`Ver cliente ${cliente.nombre}`}
+    className="absolute inset-0 z-0"
+  />
+                  <div className="pointer-events-none relative z-10 flex flex-col gap-5 xl:flex-row xl:items-center">
                     <div className="flex min-w-0 flex-1 items-start gap-3">
                       <div className="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-slate-950 text-lg font-black text-white">
                         {inicial}
@@ -520,7 +525,7 @@ export default async function ClientesPage({
                         <>
                           <Link
                             href={`/admin/pedidos/${ultimoPedido.id}`}
-                            className="mt-1 inline-block font-black text-slate-950 transition hover:text-blue-600"
+                            className="pointer-events-auto mt-1 inline-block font-black text-slate-950 transition hover:text-blue-600"
                           >
                             #
                             {
@@ -552,7 +557,7 @@ export default async function ClientesPage({
                       )}
                     </div>
 
-                    <div className="flex flex-wrap gap-2 xl:w-60 xl:justify-end">
+                    <div className="pointer-events-auto flex flex-wrap gap-2 xl:w-60 xl:justify-end">
                       <a
                         href={whatsapp}
                         target="_blank"

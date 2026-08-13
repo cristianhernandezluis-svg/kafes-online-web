@@ -158,191 +158,219 @@ export default async function OpinionesPage() {
               </thead>
 
               <tbody className="divide-y divide-slate-200">
-                {opiniones.map((opinion) => {
-                  const imagenProducto =
-                    opinion.producto.imagenes[0]?.url;
+  {opiniones.map((opinion) => {
+    const imagenProducto =
+      opinion.producto.imagenes[0]?.url;
 
-                  return (
-                    <tr
-                      key={opinion.id}
-                      className="transition hover:bg-slate-50"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-4">
-                          <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-100">
-                            {opinion.imagenUrl ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                src={opinion.imagenUrl}
-                                alt={opinion.clienteNombre}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <span className="text-lg font-black text-slate-500">
-                                {opinion.clienteNombre
-                                  .charAt(0)
-                                  .toUpperCase()}
-                              </span>
-                            )}
-                          </div>
+    const hrefEditar =
+      `/admin/opiniones/${opinion.id}/editar`;
 
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <p className="font-bold text-slate-950">
-                                {opinion.clienteNombre}
-                              </p>
+    return (
+      <tr
+        key={opinion.id}
+        className="cursor-pointer transition hover:bg-slate-50"
+      >
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4"
+          >
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+                {opinion.imagenUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={opinion.imagenUrl}
+                    alt={opinion.clienteNombre}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="text-lg font-black text-slate-500">
+                    {opinion.clienteNombre
+                      .charAt(0)
+                      .toUpperCase()}
+                  </span>
+                )}
+              </div>
 
-                              {opinion.compraVerificada && (
-                                <BadgeCheck
-                                  size={17}
-                                  className="shrink-0 text-emerald-600"
-                                />
-                              )}
-                            </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="font-bold text-slate-950">
+                    {opinion.clienteNombre}
+                  </p>
 
-                            {opinion.ciudad && (
-                              <p className="mt-1 text-xs text-slate-500">
-                                {opinion.ciudad}
-                              </p>
-                            )}
+                  {opinion.compraVerificada && (
+                    <BadgeCheck
+                      size={17}
+                      className="shrink-0 text-emerald-600"
+                    />
+                  )}
+                </div>
 
-                            <p className="mt-1 line-clamp-2 max-w-sm text-xs leading-5 text-slate-400">
-                              {opinion.comentario}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
+                {opinion.ciudad && (
+                  <p className="mt-1 text-xs text-slate-500">
+                    {opinion.ciudad}
+                  </p>
+                )}
 
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                            {imagenProducto ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                src={imagenProducto}
-                                alt={opinion.producto.nombre}
-                                className="h-full w-full object-contain"
-                              />
-                            ) : (
-                              <MessageSquareText
-                                size={19}
-                                className="text-slate-400"
-                              />
-                            )}
-                          </div>
+                <p className="mt-1 line-clamp-2 max-w-sm text-xs leading-5 text-slate-400">
+                  {opinion.comentario}
+                </p>
+              </div>
+            </div>
+          </Link>
+        </td>
 
-                          <div className="min-w-0">
-                            <p className="max-w-56 truncate text-sm font-bold text-slate-900">
-                              {opinion.producto.nombre}
-                            </p>
+        <td className="px-6 py-4">
+          <div className="flex items-center gap-3">
+            <Link
+              href={hrefEditar}
+              className="flex min-w-0 flex-1 items-center gap-3"
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                {imagenProducto ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={imagenProducto}
+                    alt={opinion.producto.nombre}
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <MessageSquareText
+                    size={19}
+                    className="text-slate-400"
+                  />
+                )}
+              </div>
 
-                            <Link
-                              href={`/producto/${opinion.producto.slug}`}
-                              target="_blank"
-                              className="mt-1 block text-xs font-semibold text-blue-600 hover:underline"
-                            >
-                              Ver producto
-                            </Link>
-                          </div>
-                        </div>
-                      </td>
+              <div className="min-w-0">
+                <p className="max-w-56 truncate text-sm font-bold text-slate-900">
+                  {opinion.producto.nombre}
+                </p>
+              </div>
+            </Link>
 
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1">
-                          {Array.from({
-                            length: 5,
-                          }).map((_, indice) => (
-                            <Star
-                              key={indice}
-                              size={16}
-                              className={
-                                indice <
-                                opinion.calificacion
-                                  ? "fill-yellow-400 text-yellow-400"
-                                  : "text-slate-300"
-                              }
-                            />
-                          ))}
-                        </div>
+            <Link
+              href={`/producto/${opinion.producto.slug}`}
+              target="_blank"
+              className="shrink-0 text-xs font-semibold text-blue-600 hover:underline"
+            >
+              Ver producto
+            </Link>
+          </div>
+        </td>
 
-                        <p className="mt-1 text-xs font-bold text-slate-500">
-                          {opinion.calificacion} de 5
-                        </p>
-                      </td>
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4"
+          >
+            <div className="flex items-center gap-1">
+              {Array.from({
+                length: 5,
+              }).map((_, indice) => (
+                <Star
+                  key={indice}
+                  size={16}
+                  className={
+                    indice <
+                    opinion.calificacion
+                      ? "fill-yellow-400 text-yellow-400"
+                      : "text-slate-300"
+                  }
+                />
+              ))}
+            </div>
 
-                      <td className="px-6 py-4 text-sm font-semibold text-slate-600">
-                        {formatearFecha(opinion.fecha)}
-                      </td>
+            <p className="mt-1 text-xs font-bold text-slate-500">
+              {opinion.calificacion} de 5
+            </p>
+          </Link>
+        </td>
 
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex rounded-full px-3 py-1 text-xs font-black ${
-                            opinion.visible
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-slate-100 text-slate-600"
-                          }`}
-                        >
-                          {opinion.visible
-                            ? "VISIBLE"
-                            : "OCULTA"}
-                        </span>
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4 text-sm font-semibold text-slate-600"
+          >
+            {formatearFecha(opinion.fecha)}
+          </Link>
+        </td>
 
-                        {opinion.compraVerificada && (
-                          <p className="mt-2 text-xs font-bold text-emerald-600">
-                            Compra verificada
-                          </p>
-                        )}
-                      </td>
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4"
+          >
+            <span
+              className={`inline-flex rounded-full px-3 py-1 text-xs font-black ${
+                opinion.visible
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-slate-100 text-slate-600"
+              }`}
+            >
+              {opinion.visible
+                ? "VISIBLE"
+                : "OCULTA"}
+            </span>
 
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <form
-                            action={cambiarEstadoOpinion}
-                          >
-                            <input
-                              type="hidden"
-                              name="opinionId"
-                              value={opinion.id}
-                            />
+            {opinion.compraVerificada && (
+              <p className="mt-2 text-xs font-bold text-emerald-600">
+                Compra verificada
+              </p>
+            )}
+          </Link>
+        </td>
 
-                            <input
-                              type="hidden"
-                              name="visible"
-                              value={String(
-                                !opinion.visible
-                              )}
-                            />
+        <td className="px-6 py-4">
+          <div className="flex items-center justify-end gap-2">
+            <form
+              action={cambiarEstadoOpinion}
+            >
+              <input
+                type="hidden"
+                name="opinionId"
+                value={opinion.id}
+              />
 
-                            <button
-                              type="submit"
-                              title={
-                                opinion.visible
-                                  ? "Ocultar opinión"
-                                  : "Mostrar opinión"
-                              }
-                              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100"
-                            >
-                              {opinion.visible ? (
-                                <EyeOff size={17} />
-                              ) : (
-                                <Eye size={17} />
-                              )}
-                            </button>
-                          </form>
+              <input
+                type="hidden"
+                name="visible"
+                value={String(
+                  !opinion.visible,
+                )}
+              />
 
-                          <Link
-                            href={`/admin/opiniones/${opinion.id}/editar`}
-                            className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-slate-950 px-4 text-sm font-bold text-white transition hover:bg-slate-800"
-                          >
-                            <Pencil size={16} />
-                            Editar
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
+              <button
+                type="submit"
+                title={
+                  opinion.visible
+                    ? "Ocultar opinión"
+                    : "Mostrar opinión"
+                }
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100"
+              >
+                {opinion.visible ? (
+                  <EyeOff size={17} />
+                ) : (
+                  <Eye size={17} />
+                )}
+              </button>
+            </form>
+
+            <Link
+              href={hrefEditar}
+              className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-slate-950 px-4 text-sm font-bold text-white transition hover:bg-slate-800"
+            >
+              <Pencil size={16} />
+              Editar
+            </Link>
+          </div>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
             </table>
           </div>
         )}
