@@ -335,6 +335,34 @@ export default function CrearPedidoDesdeCarrito({
                     Nombre y apellido
                   </span>
 
+                  <input
+                    type="text"
+                    value={nombreEditado}
+                    onChange={(event) => setNombreEditado(event.target.value)}
+                    placeholder="Nombre del cliente"
+                    className="h-12 w-full rounded-xl border border-slate-300 px-4 text-sm outline-none transition focus:border-slate-950"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-1.5 block text-sm font-bold text-slate-700">
+                    Celular
+                  </span>
+
+                  <input
+                    type="tel"
+                    value={celularEditado}
+                    onChange={(event) => setCelularEditado(event.target.value)}
+                    placeholder="999999999"
+                    className="h-12 w-full rounded-xl border border-slate-300 px-4 text-sm outline-none transition focus:border-slate-950"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-1.5 block text-sm font-bold text-slate-700">
+                    Región
+                  </span>
+
                   <select
                     value={regionEditada}
                     onChange={(event) => setRegionEditada(event.target.value)}
@@ -345,7 +373,9 @@ export default function CrearPedidoDesdeCarrito({
                       <option value={regionEditada}>{regionEditada}</option>
                     )}
                     {DEPARTAMENTOS_PERU.map((departamento) => (
-                      <option key={departamento} value={departamento}>{departamento}</option>
+                      <option key={departamento} value={departamento}>
+                        {departamento}
+                      </option>
                     ))}
                   </select>
                 </label>
@@ -358,11 +388,7 @@ export default function CrearPedidoDesdeCarrito({
                   <input
                     type="text"
                     value={ciudadEditada}
-                    onChange={(event) =>
-                      setCiudadEditada(
-                        event.target.value,
-                      )
-                    }
+                    onChange={(event) => setCiudadEditada(event.target.value)}
                     placeholder="Ej. San Juan de Lurigancho"
                     className="h-12 w-full rounded-xl border border-slate-300 px-4 text-sm outline-none transition focus:border-slate-950"
                   />
