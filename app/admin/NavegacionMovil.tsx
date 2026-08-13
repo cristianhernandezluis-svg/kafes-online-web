@@ -186,8 +186,8 @@ export default function NavegacionMovil() {
         </div>
       )}
 
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur lg:hidden">
-        <div className="mx-auto grid max-w-lg grid-cols-5">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 w-full overflow-hidden border-t border-slate-200 bg-white/95 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur lg:hidden">
+        <div className="grid w-full grid-cols-5">
           {navegacionPrincipal.map((item) => {
             const Icono = item.icono;
             const activo = estaActivo(item.href);
