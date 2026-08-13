@@ -117,7 +117,7 @@ messaging.onBackgroundMessage((payload) => {
       "Se ha registrado un nuevo pedido.",
 
     icon: "/pwa/icon-192.png",
-    badge: "/pwa/icon-192.png",
+    badge: "/pwa/badge-96.png",
 
     tag: `pedido-${datos.pedidoId || Date.now()}`,
     renotify: true,
