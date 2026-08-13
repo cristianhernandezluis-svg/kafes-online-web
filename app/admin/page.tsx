@@ -464,12 +464,12 @@ export default async function AdminPage() {
                 <Link
                   key={pedido.id}
                   href={`/admin/pedidos/${pedido.id}`}
-                  className="block p-4 transition hover:bg-slate-50 sm:p-5"
+                  className="block px-4 py-3 transition hover:bg-slate-50 sm:p-5"
                 >
-                  <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                  <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-black text-slate-950">
+                        <p className="text-sm font-black text-slate-950 sm:text-base">
                           #{pedido.codigo}
                         </p>
 
@@ -482,7 +482,7 @@ export default async function AdminPage() {
                         </span>
                       </div>
 
-                      <p className="mt-2 truncate text-sm font-bold text-slate-700">
+                      <p className="mt-1.5 truncate text-sm font-bold text-slate-700">
                         {pedido.nombreCliente}
                       </p>
 
@@ -500,14 +500,14 @@ export default async function AdminPage() {
                       </p>
                     </div>
 
-                    <div className="shrink-0 text-left sm:text-right">
+                    <div className="flex shrink-0 items-center justify-between gap-4 sm:block sm:text-right">
                       <p className="font-black">
                         {formatearDinero(
                           Number(pedido.total),
                         )}
                       </p>
 
-                      <p className="mt-1 text-[11px] font-semibold text-slate-500">
+                      <p className="text-[11px] font-semibold text-slate-500 sm:mt-1">
                         {formatearEstado(
                           pedido.estadoPago,
                         )}

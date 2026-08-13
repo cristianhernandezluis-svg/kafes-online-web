@@ -36,11 +36,6 @@ const navegacionPrincipal = [
     icono: ShoppingCart,
   },
   {
-    nombre: "Carritos abandonados",
-    href: "/admin/carritos-abandonados",
-    icono: ShoppingBasket,
-  },
-  {
     nombre: "Clientes",
     href: "/admin/clientes",
     icono: Users,
@@ -48,6 +43,12 @@ const navegacionPrincipal = [
 ];
 
 const opcionesAdicionales = [
+  {
+    nombre: "Carritos abandonados",
+    descripcion: "Recupera ventas pendientes",
+    href: "/admin/carritos-abandonados",
+    icono: ShoppingBasket,
+  },
   {
     nombre: "Categorías",
     descripcion: "Organiza los productos",
