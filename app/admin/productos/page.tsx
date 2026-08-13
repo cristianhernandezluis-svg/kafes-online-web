@@ -126,77 +126,120 @@ export default async function ProductosPage() {
               </thead>
 
               <tbody className="divide-y divide-slate-200">
-                {productos.map((producto) => (
-                  <tr
-                    key={producto.id}
-                    className="transition hover:bg-slate-50"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                          {producto.imagenes[0]?.url ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={producto.imagenes[0].url}
-                              alt={producto.nombre}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <Package size={22} className="text-slate-400" />
-                          )}
-                        </div>
+  {productos.map((producto) => {
+    const hrefEditar = `/admin/productos/${producto.id}/editar`;
 
-                        <div>
-                          <p className="font-bold text-slate-950">
-                            {producto.nombre}
-                          </p>
+    return (
+      <tr
+        key={producto.id}
+        className="cursor-pointer transition hover:bg-slate-50"
+      >
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4"
+          >
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                {producto.imagenes[0]?.url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={producto.imagenes[0].url}
+                    alt={producto.nombre}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <Package
+                    size={22}
+                    className="text-slate-400"
+                  />
+                )}
+              </div>
 
-                          <p className="mt-1 text-xs text-slate-500">
-                            /producto/{producto.slug}
-                          </p>
+              <div>
+                <p className="font-bold text-slate-950">
+                  {producto.nombre}
+                </p>
 
-                          {producto.sku && (
-                            <p className="mt-1 text-xs text-slate-400">
-                              SKU: {producto.sku}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </td>
+                <p className="mt-1 text-xs text-slate-500">
+                  /producto/{producto.slug}
+                </p>
 
-                    <td className="px-6 py-4 text-sm text-slate-600">
-                      {producto.categoria?.nombre ?? "Sin categoría"}
-                    </td>
+                {producto.sku && (
+                  <p className="mt-1 text-xs text-slate-400">
+                    SKU: {producto.sku}
+                  </p>
+                )}
+              </div>
+            </div>
+          </Link>
+        </td>
 
-                    <td className="px-6 py-4 text-sm text-slate-600">
-                      {producto.marca?.nombre ?? "Sin marca"}
-                    </td>
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4 text-sm text-slate-600"
+          >
+            {producto.categoria?.nombre ??
+              "Sin categoría"}
+          </Link>
+        </td>
 
-                    <td className="px-6 py-4 font-bold text-slate-950">
-                      S/ {Number(producto.precio).toFixed(2)}
-                    </td>
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4 text-sm text-slate-600"
+          >
+            {producto.marca?.nombre ??
+              "Sin marca"}
+          </Link>
+        </td>
 
-                    <td className="px-6 py-4 text-sm font-semibold">
-                      {producto.stock}
-                    </td>
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4 font-bold text-slate-950"
+          >
+            S/ {Number(producto.precio).toFixed(2)}
+          </Link>
+        </td>
 
-                    <td className="px-6 py-4">
-                      <Badge variant={obtenerEstado(producto.estado)}>
-                        {producto.estado}
-                      </Badge>
-                    </td>
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4 text-sm font-semibold"
+          >
+            {producto.stock}
+          </Link>
+        </td>
 
-                    <td className="px-6 py-4 text-right">
-                      <Link
-                        href={`/admin/productos/${producto.id}/editar`}
-                        className="rounded-lg px-3 py-2 text-sm font-bold text-slate-950 transition hover:bg-slate-100"
-                      >
-                        Editar
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+        <td className="p-0">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4"
+          >
+            <Badge
+              variant={obtenerEstado(
+                producto.estado,
+              )}
+            >
+              {producto.estado}
+            </Badge>
+          </Link>
+        </td>
+
+        <td className="p-0 text-right">
+          <Link
+            href={hrefEditar}
+            className="block px-6 py-4 text-sm font-bold text-slate-950"
+          >
+            Editar
+          </Link>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
             </table>
           </div>
         )}
