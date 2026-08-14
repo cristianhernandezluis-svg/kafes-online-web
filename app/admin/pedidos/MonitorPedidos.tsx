@@ -62,7 +62,7 @@ export default function MonitorPedidos({
           pedido: {
   id: number;
   codigo: string;
-  total: number | string;
+  createdAt: string;
 } | null;
         };
 
@@ -108,7 +108,9 @@ export default function MonitorPedidos({
           }, 8000);
         }
       } catch (error) {
-        console.error("Error revisando pedidos:", error);
+        if (process.env.NODE_ENV === "development") {
+          console.warn("Monitor de pedidos: consulta temporalmente no disponible.", error);
+        }
       } finally {
         ejecutando = false;
       }
@@ -118,7 +120,7 @@ export default function MonitorPedidos({
 
     const intervalo = window.setInterval(
       revisarPedidos,
-      5000,
+      10000,
     );
 
     return () => {
