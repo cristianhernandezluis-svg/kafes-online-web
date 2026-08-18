@@ -171,6 +171,12 @@ const saldoPendiente = Math.max(
               {configuracionTienda.checkoutMostrarTotal && (
   <>
 
+    {cantidad > 1 && !esPedidoConAdelanto && !esPagoCompleto && (
+      <div className="mx-4 mt-3 flex items-center justify-between rounded-xl bg-zinc-50 px-4 py-2 text-sm">
+        <span className="font-bold text-zinc-600">{cantidad} x S/{producto.precio}</span>
+        <span className="text-lg font-black text-black">Total: S/{total}</span>
+      </div>
+    )}
     {esPedidoConAdelanto && (
       <div className="mt-3 space-y-2 border-t border-slate-200 pt-3">
         <div className="flex items-center justify-between text-sm">
