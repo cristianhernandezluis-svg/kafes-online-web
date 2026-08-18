@@ -270,7 +270,7 @@ const sessionId =
     const direccionObligatoria =
       mostrarDireccion &&
       (configuracion?.checkoutDireccionObligatoria ?? true) &&
-      (!mostrarRegion || region === "Lima");
+      (!mostrarRegion || region === "Lima (Metropolitana)");
 
     if (ciudadObligatoria && !ciudad) {
       return NextResponse.json(

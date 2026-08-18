@@ -30,7 +30,8 @@ const regionesPeru = [
   "Junín",
   "La Libertad",
   "Lambayeque",
-  "Lima",
+  "Lima (Metropolitana)",
+  "Lima (Departamento)",
   "Loreto",
   "Madre de Dios",
   "Moquegua",
@@ -282,7 +283,7 @@ const saldoPendiente = Math.max(
   />
 )}
 
-                {configuracionTienda.checkoutMostrarDireccion && (!configuracionTienda.checkoutMostrarRegion || region === "Lima") && (
+                {configuracionTienda.checkoutMostrarDireccion && (!configuracionTienda.checkoutMostrarRegion || region === "Lima (Metropolitana)") && (
   <CheckoutInput
     icon={<Home size={18} />}
     placeholder={`Dirección exacta${
@@ -303,7 +304,7 @@ const saldoPendiente = Math.max(
                 {configuracionTienda.checkoutMostrarRegion &&
   region && (
                   <div className="rounded-2xl border border-green-300 bg-green-50 px-4 py-3 text-sm font-bold text-green-700">
-                    {region === "Lima"
+                    {region === "Lima (Metropolitana)"
                       ? "✅ Pago contra entrega disponible en Lima Metropolitana"
                       : "📦 Envío por Shalom u Olva. Se solicita adelanto para confirmar el envío"}
                   </div>
