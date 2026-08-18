@@ -282,15 +282,6 @@ const saldoPendiente = Math.max(
   />
 )}
 
-                {configuracionTienda.checkoutMostrarRegion &&
-  region && (
-                  <div className="rounded-2xl border border-green-300 bg-green-50 px-4 py-3 text-sm font-bold text-green-700">
-                    {region === "Lima"
-                      ? "✅ Pago contra entrega disponible en Lima Metropolitana"
-                      : "📦 Envío por Shalom u Olva. Se solicita adelanto para confirmar el envío"}
-                  </div>
-                )}
-
                 {configuracionTienda.checkoutMostrarDireccion && (!configuracionTienda.checkoutMostrarRegion || region === "Lima") && (
   <CheckoutInput
     icon={<Home size={18} />}
@@ -308,6 +299,15 @@ const saldoPendiente = Math.max(
     }
   />
 )}
+
+                {configuracionTienda.checkoutMostrarRegion &&
+  region && (
+                  <div className="rounded-2xl border border-green-300 bg-green-50 px-4 py-3 text-sm font-bold text-green-700">
+                    {region === "Lima"
+                      ? "✅ Pago contra entrega disponible en Lima Metropolitana"
+                      : "📦 Envío por Shalom u Olva. Se solicita adelanto para confirmar el envío"}
+                  </div>
+                )}
 
 
                 <button
