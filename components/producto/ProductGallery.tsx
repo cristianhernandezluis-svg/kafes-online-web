@@ -96,7 +96,8 @@ export default function ProductGallery({
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
             className="object-contain p-5 transition duration-500 group-hover:scale-[1.025] sm:p-8 lg:p-10"
-            priority
+            loading="eager"
+fetchPriority="high"
           />
         </button>
 
