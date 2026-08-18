@@ -361,7 +361,7 @@ function ProductSummary({
           alt={producto.nombre}
           width={64}
           height={64}
-          className="rounded-xl border bg-zinc-100 object-cover"
+          className="h-16 w-16 shrink-0 rounded-lg border bg-white object-contain p-1"
         />
 
         <div className="flex-1">
