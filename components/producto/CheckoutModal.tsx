@@ -166,17 +166,12 @@ const saldoPendiente = Math.max(
               <ProductSummary
                 producto={producto}
                 cantidad={cantidad}
+                total={total}
+                mostrarTotal={configuracionTienda.checkoutMostrarTotal}
               />
 
               {configuracionTienda.checkoutMostrarTotal && (
   <>
-
-    {cantidad > 1 && !esPedidoConAdelanto && !esPagoCompleto && (
-      <div className="mx-4 mt-3 flex items-center justify-between rounded-xl bg-zinc-50 px-4 py-2 text-sm">
-        <span className="font-bold text-zinc-600">{cantidad} x S/{producto.precio}</span>
-        <span className="text-lg font-black text-black">Total: S/{total}</span>
-      </div>
-    )}
     {esPedidoConAdelanto && (
       <div className="mt-3 space-y-2 border-t border-slate-200 pt-3">
         <div className="flex items-center justify-between text-sm">
@@ -349,9 +344,13 @@ const saldoPendiente = Math.max(
 function ProductSummary({
   producto,
   cantidad,
+  total,
+  mostrarTotal,
 }: {
   producto: ProductoPublico;
   cantidad: number;
+  total: number;
+  mostrarTotal: boolean;
 }) {
   return (
     <div className="border-b bg-white p-3">
@@ -365,30 +364,38 @@ function ProductSummary({
         />
 
         <div className="flex-1">
-          <h3 className="text-[15px] font-black leading-tight">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-md bg-black px-2 py-1 text-[10px] font-black text-white">{cantidad} UNIDAD{cantidad > 1 ? "ES" : ""}</span>
+            <span className="rounded-md bg-green-600 px-2 py-1 text-[10px] font-black text-white">OFERTA</span>
+          </div>
+
+          <h3 className="mt-2 text-[15px] font-black leading-tight">
             {producto.nombre}
           </h3>
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <span className="text-xl font-black text-black">
+            <span className="text-2xl font-black text-red-600">
               S/{producto.precio}
             </span>
 
             {producto.precioAntes && (
-              <span className="text-xl text-zinc-400 line-through">
+              <span className="text-base font-semibold text-zinc-400 line-through">
                 S/{producto.precioAntes}
               </span>
             )}
           </div>
 
-          <p className="mt-1 text-xs font-semibold text-zinc-500">
-            Cantidad: {cantidad}
-          </p>
-
           <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-green-100 px-2 py-1 text-xs font-bold text-green-700">
             <Truck size={14} />
             ENVÍO GRATIS
           </div>
+
+          {mostrarTotal && (
+            <div className="mt-3 flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2">
+              <span className="text-sm font-bold text-zinc-600">Total del pedido</span>
+              <span className="text-xl font-black text-black">S/{total}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
