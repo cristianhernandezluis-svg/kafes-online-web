@@ -236,24 +236,6 @@ const saldoPendiente = Math.max(
                   autoComplete="tel"
                 />
 
-                {configuracionTienda.checkoutMostrarCiudad && (
-  <CheckoutInput
-    icon={<MapPin size={18} />}
-    placeholder={`Ciudad o distrito${
-      configuracionTienda.checkoutCiudadObligatoria
-        ? " *"
-        : ""
-    }`}
-    value={ciudad}
-    onChange={onCiudadChange}
-    name="address-level2"
-    autoComplete="address-level2"
-    required={
-      configuracionTienda.checkoutCiudadObligatoria
-    }
-  />
-)}
-
                 {configuracionTienda.checkoutMostrarRegion && (
   <select
     required={
@@ -280,6 +262,24 @@ const saldoPendiente = Math.max(
       </option>
     ))}
   </select>
+)}
+
+                {configuracionTienda.checkoutMostrarCiudad && (
+  <CheckoutInput
+    icon={<MapPin size={18} />}
+    placeholder={`Ciudad o distrito${
+      configuracionTienda.checkoutCiudadObligatoria
+        ? " *"
+        : ""
+    }`}
+    value={ciudad}
+    onChange={onCiudadChange}
+    name="address-level2"
+    autoComplete="address-level2"
+    required={
+      configuracionTienda.checkoutCiudadObligatoria
+    }
+  />
 )}
 
                 {configuracionTienda.checkoutMostrarRegion &&
