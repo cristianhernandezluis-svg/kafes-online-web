@@ -170,7 +170,6 @@ const saldoPendiente = Math.max(
 
               {configuracionTienda.checkoutMostrarTotal && (
   <>
-    <OrderTotals total={total} />
 
     {esPedidoConAdelanto && (
       <div className="mt-3 space-y-2 border-t border-slate-200 pt-3">
@@ -287,11 +286,11 @@ const saldoPendiente = Math.max(
                   <div className="rounded-2xl border border-green-300 bg-green-50 px-4 py-3 text-sm font-bold text-green-700">
                     {region === "Lima"
                       ? "✅ Pago contra entrega disponible en Lima Metropolitana"
-                      : "✅ Envío seguro disponible a tu ciudad. Confirmamos tu pedido por WhatsApp"}
+                      : "📦 Envío por Shalom u Olva. Se solicita adelanto para confirmar el envío"}
                   </div>
                 )}
 
-                {configuracionTienda.checkoutMostrarDireccion && (
+                {configuracionTienda.checkoutMostrarDireccion && (!configuracionTienda.checkoutMostrarRegion || region === "Lima") && (
   <CheckoutInput
     icon={<Home size={18} />}
     placeholder={`Dirección exacta${
@@ -349,14 +348,14 @@ function ProductSummary({
   cantidad: number;
 }) {
   return (
-    <div className="border-b bg-white p-4">
+    <div className="border-b bg-white p-3">
       <div className="flex gap-3">
         <Image
           src={producto.imagen}
           alt={producto.nombre}
-          width={85}
-          height={85}
-          className="rounded-2xl border bg-zinc-100 object-cover"
+          width={64}
+          height={64}
+          className="rounded-xl border bg-zinc-100 object-cover"
         />
 
         <div className="flex-1">
@@ -365,7 +364,7 @@ function ProductSummary({
           </h3>
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <span className="text-2xl font-black text-black">
+            <span className="text-xl font-black text-black">
               S/{producto.precio}
             </span>
 

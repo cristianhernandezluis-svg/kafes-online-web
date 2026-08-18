@@ -304,6 +304,7 @@ useEffect(() => {
           region.trim()) &&
         (!configuracionTienda.checkoutMostrarDireccion ||
           !configuracionTienda.checkoutDireccionObligatoria ||
+          (configuracionTienda.checkoutMostrarRegion && region !== "Lima") ||
           direccion.trim()) &&
         (!configuracionTienda.checkoutMostrarDni ||
           !configuracionTienda.checkoutDniObligatorio ||
@@ -659,6 +660,7 @@ if (
 if (
   configuracionTienda.checkoutMostrarDireccion &&
   configuracionTienda.checkoutDireccionObligatoria &&
+  (!configuracionTienda.checkoutMostrarRegion || region === "Lima") &&
   !direccion.trim()
 ) {
   alert("Ingresa tu dirección de entrega.");
