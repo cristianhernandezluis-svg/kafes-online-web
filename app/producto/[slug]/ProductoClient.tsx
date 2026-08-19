@@ -291,7 +291,11 @@ useEffect(() => {
         return;
       }
 
-      const celularLimpioCarrito = celular.replace(/\\D/g, "");
+      const celularLimpioCarrito = celular.replace(/\D/g, "");
+
+      if (celularLimpioCarrito.length < 9) {
+        return;
+      }
 
       const datosCompletos = Boolean(
         nombre.trim() &&
@@ -434,6 +438,12 @@ const registrarEventoAnalitica = (
 
 const guardarCarritoAbandonado = (ultimoPaso?: string, errorPedido?: string) => {
   if (typeof window === "undefined") {
+    return;
+  }
+
+  const celularLimpioCarrito = celular.replace(/\D/g, "");
+
+  if (celularLimpioCarrito.length < 9) {
     return;
   }
 
