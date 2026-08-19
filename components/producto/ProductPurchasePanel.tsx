@@ -185,6 +185,12 @@ const promedioFormateado =
             </span>
           </div>
         )}
+        {producto.slug === "soporte-telescopico-para-amoladora" && (
+          <div className="mt-3 flex items-center gap-2 rounded-xl bg-yellow-400 px-3 py-2 text-sm font-black text-black">
+            <PackageCheck size={18} className="shrink-0" />
+            <span>HOY: 5 DISCOS DE CORTE PARA METAL GRATIS</span>
+          </div>
+        )}
       </div>
 
       {producto.descripcion && (
