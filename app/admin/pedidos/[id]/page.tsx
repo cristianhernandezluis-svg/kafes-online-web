@@ -30,6 +30,7 @@ function formatoFecha(fecha: Date) {
   return new Intl.DateTimeFormat("es-PE", {
     dateStyle: "medium",
     timeStyle: "short",
+    timeZone: "America/Lima",
   }).format(fecha);
 }
 
