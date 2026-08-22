@@ -1,0 +1,1109 @@
+"use client";
+
+import LandingProducto from "@/components/LandingProducto";
+import type {
+  AsesorWhatsAppPublico,
+  ConfiguracionTiendaPublica,
+} from "@/lib/configuracion-tienda";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import StickyBuyButton from "@/components/producto/StickyBuyButton";
+import RelatedProducts from "@/components/producto/RelatedProducts";
+import ProductSocialProof from "@/components/producto/ProductSocialProof";
+import CheckoutModal from "@/components/producto/CheckoutModal";
+import ProductGallery from "@/components/producto/ProductGallery";
+import ProductPurchasePanel from "@/components/producto/ProductPurchasePanel";
+import ProductTechnicalSpecs from "@/components/producto/ProductTechnicalSpecs";
+import ProductDocuments from "@/components/producto/ProductDocuments";
+import ProductAccessories from "@/components/producto/ProductAccessories";
+import type { ProductoPublico } from "@/components/producto/product-types";
+import BuscadorProductos from "@/components/BuscadorProductos";
+import Image from "next/image";
+import Link from "next/link";
+
+import { useEffect, useRef, useState } from "react";
+import {
+  ShoppingCart,
+} from "lucide-react";
+declare global {
+  interface Window {
+    fbq?: any;
+    ttq?: any;
+  }
+}
+
+type AtribucionPedido = {
+  utmSource: string | null;
+  utmMedium: string | null;
+  utmCampaign: string | null;
+  utmContent: string | null;
+  utmTerm: string | null;
+  fbclid: string | null;
+  ttclid: string | null;
+  landingPath: string | null;
+  referrer: string | null;
+  guardadoAt: number;
+};
+
+type ProductoClientProps = {
+  producto: ProductoPublico;
+  configuracionTienda: ConfiguracionTiendaPublica;
+  asesoresWhatsApp: AsesorWhatsAppPublico[];
+};
+
+export default function ProductoClient({
+  producto,
+  configuracionTienda,
+  asesoresWhatsApp,
+}: ProductoClientProps) {
+  const slug = producto.slug;
+  const comprarAhoraRef = useRef<HTMLButtonElement | null>(null);
+  const [mostrarCompraFija, setMostrarCompraFija] = useState(false);
+
+const [openCheckout, setOpenCheckout] = useState(false);
+const [pedidoFinalizado, setPedidoFinalizado] = useState(false);
+const [loading, setLoading] = useState(false);
+
+const [cantidad, setCantidad] = useState(1);
+const [nombre, setNombre] = useState("");
+const [celular, setCelular] = useState("");
+const [dni, setDni] = useState("");
+const [ciudad, setCiudad] = useState("");
+const [region, setRegion] = useState("");
+const [direccion, setDireccion] = useState("");
+const [referencia, setReferencia] = useState("");
+
+
+const viewContentTrackedSlug = useRef<string | null>(null);
+const intentoPedidoRef = useRef(false);
+const atribucionRef = useRef<AtribucionPedido | null>(
+  null
+);
+
+const precio = producto?.precio || 0;
+const total = precio * cantidad;
+
+useEffect(() => {
+  const CLAVE_ATRIBUCION =
+    "kafes_atribucion_publicitaria";
+
+  const SIETE_DIAS =
+    7 * 24 * 60 * 60 * 1000;
+
+  const parametros = new URLSearchParams(
+    window.location.search
+  );
+
+  const tieneAtribucionNueva =
+    parametros.has("utm_source") ||
+    parametros.has("utm_medium") ||
+    parametros.has("utm_campaign") ||
+    parametros.has("utm_content") ||
+    parametros.has("utm_term") ||
+    parametros.has("fbclid") ||
+    parametros.has("ttclid");
+
+  if (tieneAtribucionNueva) {
+    const nuevaAtribucion: AtribucionPedido = {
+      utmSource:
+        parametros.get("utm_source"),
+      utmMedium:
+        parametros.get("utm_medium"),
+      utmCampaign:
+        parametros.get("utm_campaign"),
+      utmContent:
+        parametros.get("utm_content"),
+      utmTerm:
+        parametros.get("utm_term"),
+      fbclid:
+        parametros.get("fbclid"),
+      ttclid:
+        parametros.get("ttclid"),
+      landingPath:
+        `${window.location.pathname}${window.location.search}`,
+      referrer:
+        document.referrer || null,
+      guardadoAt: Date.now(),
+    };
+
+    atribucionRef.current =
+      nuevaAtribucion;
+
+    try {
+      localStorage.setItem(
+        CLAVE_ATRIBUCION,
+        JSON.stringify(nuevaAtribucion)
+      );
+    } catch {
+      // Si localStorage no está disponible,
+      // el pedido igualmente continúa.
+    }
+
+    return;
+  }
+
+  try {
+    const guardada =
+      localStorage.getItem(
+        CLAVE_ATRIBUCION
+      );
+
+    if (!guardada) {
+      atribucionRef.current = {
+        utmSource: null,
+        utmMedium: null,
+        utmCampaign: null,
+        utmContent: null,
+        utmTerm: null,
+        fbclid: null,
+        ttclid: null,
+        landingPath:
+          window.location.pathname,
+        referrer:
+          document.referrer || null,
+        guardadoAt: Date.now(),
+      };
+
+      return;
+    }
+
+    const atribucionGuardada =
+      JSON.parse(
+        guardada
+      ) as AtribucionPedido;
+
+    const expirada =
+      Date.now() -
+        atribucionGuardada.guardadoAt >
+      SIETE_DIAS;
+
+    if (expirada) {
+      localStorage.removeItem(
+        CLAVE_ATRIBUCION
+      );
+
+      atribucionRef.current = null;
+      return;
+    }
+
+    atribucionRef.current =
+      atribucionGuardada;
+  } catch {
+    atribucionRef.current = null;
+  }
+}, []);
+
+useEffect(() => {
+  const cantidadMaxima = Math.max(
+    1,
+    configuracionTienda.checkoutCantidadMaxima
+  );
+
+  if (
+    !configuracionTienda.checkoutPermitirCantidad
+  ) {
+    if (cantidad !== 1) {
+      setCantidad(1);
+    }
+
+    return;
+  }
+
+  if (cantidad > cantidadMaxima) {
+    setCantidad(cantidadMaxima);
+  }
+}, [
+  cantidad,
+  configuracionTienda.checkoutPermitirCantidad,
+  configuracionTienda.checkoutCantidadMaxima,
+]);
+
+useEffect(() => {
+  const onScroll = () => {
+    if (!comprarAhoraRef.current) return;
+
+    const rect = comprarAhoraRef.current.getBoundingClientRect();
+
+    // Solo aparece cuando el botón original ya pasó por arriba
+    if (rect.bottom < 0) {
+      setMostrarCompraFija(true);
+    } else {
+      setMostrarCompraFija(false);
+    }
+  };
+
+  window.addEventListener("scroll", onScroll);
+
+  // Ejecutar una vez
+  onScroll();
+
+  return () => window.removeEventListener("scroll", onScroll);
+}, []);
+
+  useEffect(() => {
+    if (!producto || !slug) return;
+    if (viewContentTrackedSlug.current === slug) return;
+
+    viewContentTrackedSlug.current = slug;
+
+    window.ttq?.track("ViewContent", {
+      content_id: slug,
+      content_name: producto.nombre,
+      content_type: "product",
+      value: precio,
+      currency: "PEN",
+      price: precio,
+    });
+
+    window.fbq?.("track", "ViewContent", {
+      value: precio,
+      currency: "PEN",
+      content_ids: [slug],
+      content_name: producto.nombre,
+      content_type: "product",
+    });
+  }, [slug, producto, precio]);
+
+useEffect(() => {
+  if (!openCheckout || pedidoFinalizado || !producto) {
+    return;
+  }
+
+  const temporizador = window.setTimeout(() => {
+    try {
+      const sesionGuardada = localStorage.getItem(
+        "kafes_sesion_analitica"
+      );
+
+      if (!sesionGuardada) {
+        return;
+      }
+
+      const sesion = JSON.parse(
+        sesionGuardada
+      ) as {
+        sessionId?: string;
+      };
+
+      const sessionId =
+        sesion.sessionId?.trim();
+
+      if (!sessionId) {
+        return;
+      }
+
+      const celularLimpioCarrito = celular.replace(/\\D/g, "");
+
+      const datosCompletos = Boolean(
+        nombre.trim() &&
+        celularLimpioCarrito.length >= 9 &&
+        (!configuracionTienda.checkoutMostrarCiudad ||
+          !configuracionTienda.checkoutCiudadObligatoria ||
+          ciudad.trim()) &&
+        (!configuracionTienda.checkoutMostrarRegion ||
+          !configuracionTienda.checkoutRegionObligatoria ||
+          region.trim()) &&
+        (!configuracionTienda.checkoutMostrarDireccion ||
+          !configuracionTienda.checkoutDireccionObligatoria ||
+          direccion.trim()) &&
+        (!configuracionTienda.checkoutMostrarDni ||
+          !configuracionTienda.checkoutDniObligatorio ||
+          dni.replace(/\\D/g, "").length === 8)
+      );
+
+      fetch(
+        "/api/carritos-abandonados",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            sessionId,
+            productoId: producto.id,
+            cantidad,
+            nombre,
+            celular,
+            ciudad,
+            region,
+            direccion,
+            ...(!intentoPedidoRef.current && datosCompletos
+              ? { ultimoPaso: "DATOS_COMPLETOS" }
+              : {}),
+          }),
+          keepalive: true,
+        }
+      ).catch(() => {
+        // El guardado del carrito no debe
+        // interrumpir la compra.
+      });
+    } catch {
+      // No bloquear el checkout.
+    }
+  }, 800);
+
+  return () => {
+    window.clearTimeout(temporizador);
+  };
+}, [
+  openCheckout,
+  pedidoFinalizado,
+  producto?.id,
+  cantidad,
+  nombre,
+  celular,
+  ciudad,
+  region,
+  direccion,
+]);
+
+  if (!producto) {
+    return (
+      <main className="min-h-screen flex items-center justify-center text-center px-6">
+        <div>
+          <h1 className="text-4xl font-black">Producto no encontrado</h1>
+          <Link
+            href="/"
+            className="inline-block mt-6 bg-black text-yellow-400 px-8 py-4 rounded-2xl font-black"
+          >
+            Volver al catálogo
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+const registrarEventoAnalitica = (
+  evento:
+    | "CHECKOUT_INICIADO"
+    | "PEDIDO_REALIZADO"
+) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    const sesionGuardada =
+      localStorage.getItem(
+        "kafes_sesion_analitica"
+      );
+
+    if (!sesionGuardada) {
+      return;
+    }
+
+    const sesion = JSON.parse(
+      sesionGuardada
+    ) as {
+      sessionId?: string;
+    };
+
+    const sessionId =
+      sesion.sessionId?.trim();
+
+    if (!sessionId) {
+      return;
+    }
+
+    fetch(
+      "/api/analytics/event",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
+        body: JSON.stringify({
+          sessionId,
+          evento,
+        }),
+
+        keepalive: true,
+      }
+    ).catch(() => {
+      // La analítica nunca debe
+      // interrumpir la compra.
+    });
+  } catch {
+    // No bloquear el checkout.
+  }
+};
+
+const guardarCarritoAbandonado = (ultimoPaso?: string, errorPedido?: string) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    const sesionGuardada =
+      localStorage.getItem(
+        "kafes_sesion_analitica"
+      );
+
+    if (!sesionGuardada) {
+      return;
+    }
+
+    const sesion = JSON.parse(
+      sesionGuardada
+    ) as {
+      sessionId?: string;
+    };
+
+    const sessionId =
+      sesion.sessionId?.trim();
+
+    if (!sessionId) {
+      return;
+    }
+
+    fetch(
+      "/api/carritos-abandonados",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          sessionId,
+          productoId: producto.id,
+          cantidad,
+          nombre,
+          celular,
+          ciudad,
+          region,
+          direccion,
+          ...(ultimoPaso ? { ultimoPaso } : {}),
+          ...(errorPedido ? { errorPedido } : {}),
+        }),
+        keepalive: true,
+      }
+    ).catch(() => {
+      // El registro del carrito nunca
+      // debe interrumpir la compra.
+    });
+  } catch {
+    // No bloquear el checkout.
+  }
+};
+
+  const abrirCheckout = () => {
+  if (!configuracionTienda.checkoutActivo) {
+    alert(
+      "Los pedidos están temporalmente desactivados."
+    );
+    return;
+  }
+
+  window.ttq?.track("AddToCart", {
+      content_id: slug,
+      content_name: producto.nombre,
+      content_type: "product",
+      value: total,
+      currency: "PEN",
+      quantity: cantidad,
+      price: precio,
+    });
+
+    window.ttq?.track("InitiateCheckout", {
+      content_id: slug,
+      content_name: producto.nombre,
+      content_type: "product",
+      value: total,
+      currency: "PEN",
+      quantity: cantidad,
+      price: precio,
+    });
+
+    window.fbq?.("track", "AddToCart", {
+      value: total,
+      currency: "PEN",
+      content_ids: [slug],
+      content_name: producto.nombre,
+      content_type: "product",
+      contents: [
+        {
+          id: slug,
+          quantity: cantidad,
+          item_price: precio,
+        },
+      ],
+    });
+
+    window.fbq?.("track", "InitiateCheckout", {
+      value: total,
+      currency: "PEN",
+      content_ids: [slug],
+      content_name: producto.nombre,
+      content_type: "product",
+      contents: [
+        {
+          id: slug,
+          quantity: cantidad,
+          item_price: precio,
+        },
+      ],
+    });
+
+registrarEventoAnalitica(
+  "CHECKOUT_INICIADO"
+);
+
+    guardarCarritoAbandonado();
+    setOpenCheckout(true);
+  };
+
+const obtenerAtribucionActual = (): AtribucionPedido | null => {
+  if (typeof window === "undefined") {
+    return atribucionRef.current;
+  }
+
+  try {
+    const sesionGuardada =
+      localStorage.getItem(
+        "kafes_sesion_analitica"
+      );
+
+    if (sesionGuardada) {
+      const sesion = JSON.parse(
+        sesionGuardada
+      ) as {
+        sessionId?: string;
+        ultimaActividad?: number;
+
+        utmSource?: string | null;
+        utmMedium?: string | null;
+        utmCampaign?: string | null;
+        utmContent?: string | null;
+        utmTerm?: string | null;
+
+        fbclid?: string | null;
+        ttclid?: string | null;
+      };
+
+      if (sesion.sessionId) {
+        return {
+          utmSource:
+            sesion.utmSource ?? null,
+
+          utmMedium:
+            sesion.utmMedium ?? null,
+
+          utmCampaign:
+            sesion.utmCampaign ?? null,
+
+          utmContent:
+            sesion.utmContent ?? null,
+
+          utmTerm:
+            sesion.utmTerm ?? null,
+
+          fbclid:
+            sesion.fbclid ?? null,
+
+          ttclid:
+            sesion.ttclid ?? null,
+
+          landingPath:
+            `${window.location.pathname}${window.location.search}`,
+
+          referrer:
+            document.referrer || null,
+
+          guardadoAt:
+            sesion.ultimaActividad ??
+            Date.now(),
+        };
+      }
+    }
+  } catch {
+    // Si falla la sesión nueva,
+    // usamos la atribución anterior.
+  }
+
+  return atribucionRef.current;
+};
+  
+  const finalizarPedido = async () => {
+  if (!nombre.trim()) {
+  alert("Ingresa tu nombre completo.");
+  return;
+}
+
+if (!celular.trim()) {
+  alert("Ingresa tu número de celular.");
+  return;
+}
+
+if (
+  configuracionTienda.checkoutMostrarCiudad &&
+  configuracionTienda.checkoutCiudadObligatoria &&
+  !ciudad.trim()
+) {
+  alert("Ingresa tu ciudad o distrito.");
+  return;
+}
+
+if (
+  configuracionTienda.checkoutMostrarRegion &&
+  configuracionTienda.checkoutRegionObligatoria &&
+  !region.trim()
+) {
+  alert("Selecciona tu región.");
+  return;
+}
+
+if (
+  configuracionTienda.checkoutMostrarDireccion &&
+  configuracionTienda.checkoutDireccionObligatoria &&
+  !direccion.trim()
+) {
+  alert("Ingresa tu dirección de entrega.");
+  return;
+}
+
+
+
+  const celularLimpio = celular.replace(/\D/g, "");
+
+  if (celularLimpio.length < 9) {
+    alert("Ingresa un número de celular válido");
+    return;
+  }
+
+const dniLimpio = dni.replace(/\D/g, "");
+
+if (
+  configuracionTienda.checkoutMostrarDni &&
+  configuracionTienda.checkoutDniObligatorio &&
+  !dniLimpio
+) {
+  alert("Ingresa tu DNI.");
+  return;
+}
+
+if (dniLimpio && dniLimpio.length !== 8) {
+  alert("El DNI debe tener 8 dígitos.");
+  return;
+}
+
+  intentoPedidoRef.current = true;
+  guardarCarritoAbandonado("INTENTO_PEDIDO");
+
+  setLoading(true);
+
+  try {
+const atribucion =
+  obtenerAtribucionActual();
+
+let sessionId: string | null = null;
+
+try {
+  const sesionGuardada =
+    localStorage.getItem(
+      "kafes_sesion_analitica"
+    );
+
+  if (sesionGuardada) {
+    const sesion = JSON.parse(
+      sesionGuardada
+    ) as {
+      sessionId?: string;
+    };
+
+    sessionId =
+      sesion.sessionId?.trim() || null;
+  }
+} catch {
+  sessionId = null;
+}
+
+    const respuesta = await fetch("/api/pedidos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+  productoId: producto.id,
+  cantidad,
+  sessionId,
+
+  nombre: nombre.trim(),
+  celular: celularLimpio,
+  dni: dniLimpio,
+  ciudad: ciudad.trim(),
+  region: region.trim(),
+  direccion: direccion.trim(),
+  referencia: referencia.trim(),
+
+  utmSource:
+    atribucion?.utmSource ?? null,
+  utmMedium:
+    atribucion?.utmMedium ?? null,
+  utmCampaign:
+    atribucion?.utmCampaign ?? null,
+  utmContent:
+    atribucion?.utmContent ?? null,
+  utmTerm:
+    atribucion?.utmTerm ?? null,
+
+  fbclid:
+    atribucion?.fbclid ?? null,
+  ttclid:
+    atribucion?.ttclid ?? null,
+
+  landingPath:
+    atribucion?.landingPath ?? null,
+  referrer:
+    atribucion?.referrer ?? null,
+}),
+});
+    const resultado = await respuesta.json();
+
+    if (!respuesta.ok || !resultado.ok) {
+      throw new Error(
+        resultado.error || "No se pudo registrar el pedido",
+      );
+    }
+
+registrarEventoAnalitica(
+  "PEDIDO_REALIZADO"
+);
+
+    /*
+     * Enviamos también la información a n8n.
+     * Si n8n falla, el pedido ya quedó guardado
+     * correctamente en PostgreSQL.
+     */
+    try {
+      await fetch(
+        "https://n8n-n8n.xhb7ax.easypanel.host/webhook/96372183-cc2d-468e-b1c3-5ee5564eb2b8",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            pedidoId: resultado.pedido.id,
+            codigo: resultado.pedido.codigo,
+            productoId: producto.id,
+            producto: producto.nombre,
+            precio,
+            cantidad,
+            total: resultado.pedido.total,
+            nombre: nombre.trim(),
+            celular: celularLimpio,
+            dni: dniLimpio,
+            ciudad: ciudad.trim(),
+            region: region.trim(),
+            direccion: direccion.trim(),
+            referencia: referencia.trim(),
+            estado: resultado.pedido.estado,
+            fecha: new Date().toLocaleString("es-PE"),
+          }),
+        },
+      );
+    } catch (errorN8n) {
+      console.error(
+        "El pedido se guardó, pero n8n no respondió:",
+        errorN8n,
+      );
+    }
+
+    setPedidoFinalizado(true);
+
+    if (typeof window !== "undefined") {
+      window.fbq?.(
+  "track",
+  configuracionTienda.metaEventoPedido,
+  {
+    value: resultado.pedido.total,
+    currency: "PEN",
+    content_ids: [String(producto.id)],
+    content_name: producto.nombre,
+    content_type: "product",
+    num_items: cantidad,
+  }
+);
+
+      window.ttq?.track("CompletePayment", {
+        value: resultado.pedido.total,
+        currency: "PEN",
+        content_id: String(producto.id),
+        content_name: producto.nombre,
+        quantity: cantidad,
+      });
+if (
+  configuracionTienda.checkoutWhatsAppPostPedido
+) {
+  const mensajeWhatsApp = [
+    "Hola, acabo de realizar un pedido en KAFES ONLINE.",
+    "",
+    `Pedido: ${resultado.pedido.codigo}`,
+    `Producto: ${producto.nombre}`,
+    `Cantidad: ${cantidad}`,
+    `Total: S/${resultado.pedido.total}`,
+    `Nombre: ${nombre.trim()}`,
+  ].join("\n");
+
+  const whatsappUrl =
+    `https://wa.me/${configuracionTienda.whatsapp}?text=${encodeURIComponent(
+      mensajeWhatsApp
+    )}`;
+
+  window.setTimeout(() => {
+    window.location.href = whatsappUrl;
+  }, 1200);
+}
+
+    }
+  } catch (error) {
+    console.error("Error al finalizar el pedido:", error);
+
+    const mensaje =
+      error instanceof Error
+        ? error.message
+        : "No pudimos registrar el pedido";
+
+    guardarCarritoAbandonado("ERROR_PEDIDO", mensaje);
+
+    alert(`${mensaje}. Inténtalo nuevamente.`);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  return (
+    <main
+  className={`min-h-screen w-full overflow-x-hidden text-black pb-28 ${
+        producto.modoGempages ? "bg-black" : "bg-white"
+      }`}
+    >
+      {!producto.modoGempages && (
+        <>
+          <div className="bg-green-500 text-white text-center py-2 text-sm font-bold">
+            🚚 ENVÍOS GRATIS A TODO EL PERÚ
+          </div>
+
+          <header className="sticky top-0 z-50 border-b bg-white">
+  <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-2 px-3 py-3 md:gap-4 md:px-6 md:py-4">
+    <Link
+      href="/"
+      className="min-w-0 shrink text-lg font-black leading-none md:text-3xl"
+    >
+      KAFES ONLINE
+    </Link>
+
+    <BuscadorProductos variante="desktop" />
+
+    <div className="flex shrink-0 items-center gap-2 md:gap-3">
+      <Link
+        href="/"
+        className="hidden text-sm font-bold hover:text-yellow-500 sm:block md:text-base"
+      >
+        Inicio
+      </Link>
+
+      <Link
+        href="/#productos"
+        className="hidden font-bold hover:text-yellow-500 md:block"
+      >
+        Catálogo
+      </Link>
+
+      <button
+        type="button"
+        aria-label="Carrito"
+        className="rounded-full bg-yellow-400 p-2.5 text-black md:p-3"
+      >
+        <ShoppingCart size={20} />
+      </button>
+    </div>
+  </div>
+</header>
+
+<div className="border-b bg-white px-3 pb-3 md:hidden">
+  <BuscadorProductos variante="mobile" />
+</div>
+        </>
+      )}
+
+      {producto.modoGempages ? (
+  <>
+    <section className="w-full bg-black">
+      <div className="w-full max-w-[430px] mx-auto bg-black">
+        {[
+          producto.imagen,
+          `/${slug}-2.png`,
+          `/${slug}-3.png`,
+          `/${slug}-4.jpg`,
+          `/${slug}-5.jpg`,
+        ].map((src, index) => (
+          <div key={src}>
+            <Image
+              src={src}
+              alt={`${producto.nombre} ${index + 1}`}
+              width={1365}
+              height={2048}
+              className="w-full h-auto block"
+              priority={index === 0}
+            />
+
+            <div className="px-4 pb-6 pt-2 bg-black">
+              <button
+                onClick={abrirCheckout}
+                className="w-full bg-green-600 hover:bg-green-500 text-white font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(22,163,74,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-green-800 animate-[pulse_1.5s_ease-in-out_infinite]"
+              >
+                <ShoppingCart size={28} />
+                REALIZAR PEDIDO
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </>
+) : (
+        <>
+          <section className="border-b border-zinc-200 bg-gradient-to-b from-zinc-50 to-white">
+            <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-7 px-3 py-6 sm:px-4 sm:py-8 md:px-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(410px,0.92fr)] lg:gap-10 lg:py-12">
+              <ProductGallery
+                nombre={producto.nombre}
+                imagenPrincipal={producto.imagen}
+                imagenes={producto.imagenes}
+                caracteristicas={producto.mini}
+              />
+
+              <ProductPurchasePanel
+  producto={producto}
+  cantidad={cantidad}
+  whatsapp={configuracionTienda.whatsapp}
+  checkoutActivo={
+    configuracionTienda.checkoutActivo
+  }
+  permitirCantidad={
+    configuracionTienda.checkoutPermitirCantidad
+  }
+  cantidadMaxima={
+    configuracionTienda.checkoutCantidadMaxima
+  }
+  onCantidadChange={setCantidad}
+  onComprar={abrirCheckout}
+  comprarAhoraRef={comprarAhoraRef}
+/>
+            </div>
+          </section>
+
+          {producto.contenidoHtml && (
+  <LandingProducto producto={producto} />
+)}
+
+<ProductAccessories
+  accesorios={producto.accesorios}
+/>
+
+<ProductTechnicalSpecs
+  especificaciones={producto.especificaciones}
+/>
+
+<ProductDocuments
+  documentos={producto.documentos}
+/>
+
+<ProductSocialProof
+  opiniones={producto.opiniones}
+/>
+        </>
+      )}
+
+        <RelatedProducts
+  productos={producto.relacionados}
+/>
+      {!producto.modoGempages && (
+        <footer className="bg-black text-white px-6 py-16 pb-32">
+          <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
+            <div>
+              <h2 className="text-3xl font-black">
+  {configuracionTienda.nombreTienda}
+</h2>
+              <p className="text-zinc-400 mt-4">
+                {configuracionTienda.textoFooter}
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-black mb-4">Atención al cliente</h3>
+              {configuracionTienda.telefono && (
+  <p className="text-zinc-400">
+    📞 {configuracionTienda.telefono}
+  </p>
+)}
+
+{configuracionTienda.direccion && (
+  <p className="text-zinc-400">
+    📍 {configuracionTienda.direccion}
+  </p>
+)}
+            </div>
+
+            <div>
+              <h3 className="font-black mb-4">Menú inferior</h3>
+              <p className="text-zinc-400">Preguntas frecuentes</p>
+              <p className="text-zinc-400">Política de envíos</p>
+              <p className="text-zinc-400">Términos del servicio</p>
+              <p className="text-zinc-400">Política de privacidad</p>
+            </div>
+          </div>
+
+          <div className="text-center text-zinc-500 text-sm mt-12 border-t border-zinc-800 pt-6">
+            © 2026 {configuracionTienda.nombreTienda} - Todos los derechos reservados.
+          </div>
+        </footer>
+      )}
+
+<CheckoutModal
+  open={openCheckout}
+  producto={producto}
+  configuracionTienda={configuracionTienda}
+  cantidad={cantidad}
+  total={total}
+  loading={loading}
+  pedidoFinalizado={pedidoFinalizado}
+  nombre={nombre}
+  celular={celular}
+  dni={dni}
+  ciudad={ciudad}
+  region={region}
+  direccion={direccion}
+  referencia={referencia}
+  onNombreChange={setNombre}
+  onCelularChange={setCelular}
+  onDniChange={setDni}
+  onCiudadChange={setCiudad}
+  onRegionChange={setRegion}
+  onDireccionChange={setDireccion}
+  onReferenciaChange={setReferencia}
+  onClose={() => setOpenCheckout(false)}
+  onSubmit={finalizarPedido}
+/>
+
+{!producto.modoGempages &&
+  configuracionTienda.checkoutActivo &&
+  configuracionTienda.checkoutBotonFijo && (
+  <StickyBuyButton
+    visible={mostrarCompraFija}
+    onComprar={abrirCheckout}
+  />
+)}
+      <WhatsAppButton
+  whatsapp={configuracionTienda.whatsapp}
+  mensaje={`Hola, quiero información sobre ${producto.nombre}.`}
+  nombreTienda={configuracionTienda.nombreTienda}
+  asesores={asesoresWhatsApp}
+/>
+    </main>
+  );
+}

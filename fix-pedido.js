@@ -1,367 +1,24 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import prisma from "@/lib/prisma";
-import { cambiarEstadoPedido } from "./actions";
-import {
-  ArrowLeft,
-  ChevronLeft,
-  ChevronRight,
-  MapPin,
-  MessageCircle,
-  Package,
-  Phone,
-  User,
-} from "lucide-react";
+const fs = require("fs");
 
-type PedidoDetallePageProps = {
-  params: Promise<{
-    id: string;
-  }>;
-};
+const archivo = "app/admin/pedidos/[id]/page.tsx";
 
-function formatoMoneda(valor: number) {
-  return new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-  }).format(valor);
+let contenido = fs.readFileSync(archivo, "utf8");
+
+const inicioTexto = '          <aside className="space-y-6">';
+const finTexto = "          </aside>";
+
+const inicio = contenido.indexOf(inicioTexto);
+const fin = contenido.indexOf(finTexto, inicio);
+
+if (inicio === -1) {
+  throw new Error("No se encontró el inicio del aside derecho.");
 }
 
-function formatoFecha(fecha: Date) {
-  return new Intl.DateTimeFormat("es-PE", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(fecha);
+if (fin === -1) {
+  throw new Error("No se encontró el cierre del aside derecho.");
 }
 
-function textoEstado(estado: string) {
-  return estado.replaceAll("_", " ");
-}
-
-function textoTipoPedido(tipo: string) {
-  if (tipo === "ADELANTO") {
-    return "Pedido con adelanto";
-  }
-
-  if (tipo === "PAGO_COMPLETO") {
-    return "Pago completo";
-  }
-
-  return "Pago contra entrega";
-}
-
-function textoMetodoPago(metodo: string) {
-  const nombres: Record<string, string> = {
-    CONTRA_ENTREGA: "Contra entrega",
-    YAPE: "Yape",
-    PLIN: "Plin",
-    TRANSFERENCIA: "Transferencia",
-    EFECTIVO: "Efectivo",
-    OTRO: "Por definir",
-  };
-
-  return nombres[metodo] ?? textoEstado(metodo);
-}
-
-function claseEstado(estado: string) {
-  const estilos: Record<string, string> = {
-    NUEVO: "bg-blue-100 text-blue-700",
-    CONFIRMADO: "bg-emerald-100 text-emerald-700",
-    PREPARANDO: "bg-amber-100 text-amber-700",
-    ENVIADO: "bg-violet-100 text-violet-700",
-    ENTREGADO: "bg-green-100 text-green-700",
-    CANCELADO: "bg-red-100 text-red-700",
-  };
-
-  return estilos[estado] ?? "bg-slate-100 text-slate-700";
-}
-
-export default async function PedidoDetallePage({
-  params,
-}: PedidoDetallePageProps) {
-  const { id } = await params;
-  const pedidoId = Number(id);
-
-  if (!Number.isInteger(pedidoId) || pedidoId <= 0) {
-    notFound();
-  }
-
-  const pedido = await prisma.pedido.findUnique({
-    where: {
-      id: pedidoId,
-    },
-    include: {
-      items: {
-        orderBy: {
-          id: "asc",
-        },
-        include: {
-          producto: {
-            select: {
-              imagenes: {
-                orderBy: [{ esPrincipal: "desc" }, { orden: "asc" }],
-                take: 1,
-                select: { url: true },
-              },
-            },
-          },
-        },
-      },
-      historial: {
-        orderBy: {
-          createdAt: "desc",
-        },
-      },
-      cliente: true,
-    },
-  });
-
-  if (!pedido) {
-    notFound();
-  }
-
-const [pedidoAnterior, pedidoSiguiente] = await Promise.all([
-  prisma.pedido.findFirst({
-    where: {
-      id: {
-        gt: pedido.id,
-      },
-    },
-    orderBy: {
-      id: "asc",
-    },
-    select: {
-      id: true,
-    },
-  }),
-
-  prisma.pedido.findFirst({
-    where: {
-      id: {
-        lt: pedido.id,
-      },
-    },
-    orderBy: {
-      id: "desc",
-    },
-    select: {
-      id: true,
-    },
-  }),
-]);
-
-  const telefonoWhatsApp = pedido.telefonoCliente.replace(/\D/g, "");
-
-  const mensajeWhatsApp = encodeURIComponent(
-    `Hola ${pedido.nombreCliente}, te escribimos de Kafes Online por tu pedido #${pedido.codigo}.`,
-  );
-
-  const enlaceWhatsApp = `https://wa.me/${telefonoWhatsApp}?text=${mensajeWhatsApp}`;
-
-  return (
-    <main className="min-h-screen bg-slate-100 p-3 sm:p-5 lg:p-6">
-      <div className="mx-auto w-full max-w-7xl">
-        <div className="mb-5">
-          <Link
-            href="/admin/pedidos"
-            className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-950"
-          >
-            <ArrowLeft size={17} />
-            Volver a pedidos
-          </Link>
-
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
-                  Pedido #{pedido.codigo}
-                </h1>
-
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-bold ${claseEstado(
-                    pedido.estado,
-                  )}`}
-                >
-                  {textoEstado(pedido.estado)}
-                </span>
-              </div>
-
-              <p className="mt-1 text-sm text-slate-500">
-                Creado el {formatoFecha(pedido.createdAt)}
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-  {pedidoAnterior ? (
-    <Link
-      href={`/admin/pedidos/${pedidoAnterior.id}`}
-      className="inline-flex h-11 items-center justify-center gap-1 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-    >
-      <ChevronLeft size={19} />
-      Anterior
-    </Link>
-  ) : (
-    <span className="inline-flex h-11 cursor-not-allowed items-center justify-center gap-1 rounded-xl border border-slate-200 bg-slate-100 px-3 text-sm font-semibold text-slate-400">
-      <ChevronLeft size={19} />
-      Anterior
-    </span>
-  )}
-
-  {pedidoSiguiente ? (
-    <Link
-      href={`/admin/pedidos/${pedidoSiguiente.id}`}
-      className="inline-flex h-11 items-center justify-center gap-1 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-    >
-      Siguiente
-      <ChevronRight size={19} />
-    </Link>
-  ) : (
-    <span className="inline-flex h-11 cursor-not-allowed items-center justify-center gap-1 rounded-xl border border-slate-200 bg-slate-100 px-3 text-sm font-semibold text-slate-400">
-      Siguiente
-      <ChevronRight size={19} />
-    </span>
-  )}
-
-  <a
-    href={enlaceWhatsApp}
-    target="_blank"
-    rel="noreferrer"
-    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 text-sm font-bold text-white transition hover:bg-emerald-700"
-  >
-    <MessageCircle size={18} />
-    Contactar por WhatsApp
-  </a>
-</div>
-          </div>
-        </div>
-
-        <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_380px]">
-          <div className="space-y-4">
-            <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-              <div className="border-b border-slate-200 px-5 py-3">
-                <h2 className="flex items-center gap-2 text-base font-bold text-slate-950">
-                  <Package size={20} />
-                  Productos
-                </h2>
-              </div>
-
-              <div className="divide-y divide-slate-100">
-                {pedido.items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex gap-4 px-5 py-4"
-                  >
-                    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
-                      {item.imagenUrl || item.producto?.imagenes[0]?.url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={item.imagenUrl || item.producto?.imagenes[0]?.url || ""}
-                          alt={item.nombreProducto}
-                          className="h-full w-full object-contain"
-                        />
-                      ) : (
-                        <Package
-                          size={28}
-                          className="text-slate-400"
-                        />
-                      )}
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <p className="font-semibold leading-snug text-slate-950">
-                        {item.nombreProducto}
-                      </p>
-
-                      {item.skuProducto && (
-                        <p className="mt-1 text-xs text-slate-500">
-                          SKU: {item.skuProducto}
-                        </p>
-                      )}
-
-                      <p className="mt-2 text-sm text-slate-600">
-                        {item.cantidad} ×{" "}
-                        {formatoMoneda(Number(item.precioUnitario))}
-                      </p>
-                    </div>
-
-                    <div className="text-right font-black text-slate-950">
-                      {formatoMoneda(Number(item.subtotal))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="border-t border-slate-200 bg-white px-5 py-4">
-                <div className="ml-auto max-w-sm space-y-2">
-                  <div className="flex justify-between text-sm text-slate-600">
-                    <span>Subtotal</span>
-                    <span>
-                      {formatoMoneda(Number(pedido.subtotal))}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between text-sm text-slate-600">
-                    <span>Descuento</span>
-                    <span>
-                      -{formatoMoneda(Number(pedido.descuento))}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between text-sm text-slate-600">
-                    <span>Envío</span>
-                    <span>
-                      {formatoMoneda(Number(pedido.costoEnvio))}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between border-t border-slate-300 pt-3 text-lg font-black text-slate-950">
-                    <span>Total</span>
-                    <span>
-                      {formatoMoneda(Number(pedido.total))}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="text-base font-bold text-slate-950">
-                Cronología
-              </h2>
-
-              {pedido.historial.length === 0 ? (
-                <p className="mt-3 text-sm text-slate-500">
-                  Todavía no hay movimientos registrados.
-                </p>
-              ) : (
-                <div className="mt-3 space-y-3">
-                  {pedido.historial.map((registro) => (
-                    <div
-                      key={registro.id}
-                      className="relative border-l border-slate-200 pl-5"
-                    >
-                      <div className="absolute -left-[5px] top-1 h-2.5 w-2.5 rounded-full bg-slate-900" />
-
-                      <p className="font-semibold text-slate-900">
-                        {registro.accion}
-                      </p>
-
-                      {registro.descripcion && (
-                        <p className="mt-0.5 text-sm text-slate-600">
-                          {registro.descripcion}
-                        </p>
-                      )}
-
-                      <p className="mt-1 text-xs text-slate-400">
-                        {formatoFecha(registro.createdAt)}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-          </div>
-
-          <aside className="space-y-4">
+const nuevoAside = `          <aside className="space-y-4">
 
             <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
               <h2 className="text-base font-bold text-slate-950">
@@ -560,7 +217,7 @@ const [pedidoAnterior, pedidoSiguiente] = await Promise.all([
                 <a
                   href={
                     "https://wa.me/51" +
-                    pedido.telefonoCliente.replace(/\D/g, "")
+                    pedido.telefonoCliente.replace(/\\D/g, "")
                   }
                   target="_blank"
                   rel="noreferrer"
@@ -763,9 +420,13 @@ const [pedidoAnterior, pedidoSiguiente] = await Promise.all([
               </div>
             </section>
 
-          </aside>
-        </div>
-      </div>
-    </main>
-  );
-}
+          </aside>`;
+
+const actualizado =
+  contenido.slice(0, inicio) +
+  nuevoAside +
+  contenido.slice(fin + finTexto.length);
+
+fs.writeFileSync(archivo, actualizado, "utf8");
+
+console.log("Lateral derecho reorganizado correctamente.");
