@@ -43,3 +43,11 @@ kafes-crm/
 
 /app/generated/prisma
 *.bak
+
+# Archivos de respaldo locales
+*.backup*.tsx
+*.backup*.ts
+
+# Archivos temporales de desarrollo
+fix-pedido.js
+lighthouse*.json
