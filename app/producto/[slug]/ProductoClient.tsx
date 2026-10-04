@@ -958,7 +958,7 @@ if (
               priority={index === 0}
             />
 
-            <div className="px-4 pb-6 pt-2 bg-black">
+            <div className="px-4 py-2 bg-black">
               <button
                 onClick={abrirCheckout}
                 className="w-full bg-green-600 hover:bg-green-500 text-white font-black text-2xl py-5 rounded-[24px] shadow-[0_10px_40px_rgba(22,163,74,0.35)] transition active:scale-[0.98] flex items-center justify-center gap-3 border-b-[6px] border-green-800 animate-[pulse_1.5s_ease-in-out_infinite]"
@@ -1106,12 +1106,14 @@ if (
     onComprar={abrirCheckout}
   />
 )}
-      <WhatsAppButton
-  whatsapp={configuracionTienda.whatsapp}
-  mensaje={`Hola, quiero información sobre ${producto.nombre}.`}
-  nombreTienda={configuracionTienda.nombreTienda}
-  asesores={asesoresWhatsApp}
-/>
+      {!producto.modoGempages && (
+  <WhatsAppButton
+    whatsapp={configuracionTienda.whatsapp}
+    mensaje={`Hola, quiero información sobre ${producto.nombre}.`}
+    nombreTienda={configuracionTienda.nombreTienda}
+    asesores={asesoresWhatsApp}
+  />
+)}
     </main>
   );
 }
