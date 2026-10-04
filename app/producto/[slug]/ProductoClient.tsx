@@ -964,6 +964,8 @@ if (
   className="w-full h-auto block"
   priority={index === 0}
   loading={index === 0 ? "eager" : "lazy"}
+  fetchPriority={index === 0 ? "high" : "auto"}
+  quality={index === 0 ? 65 : 70}
   sizes="(max-width: 640px) 100vw, 600px"
 />
 
