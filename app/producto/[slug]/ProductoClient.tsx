@@ -950,13 +950,15 @@ if (
         {producto.landingImagenes.map((imagen, index) => (
           <div key={imagen.id}>
             <Image
-              src={imagen.imagenUrl}
-              alt={`${producto.nombre} ${index + 1}`}
-              width={1365}
-              height={2048}
-              className="w-full h-auto block"
-              priority={index === 0}
-            />
+  src={imagen.imagenUrl}
+  alt={`${producto.nombre} ${index + 1}`}
+  width={1365}
+  height={2048}
+  className="w-full h-auto block"
+  priority={index === 0}
+  loading={index === 0 ? "eager" : "lazy"}
+  sizes="(max-width: 640px) 100vw, 600px"
+/>
 
             <div className="px-4 py-2 bg-black">
               <button
