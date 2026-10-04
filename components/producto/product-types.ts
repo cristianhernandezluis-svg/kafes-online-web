@@ -49,6 +49,13 @@ export type ProductoAccesorioPublico = {
   orden: number;
 };
 
+export type ProductoLandingImagenPublica = {
+  id: number;
+  imagenUrl: string;
+  orden: number;
+  mostrarBoton: boolean;
+};
+
 export type ProductoPublico = {
   id: number;
   slug: string;
@@ -60,6 +67,7 @@ export type ProductoPublico = {
   imagenes: string[];
   etiqueta: string;
   modoGempages: boolean;
+  landingImagenes: ProductoLandingImagenPublica[];
   descripcion: string;
   contenidoHtml: string | null;
   stock: number;

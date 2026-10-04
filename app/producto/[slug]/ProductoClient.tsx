@@ -947,16 +947,10 @@ if (
   <>
     <section className="w-full bg-black">
       <div className="w-full max-w-[430px] mx-auto bg-black">
-        {[
-          producto.imagen,
-          `/${slug}-2.png`,
-          `/${slug}-3.png`,
-          `/${slug}-4.jpg`,
-          `/${slug}-5.jpg`,
-        ].map((src, index) => (
-          <div key={src}>
+        {producto.landingImagenes.map((imagen, index) => (
+          <div key={imagen.id}>
             <Image
-              src={src}
+              src={imagen.imagenUrl}
               alt={`${producto.nombre} ${index + 1}`}
               width={1365}
               height={2048}
@@ -1031,9 +1025,11 @@ if (
         </>
       )}
 
-        <RelatedProducts
-  productos={producto.relacionados}
-/>
+        {!producto.modoGempages && (
+  <RelatedProducts
+    productos={producto.relacionados}
+  />
+)}
       {!producto.modoGempages && (
         <footer className="bg-black text-white px-6 py-16 pb-32">
           <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">

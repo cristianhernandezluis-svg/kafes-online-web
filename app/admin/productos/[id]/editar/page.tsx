@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import prisma from "@/lib/prisma";
+import ProductLandingManager from "@/components/admin/landing/ProductLandingManager";
 import Card from "@/components/admin/ui/Card";
 import Input from "@/components/admin/ui/Input";
 import Textarea from "@/components/admin/ui/Textarea";
@@ -40,6 +41,10 @@ const tabs = [
   {
     nombre: "Imágenes",
     valor: "imagenes",
+  },
+  {
+    nombre: "Landing visual",
+    valor: "landing",
   },
   {
     nombre: "Contenido",
@@ -440,6 +445,18 @@ export default async function EditarProductoPage({
           />
         </Card>
       )}
+
+{tabActiva === "landing" && (
+  <Card
+    title="Landing visual"
+    description="Crea una página de venta visual estilo GemPages con imágenes y botones de pedido."
+  >
+    <ProductLandingManager
+      productoId={producto.id}
+      productoNombre={producto.nombre}
+    />
+  </Card>
+)}
 
       {tabActiva === "contenido" && (
   <form action={actualizarProducto}>

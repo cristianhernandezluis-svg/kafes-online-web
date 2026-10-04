@@ -49,6 +49,23 @@ const asesoresWhatsApp =
   ],
 },
 
+secciones: {
+  where: {
+    visible: true,
+    tipo: {
+      in: ["LANDING_CONFIG", "LANDING_IMAGEN"],
+    },
+  },
+  orderBy: [
+    {
+      orden: "asc",
+    },
+    {
+      id: "asc",
+    },
+  ],
+},
+
 accesorios: {
   orderBy: [
     {
@@ -198,6 +215,50 @@ const relacionadosDb = [
     (imagen) => imagen.url,
   );
 
+const seccionConfiguracionLanding =
+  productoDb.secciones.find(
+    (seccion) => seccion.tipo === "LANDING_CONFIG"
+  );
+
+const configuracionLanding =
+  seccionConfiguracionLanding?.configuracion &&
+  typeof seccionConfiguracionLanding.configuracion === "object" &&
+  !Array.isArray(seccionConfiguracionLanding.configuracion)
+    ? (seccionConfiguracionLanding.configuracion as Record<
+        string,
+        unknown
+      >)
+    : {};
+
+const modoGempages =
+  configuracionLanding.activo === true;
+
+const landingImagenes = productoDb.secciones
+  .filter(
+    (seccion) =>
+      seccion.tipo === "LANDING_IMAGEN" &&
+      Boolean(seccion.imagenUrl)
+  )
+  .map((seccion) => {
+    const configuracion =
+      seccion.configuracion &&
+      typeof seccion.configuracion === "object" &&
+      !Array.isArray(seccion.configuracion)
+        ? (seccion.configuracion as Record<
+            string,
+            unknown
+          >)
+        : {};
+
+    return {
+      id: seccion.id,
+      imagenUrl: seccion.imagenUrl!,
+      orden: seccion.orden,
+      mostrarBoton:
+        configuracion.mostrarBoton !== false,
+    };
+  });
+
   const producto: ProductoPublico = {
     id: productoDb.id,
     slug: productoDb.slug,
@@ -224,7 +285,8 @@ const relacionadosDb = [
       ? "MÁS VENDIDO"
       : "OFERTA",
 
-    modoGempages: false,
+    modoGempages,
+landingImagenes,
 
     descripcion:
       productoDb.descripcionCorta ||
