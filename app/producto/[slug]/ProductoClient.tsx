@@ -9,7 +9,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import StickyBuyButton from "@/components/producto/StickyBuyButton";
 import RelatedProducts from "@/components/producto/RelatedProducts";
 import ProductSocialProof from "@/components/producto/ProductSocialProof";
-import CheckoutModal from "@/components/producto/CheckoutModal";
+import dynamic from "next/dynamic";
 import ProductGallery from "@/components/producto/ProductGallery";
 import ProductPurchasePanel from "@/components/producto/ProductPurchasePanel";
 import ProductTechnicalSpecs from "@/components/producto/ProductTechnicalSpecs";
@@ -21,9 +21,16 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  ShoppingCart,
-} from "lucide-react";
+import { ShoppingCart } from "lucide-react";
+
+const CheckoutModal = dynamic(
+  () => import("@/components/producto/CheckoutModal"),
+  {
+    ssr: false,
+    loading: () => null,
+  }
+);
+
 declare global {
   interface Window {
     fbq?: any;
