@@ -134,10 +134,10 @@ const saldoPendiente = Math.max(
       onClick={onClose}
       className="fixed inset-0 z-[999] overflow-y-auto bg-black/70"
     >
-      <div className="flex min-h-screen items-start justify-center p-4">
+      <div className="flex min-h-screen items-start justify-center p-2 sm:p-4">
         <div
           onClick={(event) => event.stopPropagation()}
-          className="relative my-10 w-full max-w-md overflow-hidden rounded-2xl bg-white text-black shadow-2xl"
+          className="relative my-3 w-full max-w-md overflow-hidden rounded-2xl bg-white text-black shadow-2xl sm:my-6"
         >
           <button
             type="button"
@@ -150,7 +150,7 @@ const saldoPendiente = Math.max(
 
           {!pedidoFinalizado ? (
             <>
-              <div className="border-b bg-gradient-to-r from-yellow-400 to-yellow-300 p-4">
+              <div className="border-b bg-gradient-to-r from-yellow-400 to-yellow-300 px-4 py-3">
                 <p className="text-xs font-black uppercase tracking-wide">
                   Oferta especial
                 </p>
@@ -217,7 +217,7 @@ const saldoPendiente = Math.max(
   </>
 )}
 
-              <div className="space-y-3 p-4">
+              <div className="space-y-2.5 px-4 py-3">
                 <CheckoutInput
                   icon={<User size={18} />}
                   placeholder="Nombre completo *"
@@ -248,7 +248,7 @@ const saldoPendiente = Math.max(
     }
     name="region"
     autoComplete="address-level1"
-    className="w-full rounded-2xl border bg-white px-5 py-4 text-lg font-semibold text-zinc-700 outline-none"
+    className="w-full rounded-2xl border bg-white px-5 py-3.5 text-base font-semibold text-zinc-700 outline-none"
   >
     <option value="">
       Selecciona tu región
@@ -315,7 +315,7 @@ const saldoPendiente = Math.max(
                   type="button"
                   onClick={onSubmit}
                   disabled={loading}
-                  className="flex w-full animate-[pulse_1.5s_ease-in-out_infinite] items-center justify-center gap-3 rounded-2xl border-b-[5px] border-yellow-600 bg-yellow-400 py-5 text-lg font-black text-black shadow-xl transition hover:bg-yellow-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex w-full animate-[pulse_1.5s_ease-in-out_infinite] items-center justify-center gap-2 rounded-2xl border-b-[4px] border-yellow-600 bg-yellow-400 py-4 text-lg font-black text-black shadow-lg transition hover:bg-yellow-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <Truck size={22} />
 
