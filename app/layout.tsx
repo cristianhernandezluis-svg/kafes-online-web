@@ -5,6 +5,7 @@ import { Poppins } from "next/font/google";
 
 import prisma from "@/lib/prisma";
 
+import ActualizadorPWA from "./ActualizadorPWA";
 
 import AnalyticsTracker from "./AnalyticsTracker";
 
@@ -385,6 +386,8 @@ export default async function RootLayout({
             />
           </noscript>
         )}
+
+        <ActualizadorPWA />
 
 <AnalyticsTracker />
 
