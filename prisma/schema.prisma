@@ -519,6 +519,9 @@ model ConfiguracionTienda {
   checkoutMostrarRegion     Boolean @default(true)
   checkoutRegionObligatoria Boolean @default(true)
 
+checkoutMostrarAvisoProvincias Boolean @default(false)
+checkoutMensajeProvincias String @default("Envio por Shalom u Olva. Para provincias trabajamos con adelanto para confirmar el pedido. No contamos con pago contraentrega fuera de Lima.")
+
   checkoutMostrarCiudad     Boolean @default(true)
   checkoutCiudadObligatoria Boolean @default(true)
 

@@ -380,6 +380,18 @@ export async function guardarConfiguracionTienda(
       "checkoutRegionObligatoria"
     );
 
+const checkoutMostrarAvisoProvincias =
+  obtenerBooleano(
+    formData,
+    "checkoutMostrarAvisoProvincias"
+  );
+
+const checkoutMensajeProvincias =
+  String(
+    formData.get("checkoutMensajeProvincias") ?? ""
+  ).trim() ||
+  "Envío por Shalom u Olva. Para provincias trabajamos con adelanto para confirmar el pedido. No contamos con pago contraentrega fuera de Lima.";
+
   const checkoutMostrarCiudad =
     obtenerBooleano(
       formData,
@@ -476,6 +488,9 @@ export async function guardarConfiguracionTienda(
 
       checkoutMostrarRegion,
       checkoutRegionObligatoria,
+
+checkoutMostrarAvisoProvincias,
+checkoutMensajeProvincias,
 
       checkoutMostrarCiudad,
       checkoutCiudadObligatoria,

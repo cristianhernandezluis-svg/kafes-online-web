@@ -47,6 +47,9 @@ checkoutMontoAdelanto: number;
   checkoutMostrarRegion: boolean;
   checkoutRegionObligatoria: boolean;
 
+  checkoutMostrarAvisoProvincias: boolean;
+checkoutMensajeProvincias: string;
+
   checkoutMostrarCiudad: boolean;
   checkoutCiudadObligatoria: boolean;
 
@@ -231,6 +234,15 @@ checkoutMontoAdelanto: Number(
     checkoutRegionObligatoria:
       configuracion?.checkoutRegionObligatoria ??
       true,
+
+checkoutMostrarAvisoProvincias:
+  configuracion?.checkoutMostrarAvisoProvincias ??
+  false,
+
+checkoutMensajeProvincias: texto(
+  configuracion?.checkoutMensajeProvincias,
+  "Envío por Shalom u Olva. Para provincias trabajamos con adelanto para confirmar el pedido. No contamos con pago contraentrega fuera de Lima."
+),
 
     checkoutMostrarCiudad:
       configuracion?.checkoutMostrarCiudad ??

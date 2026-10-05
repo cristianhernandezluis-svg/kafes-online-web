@@ -302,13 +302,20 @@ const saldoPendiente = Math.max(
 )}
 
                 {configuracionTienda.checkoutMostrarRegion &&
-  region && (
-                  <div className="rounded-2xl border border-green-300 bg-green-50 px-4 py-3 text-sm font-bold text-green-700">
-                    {region === "Lima (Metropolitana)"
-                      ? "✅ Pago contra entrega disponible en Lima Metropolitana"
-                      : "📦 Envío por Shalom u Olva. Se solicita adelanto para confirmar el envío"}
-                  </div>
-                )}
+  region === "Lima (Metropolitana)" && (
+    <div className="rounded-2xl border border-green-300 bg-green-50 px-4 py-3 text-sm font-bold text-green-700">
+      ✅ Pago contra entrega disponible en Lima Metropolitana
+    </div>
+  )}
+
+{configuracionTienda.checkoutMostrarRegion &&
+  region &&
+  region !== "Lima (Metropolitana)" &&
+  configuracionTienda.checkoutMostrarAvisoProvincias && (
+    <div className="rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-800">
+      📦 {configuracionTienda.checkoutMensajeProvincias}
+    </div>
+  )}
 
 
                 <button

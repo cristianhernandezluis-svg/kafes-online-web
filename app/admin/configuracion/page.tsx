@@ -513,6 +513,44 @@ export default async function ConfiguracionPage({
           </div>
         </div>
 
+<div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+  <p className="mb-3 text-sm font-black text-slate-900">
+    Aviso para provincias
+  </p>
+
+  <div className="space-y-4">
+    <label className="flex items-center gap-3">
+      <input
+        type="checkbox"
+        name="checkoutMostrarAvisoProvincias"
+        defaultChecked={
+          configuracion?.checkoutMostrarAvisoProvincias ??
+          false
+        }
+      />
+
+      <span className="text-sm font-semibold text-slate-700">
+        Mostrar aviso de envíos y adelanto para provincias
+      </span>
+    </label>
+
+    <Textarea
+      label="Mensaje para provincias"
+      name="checkoutMensajeProvincias"
+      defaultValue={
+        configuracion?.checkoutMensajeProvincias ??
+        "Envío por Shalom u Olva. Para provincias trabajamos con adelanto para confirmar el pedido. No contamos con pago contraentrega fuera de Lima."
+      }
+      placeholder="Mensaje que verá el cliente de provincia"
+      rows={3}
+    />
+
+    <p className="text-xs text-slate-500">
+      Si desactivas el aviso, este mensaje no aparecerá en el checkout.
+    </p>
+  </div>
+</div>
+
         <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
           <p className="mb-3 text-sm font-black text-slate-900">
             Ciudad
